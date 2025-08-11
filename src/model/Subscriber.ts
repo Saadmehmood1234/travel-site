@@ -1,11 +1,15 @@
+
 import mongoose, { model, models } from "mongoose";
 
 export const subscriberSchema = new mongoose.Schema({
   email: {
     type: String,
-    requiredt: true,
+    required: true, 
+    unique: true,   
+    trim: true,    
+    lowercase: true 
   },
 });
 
-export const Subscriber =
-  models?.Subscriber || model("Subscriber", subscriberSchema);
+export const TravelSubscriber =
+  models?.TravelSubscriber || model("TravelSubscriber", subscriberSchema);

@@ -259,7 +259,7 @@ export default function DestinationsManager({ onUpdate }: DestinationsManagerPro
                   <Switch
                     id="featured"
                     checked={formData.featured}
-                    onCheckedChange={(checked) => setFormData({ ...formData, featured: checked })}
+                    onCheckedChange={(checked:any) => setFormData({ ...formData, featured: checked })}
                   />
                   <Label htmlFor="featured">Featured Destination</Label>
                 </div>
