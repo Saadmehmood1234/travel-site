@@ -1,15 +1,17 @@
 "use client";
-
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Plane, Phone, Mail } from "lucide-react";
 import { useSession } from "next-auth/react";
 import SignOutButton from "./SignOutButton";
+import { Profile } from "./Profile";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-const { data: session } = useSession();
+  const { data: session } = useSession();
+  console.log(session);
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -99,15 +101,23 @@ const { data: session } = useSession();
               >
                 Contact
               </Link>
-             <Link href="/auth/signin">
-             {!session?(
-               <Button className="bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white">
-                Login
-              </Button>
-             ):(
-              <SignOutButton/>
-             )}
-             </Link>
+              {!session ? (
+                <Link href="/auth/signin">
+                  <Button className="bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white">
+                    Login
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/profile">
+                  <Image
+                    src={session?.user?.image || "/default-avatar.png"}
+                    alt="Profile Picture"
+                    width={40}
+                    height={40}
+                    className="rounded-full"
+                  />
+                </Link>
+              )}
             </div>
 
             {/* Mobile menu button */}
@@ -165,9 +175,20 @@ const { data: session } = useSession();
                 >
                   Contact
                 </Link>
-                <Button className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white w-full">
-                  Get Quote
-                </Button>
+                {!session ? (
+                  <Link href="/auth/signin">
+                    <Button className="bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white">
+                      Login
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/profile">
+                   <div className="flex gap-2 justify-start items-center">
+                     <Button>Profile</Button>
+                    <SignOutButton/>
+                   </div>
+                  </Link>
+                )}
               </div>
             </div>
           )}
