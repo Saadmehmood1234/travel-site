@@ -3,25 +3,112 @@ import { Star, MapPin, Clock } from "lucide-react"
 import Image from "next/image"
 import BookingForm from "./booking-form"
 
-async function getDestination(id: string) {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/destinations/${id}`, {
-      cache: "no-store",
-    })
-    if (!res.ok) throw new Error("Failed to fetch")
-    return await res.json()
-  } catch (error) {
-    console.error("Error fetching destination:", error)
-    return null
-  }
-}
+// Static destinations array (same as in DestinationsList)
+const destinations = [
+  {
+    id: 1,
+    name: "Tropical Paradise Bali",
+    location: "Bali, Indonesia",
+    price: 1299,
+    originalPrice: 1599,
+    rating: 4.8,
+    reviews: 324,
+    duration: "7 days",
+    category: "Beach",
+    description:
+      "Experience the beauty of Bali with pristine beaches, vibrant culture, and world-class resorts.",
+    image: "/placeholder.svg?height=400&width=600",
+    featured: true,
+    discount: 19,
+  },
+  {
+    id: 2,
+    name: "Swiss Alps Adventure",
+    location: "Switzerland",
+    price: 2199,
+    originalPrice: 2499,
+    rating: 4.9,
+    reviews: 156,
+    duration: "10 days",
+    category: "Adventure",
+    description:
+      "Enjoy breathtaking views, snowy peaks, and thrilling outdoor adventures in the Swiss Alps.",
+    image: "/placeholder.svg?height=400&width=600",
+    featured: true,
+    discount: 12,
+  },
+  {
+    id: 3,
+    name: "Luxury Maldives Resort",
+    location: "Maldives",
+    price: 3499,
+    originalPrice: 4299,
+    rating: 4.9,
+    reviews: 89,
+    duration: "5 days",
+    category: "Luxury",
+    description:
+      "Relax in an overwater villa surrounded by turquoise waters in a private luxury resort.",
+    image: "/placeholder.svg?height=400&width=600",
+    featured: false,
+    discount: 19,
+  },
+  {
+    id: 4,
+    name: "Tokyo Cultural Journey",
+    location: "Tokyo, Japan",
+    price: 1899,
+    originalPrice: 2199,
+    rating: 4.7,
+    reviews: 267,
+    duration: "8 days",
+    category: "Family-Friendly",
+    description:
+      "Dive into Japan’s rich culture, vibrant streets, and unique culinary experiences.",
+    image: "/placeholder.svg?height=400&width=600",
+    featured: true,
+    discount: 14,
+  },
+  {
+    id: 5,
+    name: "African Safari Experience",
+    location: "Kenya & Tanzania",
+    price: 3299,
+    originalPrice: 3899,
+    rating: 4.9,
+    reviews: 134,
+    duration: "12 days",
+    category: "Adventure",
+    description:
+      "Witness majestic wildlife up close in an unforgettable African safari experience.",
+    image: "/placeholder.svg?height=400&width=600",
+    featured: false,
+    discount: 15,
+  },
+  {
+    id: 6,
+    name: "Santorini Sunset Escape",
+    location: "Santorini, Greece",
+    price: 1599,
+    originalPrice: 1899,
+    rating: 4.6,
+    reviews: 198,
+    duration: "6 days",
+    category: "Beach",
+    description:
+      "Enjoy breathtaking sunsets, whitewashed villages, and the charm of the Greek islands.",
+    image: "/placeholder.svg?height=400&width=600",
+    featured: false,
+    discount: 16,
+  },
+]
 
 interface DestinationDetailProps {
   id: string
 }
 
-export default async function DestinationDetail({ id }: DestinationDetailProps) {
-  const destination = await getDestination(id)
+export default function DestinationDetail({ id }: DestinationDetailProps) {
+  const destination = destinations.find((d) => d.id === Number(id))
 
   if (!destination) {
     return (
@@ -38,7 +125,7 @@ export default async function DestinationDetail({ id }: DestinationDetailProps) 
         <div>
           <div className="relative h-96 rounded-xl overflow-hidden mb-6">
             <Image
-              src={destination.image_url || "/placeholder.svg?height=600&width=800"}
+              src={destination.image || "/placeholder.svg?height=600&width=800"}
               alt={destination.name}
               fill
               className="object-cover"

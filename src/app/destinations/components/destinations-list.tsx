@@ -4,31 +4,103 @@ import { Star, MapPin, Clock, ArrowRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
-async function getDestinations() {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/destinations`, {
-      cache: "no-store",
-    })
-    if (!res.ok) throw new Error("Failed to fetch")
-    return await res.json()
-  } catch (error) {
-    console.error("Error fetching destinations:", error)
-    return []
-  }
-}
+const destinations = [
+  {
+    id: 1,
+    name: "Tropical Paradise Bali",
+    location: "Bali, Indonesia",
+    price: 1299,
+    originalPrice: 1599,
+    rating: 4.8,
+    reviews: 324,
+    duration: "7 days",
+    category: "Beach",
+    image: "/placeholder.svg?height=400&width=600",
+    featured: true,
+    discount: 19,
+  },
+  {
+    id: 2,
+    name: "Swiss Alps Adventure",
+    location: "Switzerland",
+    price: 2199,
+    originalPrice: 2499,
+    rating: 4.9,
+    reviews: 156,
+    duration: "10 days",
+    category: "Adventure",
+    image: "/placeholder.svg?height=400&width=600",
+    featured: true,
+    discount: 12,
+  },
+  {
+    id: 3,
+    name: "Luxury Maldives Resort",
+    location: "Maldives",
+    price: 3499,
+    originalPrice: 4299,
+    rating: 4.9,
+    reviews: 89,
+    duration: "5 days",
+    category: "Luxury",
+    image: "/placeholder.svg?height=400&width=600",
+    featured: false,
+    discount: 19,
+  },
+  {
+    id: 4,
+    name: "Tokyo Cultural Journey",
+    location: "Tokyo, Japan",
+    price: 1899,
+    originalPrice: 2199,
+    rating: 4.7,
+    reviews: 267,
+    duration: "8 days",
+    category: "Family-Friendly",
+    image: "/placeholder.svg?height=400&width=600",
+    featured: true,
+    discount: 14,
+  },
+  {
+    id: 5,
+    name: "African Safari Experience",
+    location: "Kenya & Tanzania",
+    price: 3299,
+    originalPrice: 3899,
+    rating: 4.9,
+    reviews: 134,
+    duration: "12 days",
+    category: "Adventure",
+    image: "/placeholder.svg?height=400&width=600",
+    featured: false,
+    discount: 15,
+  },
+  {
+    id: 6,
+    name: "Santorini Sunset Escape",
+    location: "Santorini, Greece",
+    price: 1599,
+    originalPrice: 1899,
+    rating: 4.6,
+    reviews: 198,
+    duration: "6 days",
+    category: "Beach",
+    image: "/placeholder.svg?height=400&width=600",
+    featured: false,
+    discount: 16,
+  },
+]
 
-export default async function DestinationsList() {
-  const destinations = await getDestinations()
-
+export default function DestinationsList() {
   return (
     <section className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {destinations.map((destination: any) => (
+          {destinations.map((destination) => (
             <Card key={destination.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden">
               <div className="relative h-64 overflow-hidden">
                 <Image
-                  src={destination.image_url || "/placeholder.svg?height=400&width=600"}
+                  src={destination.image || "/placeholder.svg?height=400&width=600"}
                   alt={destination.name}
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -61,7 +133,7 @@ export default async function DestinationsList() {
                   <span className="text-sm">{destination.duration}</span>
                 </div>
 
-                <p className="text-gray-600 mb-4 line-clamp-3">{destination.description}</p>
+                <p className="text-gray-600 mb-4 line-clamp-3">{destination.category}</p>
 
                 <Button asChild className="w-full group">
                   <Link href={`/destinations/${destination.id}`}>

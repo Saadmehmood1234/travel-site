@@ -100,11 +100,9 @@ export default function ContactSection() {
                       Visit Our Office
                     </h4>
                     <p className="text-gray-600">
-                      123 Travel Street
-                      <br />
-                      New York, NY 10001
-                      <br />
-                      United States
+                      Second Floor, A-245, Devli Rd, opp. Honda Showroom, near
+                      Vishal Mega Mart, Khanpur Village, Khanpur, New Delhi,
+                      Delhi 110062
                     </p>
                   </div>
                 </div>
@@ -117,11 +115,7 @@ export default function ContactSection() {
                     <h4 className="font-semibold text-gray-900 mb-1">
                       Call Us
                     </h4>
-                    <p className="text-gray-600">
-                      +1 (555) 123-4567
-                      <br />
-                      +1 (555) 987-6543
-                    </p>
+                    <p className="text-gray-600">+91-9310682414</p>
                   </div>
                 </div>
 
@@ -133,36 +127,14 @@ export default function ContactSection() {
                     <h4 className="font-semibold text-gray-900 mb-1">
                       Email Us
                     </h4>
-                    <p className="text-gray-600">
-                      info@wanderlust.com
-                      <br />
-                      support@wanderlust.com
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="bg-secondary-100 p-3 rounded-full">
-                    <Clock className="h-6 w-6 text-secondary-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">
-                      Business Hours
-                    </h4>
-                    <p className="text-gray-600">
-                      Mon - Fri: 9:00 AM - 6:00 PM
-                      <br />
-                      Sat: 10:00 AM - 4:00 PM
-                      <br />
-                      Sun: Closed
-                    </p>
+                    <p className="text-gray-600">info@cloudshipholidays.com</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Live Chat */}
-            <Card className="border-2 border-primary-200 bg-gradient-to-br from-primary-50 to-secondary-50">
+            {/* <Card className="border-2 border-primary-200 bg-gradient-to-br from-primary-50 to-secondary-50">
               <CardContent className="p-6 text-center">
                 <MessageCircle className="h-12 w-12 text-primary-600 mx-auto mb-4" />
                 <h4 className="text-lg font-semibold text-gray-900 mb-2">
@@ -175,7 +147,7 @@ export default function ContactSection() {
                   Start Live Chat
                 </Button>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
 
           {/* Contact Form */}
@@ -311,60 +283,63 @@ export default function ContactSection() {
         </div>
 
         {/* FAQ Section */}
-        <div className="mt-20">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-heading font-bold text-gray-900 mb-4">
-              Frequently Asked Questions
-            </h3>
-            <p className="text-xl text-gray-600">
-              Quick answers to common questions about our services.
-            </p>
+        <section id="faq">
+          <div className="mt-20">
+            <div className="text-center mb-12">
+              <h3 className="text-3xl font-heading font-bold text-gray-900 mb-4">
+                Frequently Asked Questions
+              </h3>
+              <p className="text-xl text-gray-600">
+                Quick answers to common questions about our services.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <Card className="p-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                  How far in advance should I book?
+                </h4>
+                <p className="text-gray-600">
+                  We recommend booking 2-3 months in advance for the best prices
+                  and availability. However, we can also help with last-minute
+                  bookings.
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                  Do you offer travel insurance?
+                </h4>
+                <p className="text-gray-600">
+                  Yes, we offer comprehensive travel insurance options to
+                  protect your investment and provide peace of mind during your
+                  travels.
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                  Can you help with visa requirements?
+                </h4>
+                <p className="text-gray-600">
+                  Our team can assist with visa applications and provide
+                  guidance on entry requirements for your destination.
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                  What if I need to cancel my trip?
+                </h4>
+                <p className="text-gray-600">
+                  We understand plans can change. We'll work with you and our
+                  partners to minimize cancellation fees and explore rebooking
+                  options.
+                </p>
+              </Card>
+            </div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Card className="p-6">
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">
-                How far in advance should I book?
-              </h4>
-              <p className="text-gray-600">
-                We recommend booking 2-3 months in advance for the best prices
-                and availability. However, we can also help with last-minute
-                bookings.
-              </p>
-            </Card>
-
-            <Card className="p-6">
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">
-                Do you offer travel insurance?
-              </h4>
-              <p className="text-gray-600">
-                Yes, we offer comprehensive travel insurance options to protect
-                your investment and provide peace of mind during your travels.
-              </p>
-            </Card>
-
-            <Card className="p-6">
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">
-                Can you help with visa requirements?
-              </h4>
-              <p className="text-gray-600">
-                Our team can assist with visa applications and provide guidance
-                on entry requirements for your destination.
-              </p>
-            </Card>
-
-            <Card className="p-6">
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">
-                What if I need to cancel my trip?
-              </h4>
-              <p className="text-gray-600">
-                We understand plans can change. We'll work with you and our
-                partners to minimize cancellation fees and explore rebooking
-                options.
-              </p>
-            </Card>
-          </div>
-        </div>
+        </section>
       </div>
     </section>
   );

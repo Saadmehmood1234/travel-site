@@ -28,11 +28,11 @@ export default function Navbar() {
           <div className="flex items-center space-x-4">
             <div className="flex items-center">
               <Phone className="h-4 w-4 mr-1" />
-              <span>+1 (555) 123-4567</span>
+              <span>+91-9310682414</span>
             </div>
             <div className="flex items-center">
               <Mail className="h-4 w-4 mr-1" />
-              <span>info@wanderlust.com</span>
+              <span>info@cloudshipholidays.com</span>
             </div>
           </div>
           <div className="hidden md:block">
@@ -52,14 +52,8 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center space-x-3">
-              <div className="bg-gradient-to-r from-primary-500 to-secondary-500 p-2 rounded-xl">
-                <Plane className="h-8 w-8 text-white" />
-              </div>
-              <div>
-                <span className="text-2xl font-heading font-bold text-gray-900">
-                  WanderLust
-                </span>
-                <p className="text-xs text-gray-600">Travel Agency</p>
+              <div className="w-52">
+                <img src="/logo.png" />
               </div>
             </Link>
 
@@ -183,10 +177,10 @@ export default function Navbar() {
                   </Link>
                 ) : (
                   <Link href="/profile">
-                   <div className="flex gap-2 justify-start items-center">
-                     <Button>Profile</Button>
-                    <SignOutButton/>
-                   </div>
+                    <div className="flex gap-2 justify-start items-center">
+                      <Button>Profile</Button>
+                      <SignOutButton />
+                    </div>
                   </Link>
                 )}
               </div>

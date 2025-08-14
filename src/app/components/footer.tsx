@@ -50,14 +50,8 @@ export default function Footer() {
           {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="bg-gradient-to-r from-primary-500 to-secondary-500 p-2 rounded-xl">
-                <Plane className="h-8 w-8 text-white" />
-              </div>
-              <div>
-                <span className="text-2xl font-heading font-bold">
-                  WanderLust
-                </span>
-                <p className="text-xs text-gray-400">Travel Agency</p>
+              <div className="w-52">
+                <img src="/logo.png" />
               </div>
             </div>
             <p className="text-gray-300 mb-6 leading-relaxed">
@@ -210,17 +204,19 @@ export default function Footer() {
               <div className="flex items-center space-x-3">
                 <MapPin className="h-5 w-5 text-primary-400" />
                 <span className="text-gray-300 text-sm">
-                  123 Travel St, NY 10001
+                  Second Floor, A-245, Devli Rd, opp. Honda Showroom, near
+                  Vishal Mega Mart, Khanpur Village, Khanpur, New Delhi, Delhi
+                  110062
                 </span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-secondary-400" />
-                <span className="text-gray-300 text-sm">+1 (555) 123-4567</span>
+                <span className="text-gray-300 text-sm">+91-9310682414</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-primary-400" />
                 <span className="text-gray-300 text-sm">
-                  info@wanderlust.com
+                  info@cloudshipholidays.com
                 </span>
               </div>
             </div>

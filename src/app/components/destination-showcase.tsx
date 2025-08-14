@@ -1,12 +1,13 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Star, MapPin, Clock, Heart, Filter } from "lucide-react"
-import Image from "next/image"
-
+import { useOptimistic, useState, useTransition } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Star, MapPin, Clock, Heart, Filter } from "lucide-react";
+import Image from "next/image";
+import { toggleWishlist } from "../actions/wishlist.actions.ts";
+import toast from "react-hot-toast";
 const destinations = [
   {
     id: 1,
@@ -92,27 +93,70 @@ const destinations = [
     featured: false,
     discount: 16,
   },
-]
+];
 
-const categories = ["All", "Beach", "Adventure", "Luxury", "Family-Friendly"]
+const categories = ["All", "Beach", "Adventure", "Luxury", "Family-Friendly"];
 
 export default function DestinationShowcase() {
-  const [selectedCategory, setSelectedCategory] = useState("All")
-  const [favorites, setFavorites] = useState<number[]>([])
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [isPending, startTransition] = useTransition();
 
   const filteredDestinations =
-    selectedCategory === "All" ? destinations : destinations.filter((dest) => dest.category === selectedCategory)
+    selectedCategory === "All"
+      ? destinations
+      : destinations.filter((dest) => dest.category === selectedCategory);
 
-  const toggleFavorite = (id: number) => {
-    setFavorites((prev) => (prev.includes(id) ? prev.filter((fav) => fav !== id) : [...prev, id]))
-  }
+  const handleToggleFavorite = (productId: string) => {
+    const isCurrentlyFavorite = favorites.includes(productId);
 
+    // Optimistically update the UI
+    setFavorites((prev) =>
+      isCurrentlyFavorite
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId]
+    );
+
+    // Start the transition for the server action
+    startTransition(async () => {
+      try {
+        const result = await toggleWishlist(productId);
+
+        if (result.status === "error") {
+          // Revert if there was an error
+          setFavorites((prev) =>
+            isCurrentlyFavorite
+              ? [...prev, productId]
+              : prev.filter((id) => id !== productId)
+          );
+          toast.error(result.message);
+        } else {
+          toast.success(
+            isCurrentlyFavorite ? "Removed from wishlist" : "Added to wishlist"
+          );
+        }
+      } catch (error) {
+        // Revert if there was an error
+        setFavorites((prev) =>
+          isCurrentlyFavorite
+            ? [...prev, productId]
+            : prev.filter((id) => id !== productId)
+        );
+        toast.error("Failed to update wishlist");
+      }
+    });
+  };
   return (
-    <section id="destinations" className="py-20 bg-gradient-to-b from-gray-50 to-white">
+    <section
+      id="destinations"
+      className="py-20 bg-gradient-to-b from-gray-50 to-white"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <Badge className="mb-4 bg-primary-100 text-primary-700 hover:bg-primary-200">Popular Destinations</Badge>
+          <Badge className="mb-4 bg-primary-100 text-primary-700 hover:bg-primary-200">
+            Popular Destinations
+          </Badge>
           <h2 className="text-4xl md:text-5xl font-heading font-bold text-gray-900 mb-6">
             Explore Amazing
             <span className="block bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
@@ -120,8 +164,9 @@ export default function DestinationShowcase() {
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover our handpicked selection of the world's most breathtaking destinations, each offering unique
-            experiences and unforgettable memories.
+            Discover our handpicked selection of the world's most breathtaking
+            destinations, each offering unique experiences and unforgettable
+            memories.
           </p>
         </div>
 
@@ -180,22 +225,28 @@ export default function DestinationShowcase() {
 
                 {/* Favorite Button */}
                 <button
-                  onClick={() => toggleFavorite(destination.id)}
-                  className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-all duration-300"
-                >
-                  <Heart
-                    className={`h-5 w-5 transition-colors duration-300 ${
-                      favorites.includes(destination.id) ? "text-red-500 fill-current" : "text-gray-600"
-                    }`}
-                  />
-                </button>
-
+        onClick={() => handleToggleFavorite(destination.id.toString())}
+        disabled={isPending}
+        className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-all duration-300 disabled:opacity-50"
+      >
+        <Heart
+          className={`h-5 w-5 transition-colors duration-300 ${
+            favorites.includes(destination.id.toString())
+              ? "text-red-500 fill-current"
+              : "text-gray-600"
+          }`}
+        />
+      </button>
                 {/* Price */}
                 <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
                   <div className="flex items-center space-x-2">
-                    <span className="text-lg font-bold text-gray-900">${destination.price}</span>
+                    <span className="text-lg font-bold text-gray-900">
+                      ${destination.price}
+                    </span>
                     {destination.originalPrice > destination.price && (
-                      <span className="text-sm text-gray-500 line-through">${destination.originalPrice}</span>
+                      <span className="text-sm text-gray-500 line-through">
+                        ${destination.originalPrice}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -208,7 +259,9 @@ export default function DestinationShowcase() {
                   </h3>
                   <div className="flex items-center bg-yellow-50 px-2 py-1 rounded-full">
                     <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
-                    <span className="text-sm font-semibold text-gray-700">{destination.rating}</span>
+                    <span className="text-sm font-semibold text-gray-700">
+                      {destination.rating}
+                    </span>
                   </div>
                 </div>
 
@@ -225,7 +278,10 @@ export default function DestinationShowcase() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <Badge variant="secondary" className="bg-gray-100 text-gray-700">
+                  <Badge
+                    variant="secondary"
+                    className="bg-gray-100 text-gray-700"
+                  >
                     {destination.category}
                   </Badge>
                   <Button
@@ -252,5 +308,5 @@ export default function DestinationShowcase() {
         </div>
       </div>
     </section>
-  )
+  );
 }

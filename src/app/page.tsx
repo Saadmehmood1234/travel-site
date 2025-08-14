@@ -8,6 +8,7 @@ import AboutUs from "./components/about-us"
 import BlogSection from "./components/blog-section"
 import ContactSection from "./components/contact-section"
 import Footer from "./components/footer"
+import FloatWhatsapp from "./components/FloatWatsapp"
 
 export default function Home() {
   return (
@@ -17,7 +18,8 @@ export default function Home() {
       <DestinationShowcase />
       <BookingWidget />
       <SpecialOffers />
-      <Testimonials />-----
+      <FloatWhatsapp/>
+      <Testimonials />
       <AboutUs />
       <BlogSection />
       <ContactSection />

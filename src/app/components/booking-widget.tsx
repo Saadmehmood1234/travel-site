@@ -195,75 +195,77 @@ export default function BookingWidget() {
               </div>
             )}
 
-            {/* Step 2: Dates */}
-            {currentStep === 2 && (
-              <div className="space-y-6">
-                <h3 className="text-2xl font-semibold text-gray-900 mb-6">
-                  Select Your Dates
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label>Check-in Date</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full h-12 justify-start text-left font-normal bg-transparent"
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {bookingData.checkIn
-                            ? format(bookingData.checkIn, "PPP")
-                            : "Select check-in date"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={bookingData.checkIn}
-                          onSelect={(date) =>
-                            setBookingData({ ...bookingData, checkIn: date })
-                          }
-                          disabled={(date) => date < new Date()}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  <div>
-                    <Label>Check-out Date</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full h-12 justify-start text-left font-normal bg-transparent"
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {bookingData.checkOut
-                            ? format(bookingData.checkOut, "PPP")
-                            : "Select check-out date"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={bookingData.checkOut}
-                          onSelect={(date) =>
-                            setBookingData({ ...bookingData, checkOut: date })
-                          }
-                          disabled={(date) => {
-                            if (date < new Date()) return true;
-                            if (bookingData.checkIn)
-                              return date <= bookingData.checkIn;
-                            return false;
-                          }}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </div>
-              </div>
-            )}
+{currentStep === 2 && (
+  <div className="space-y-6">
+    <h3 className="text-2xl font-semibold text-gray-900 mb-6">
+      Select Your Dates
+    </h3>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Check-in Date */}
+      <div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-full h-12 justify-start text-left font-normal text-gray-900 border-gray-200 bg-transparent"
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {bookingData.checkIn
+                ? format(bookingData.checkIn, "PPP")
+                : "Select check-in date"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto min-w-[300px] p-4 bg-white rounded-xl shadow-xl">
+            <Calendar
+              className="w-full"
+              mode="single"
+              selected={bookingData.checkIn}
+              onSelect={(date) =>
+                setBookingData({ ...bookingData, checkIn: date })
+              }
+              disabled={(date) => date < new Date()}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+
+      {/* Check-out Date */}
+      <div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-full h-12 justify-start text-left font-normal text-gray-900 border-gray-200 bg-transparent"
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {bookingData.checkOut
+                ? format(bookingData.checkOut, "PPP")
+                : "Select check-out date"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto min-w-[300px] p-4 bg-white rounded-xl shadow-xl">
+            <Calendar
+              className="w-full"
+              mode="single"
+              selected={bookingData.checkOut}
+              onSelect={(date) =>
+                setBookingData({ ...bookingData, checkOut: date })
+              }
+              disabled={(date) => {
+                if (date < new Date()) return true;
+                if (bookingData.checkIn) return date <= bookingData.checkIn;
+                return false;
+              }}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+    </div>
+  </div>
+)}
 
             {/* Step 3: Travelers */}
             {currentStep === 3 && (
