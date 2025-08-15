@@ -27,3 +27,37 @@ export default function Home() {
     </div>
   )
 }
+// "use client"
+// import { useState } from "react";
+
+// export default function Home() {
+//   const [flights, setFlights] = useState([]);
+//   const [loading, setLoading] = useState(false);
+
+//   const searchFlights = async () => {
+//     setLoading(true);
+//     const res = await fetch(`/api/flights?origin=MAD&destination=NYC&departureDate=2025-09-10`);
+//     const data = await res.json();
+//     setFlights(data.data || []);
+
+//     setLoading(false);
+//   };
+// console.log(flights )
+//   return (
+//     <div>
+//       <button onClick={searchFlights} disabled={loading}>
+//         {loading ? "Searching..." : "Search Flights"}
+//       </button>
+
+//       <ul>
+//         {flights.map((flight: any, i) => (
+//           <li key={i}>
+//             {flight.itineraries[0].segments[0].departure.iataCode} →{" "}
+//             {flight.itineraries[0].segments.slice(-1)[0].arrival.iataCode} —{" "}
+//             {flight.price.total} {flight.price.currency}
+//           </li>
+//         ))}
+//       </ul>
+//     </div>
+//   );
+// }
