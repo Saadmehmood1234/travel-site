@@ -93,7 +93,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="#destinations"
+                  href="/destinations"
                   className="text-gray-300 hover:text-white transition-colors"
                 >
                   Destinations
@@ -115,14 +115,7 @@ export default function Footer() {
                   About Us
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="#blog"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Travel Blog
-                </Link>
-              </li>
+        
               <li>
                 <Link
                   href="#contact"
@@ -131,14 +124,7 @@ export default function Footer() {
                   Contact
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/careers"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Careers
-                </Link>
-              </li>
+            
             </ul>
           </div>
 
@@ -193,24 +179,7 @@ export default function Footer() {
               </div>
             </div>
 
-            <div>
-              <h4 className="font-semibold mb-3">Newsletter</h4>
-              <p className="text-gray-400 text-sm mb-4">
-                Get travel tips and exclusive deals delivered to your inbox.
-              </p>
-              <form onSubmit={handleSubscribe} className="flex space-x-2">
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your email"
-                  className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
-                />
-                <Button className="bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600">
-                  Subscribe
-                </Button>
-              </form>
-            </div>
+         
           </div>
         </div>
 
@@ -218,7 +187,7 @@ export default function Footer() {
         <div className="border-t border-gray-800 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-gray-400 text-sm">
-              © {new Date().getFullYear()} WanderLust Travel Agency. All rights
+              © {new Date().getFullYear()} Cloudship Holidays. All rights
               reserved.
             </div>
             <div className="flex space-x-6 text-sm">
@@ -234,18 +203,8 @@ export default function Footer() {
               >
                 Terms of Service
               </Link>
-              <Link
-                href="/cookies"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                Cookie Policy
-              </Link>
-              <Link
-                href="/sitemap"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                Sitemap
-              </Link>
+         
+          
             </div>
           </div>
         </div>
