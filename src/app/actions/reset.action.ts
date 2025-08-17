@@ -1,11 +1,11 @@
 "use server";
 import { createTransport } from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
-import { TravelUser } from "@/model/User";
+import userModel from "@/model/User";
 import { PasswordResetToken } from "@/model/ResetPassword";
 import { hash } from "bcryptjs";
-import { dbConnect } from "@/lib/dbConnect";
 import nodemailer from "nodemailer";
+import dbConnect from "@/lib/dbConnect";
 
 export async function sendPasswordResetEmail(formData: FormData) {
   const identifier = formData.get("email") as string;
@@ -20,7 +20,7 @@ export async function sendPasswordResetEmail(formData: FormData) {
       };
     }
 
-    const user = await TravelUser.findOne({
+    const user = await userModel.findOne({
       $or: [{ email: identifier }, { phone: identifier }],
     });
 
@@ -111,7 +111,7 @@ export async function resetPassword(formData: FormData) {
     }
 
     const hashedPassword = await hash(password, 12);
-    await TravelUser.findByIdAndUpdate(resetToken.userId._id, {
+    await userModel.findByIdAndUpdate(resetToken.userId._id, {
       password: hashedPassword,
     });
 

@@ -3,10 +3,10 @@
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
-import { TravelUser } from "@/model/User";
 import bcrypt from "bcryptjs";
-import { dbConnect } from "@/lib/dbConnect";
+import userModel from "@/model/User";
 import { v4 as uuidv4 } from "uuid";
+import dbConnect from "@/lib/dbConnect";
 import { z } from "zod";
 import validator from "validator";
 import { headers } from "next/headers";
@@ -81,7 +81,7 @@ export const signup = async (data: {
 
     const { name, email, password, phone } = validationResult.data;
 
-    const existingUser = await TravelUser.findOne({
+    const existingUser = await userModel.findOne({
       $and: [{ email }, { emailVerified: true }],
     }).lean();
     if (existingUser) {
@@ -92,7 +92,7 @@ export const signup = async (data: {
     }
 
 
-    const userButNotVerified = await TravelUser.findOne({
+    const userButNotVerified = await userModel.findOne({
       $and: [{ email }, { emailVerified: false }],
     }).lean();
  
@@ -117,7 +117,7 @@ export const signup = async (data: {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    await TravelUser.create({
+    await userModel.create({
       name: validator.escape(name),
       email,
       phone,

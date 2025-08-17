@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
-// import orderModel from "@/model/order.model";
 import userModel from "@/model/User";
+import orderModel from "@/model/order.model";
 import { sendOrderConfirmationEmail } from "@/utils/sendOrderEmail";
-
 export async function POST(req: Request) {
   try {
     await dbConnect();

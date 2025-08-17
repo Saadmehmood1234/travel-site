@@ -1,7 +1,7 @@
 "use server";
 
-import { TravelUser } from "@/model/User";
-import { dbConnect } from "@/lib/dbConnect";
+import userModel from "@/model/User";
+import dbConnect from "@/lib/dbConnect";
 import { v4 as uuidv4 } from "uuid";
 import { createTransport } from "nodemailer";
 
@@ -9,7 +9,7 @@ export async function resendVerificationEmail(email: string) {
   await dbConnect();
 
   try {
-    const user = await TravelUser.findOne({ email });
+    const user = await userModel.findOne({ email });
     if (!user) {
       return { success: false, message: "User not found" };
     }
@@ -19,7 +19,7 @@ export async function resendVerificationEmail(email: string) {
     }
 
     const verificationToken = uuidv4();
-    await TravelUser.updateOne(
+    await userModel.updateOne(
       { _id: user._id },
       {
         verificationToken,

@@ -1,7 +1,7 @@
 // app/api/auth/[...nextauth]/route.ts
 import NextAuth from "next-auth";
-import { dbConnect } from "@/lib/dbConnect";
-import { TravelUser } from "@/model/User";
+import dbConnect from "./dbConnect";
+import userModel from "@/model/User";
 import bcrypt from "bcryptjs";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -27,7 +27,7 @@ export const authOptions: NextAuthOptions = {
 
         await dbConnect();
 
-        const user = await TravelUser.findOne({
+        const user = await userModel.findOne({
           email: credentials.email,
         }).select("+password");
         if (!user) {
@@ -74,12 +74,12 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === "google") {
         await dbConnect();
         try {
-          const existingUser = await TravelUser.findOne({
+          const existingUser = await userModel.findOne({
             email: profile?.email,
           });
 
           if (!existingUser) {
-           const user =  await TravelUser.create({
+           const user =  await userModel.create({
               name: profile?.name || "",
               email: profile?.email,
               phone: uuidv4(),
@@ -106,7 +106,7 @@ export const authOptions: NextAuthOptions = {
       }
       if (account?.provider === "credentials") {
         await dbConnect();
-        const dbUser = await TravelUser.findOne({ email: user.email });
+        const dbUser = await userModel.findOne({ email: user.email });
         if (!dbUser) {
           return false;
         }
@@ -117,7 +117,7 @@ export const authOptions: NextAuthOptions = {
             new Date(dbUser.verificationTokenExpires) < new Date()
           ) {
             const verificationToken = uuidv4();
-            await TravelUser.updateOne(
+            await userModel.updateOne(
               { email: user.email },
               {
                 verificationToken,

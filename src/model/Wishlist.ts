@@ -4,7 +4,7 @@ export const wishlistSchema = new Schema(
   {
     customerId: {
       type: Schema.Types.ObjectId,
-      ref: "TravelUser",
+      ref: "User",
       required: true,
     },
     items: [
