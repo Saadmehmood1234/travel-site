@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import Amadeus from "amadeus";
 
 const amadeus = new Amadeus({
@@ -6,25 +5,33 @@ const amadeus = new Amadeus({
   clientSecret: process.env.AMADEUS_CLIENT_SECRET!,
 });
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
-
-  const { latitude, longitude, radius } = req.query;
-  
-  if (!latitude || !longitude) {
-    return res.status(400).json({ message: 'Missing required parameters' });
-  }
-
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+
+    const latitude = searchParams.get("latitude");
+    const longitude = searchParams.get("longitude");
+    const radius = searchParams.get("radius") || "20";
+
+    if (!latitude || !longitude) {
+      return new Response(
+        JSON.stringify({ message: "Missing required parameters: latitude and longitude" }),
+        { status: 400 }
+      );
+    }
+
     const response = await amadeus.referenceData.locations.pointsOfInterest.get({
-      latitude: latitude as string,
-      longitude: longitude as string,
-      radius: radius || "20",
+      latitude,
+      longitude,
+      radius,
     });
-    res.status(200).json(response.data);
+
+    return new Response(JSON.stringify(response.data), { status: 200 });
   } catch (error: any) {
-    res.status(error.code || 500).json({ error: error.message });
+    console.error("Amadeus API error:", error);
+    return new Response(
+      JSON.stringify({ error: error.message || "Internal Server Error" }),
+      { status: error.code || 500 }
+    );
   }
 }
