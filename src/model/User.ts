@@ -23,5 +23,6 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-export const TravelUser =
-  mongoose.models?.TravelUser || model("TravelUser", userSchema);
+const   userModel =
+  mongoose.models?.user || model("User", userSchema);
+export default userModel;

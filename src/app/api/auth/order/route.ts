@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { dbConnect } from "@/lib/dbConnect";
-import { DarkUser } from "@/model/User";
-import { Order } from "@/model/Order";
+import dbConnect from "@/lib/dbConnect";
+// import orderModel from "@/model/order.model";
+import userModel from "@/model/User";
 import { sendOrderConfirmationEmail } from "@/utils/sendOrderEmail";
 
 export async function POST(req: Request) {
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       });
     }
 
-    const user = await DarkUser.findOne({ email: data.user.email });
+    const user = await userModel.findOne({ email: data.user.email });
     if (!user) {
       return NextResponse.json({
         success: false,
@@ -33,19 +33,19 @@ export async function POST(req: Request) {
     }
     const oneMinuteAgo = new Date(Date.now() - 60 * 1000); 
 
-    const recentOrder = await Order.findOne({
-      ownerId: user._id,
-      "products.productId": data.items[0]._id,
-      createdAt: { $gte: oneMinuteAgo },
-    });
+    // const recentOrder = await orderModel.findOne({
+    //   ownerId: user._id,
+    //   "products.productId": data.items[0]._id,
+    //   createdAt: { $gte: oneMinuteAgo },
+    // });
 
-    if (recentOrder) {
-      return NextResponse.json({
-        success: false,
-        message:
-          "You've already ordered this product recently. Please wait 1 minute to  ordering again.",
-      });
-    }
+    // if (recentOrder) {
+    //   return NextResponse.json({
+    //     success: false,
+    //     message:
+    //       "You've already ordered this product recently. Please wait 1 minute to  ordering again.",
+    //   });
+    // }
 
     const products = data.items.map((p: any) => {
       return {
@@ -63,28 +63,28 @@ export async function POST(req: Request) {
       comment:data.courseLink
     };
 
-    const order = await Order.create(orderData);
+    // const order = await orderModel.create(orderData);
 
-    if (!order) {
-      return NextResponse.json({
-        success: false,
-        message: "Failed to order. Please try again.",
-      });
-    }
+    // if (!order) {
+    //   return NextResponse.json({
+    //     success: false,
+    //     message: "Failed to order. Please try again.",
+    //   });
+    // }
 
-     sendOrderConfirmationEmail(user.email, {
-      orderId: order._id.toString(),
-      items: data.items.map((item: any) => ({
-        name: item.title,
-        quantity: item.quantity,
-        price: item.price,
-      })),
-      totalAmount: data.totalPrice,
-    });
+    //  sendOrderConfirmationEmail(user.email, {
+    //   orderId: order._id.toString(),
+    //   items: data.items.map((item: any) => ({
+    //     name: item.title,
+    //     quantity: item.quantity,
+    //     price: item.price,
+    //   })),
+    //   totalAmount: data.totalPrice,
+    // });
     
     return NextResponse.json({
       success: true,
-      message: "Order is successfully completed",
+      message: "orderModel is successfully completed",
     });
   } catch (error: any) {
     return NextResponse.json({
