@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import Amadeus from "amadeus";
 
 const amadeus = new Amadeus({
@@ -6,26 +5,33 @@ const amadeus = new Amadeus({
   clientSecret: process.env.AMADEUS_CLIENT_SECRET!,
 });
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const cityCode = searchParams.get("cityCode");
+  const checkInDate = searchParams.get("checkInDate");
+  const checkOutDate = searchParams.get("checkOutDate");
+  const adults = searchParams.get("adults");
 
-  const { cityCode, checkInDate, checkOutDate, adults } = req.query;
-  
   if (!cityCode || !checkInDate || !checkOutDate || !adults) {
-    return res.status(400).json({ message: 'Missing required parameters' });
+    return new Response(
+      JSON.stringify({ message: "Missing required parameters" }),
+      { status: 400 }
+    );
   }
 
   try {
     const response = await amadeus.shopping.hotelOffers.get({
-      cityCode: cityCode as string,
-      checkInDate: checkInDate as string,
-      checkOutDate: checkOutDate as string,
-      adults: adults as string,
+      cityCode,
+      checkInDate,
+      checkOutDate,
+      adults,
     });
-    res.status(200).json(response.data);
+
+    return new Response(JSON.stringify(response.data), { status: 200 });
   } catch (error: any) {
-    res.status(error.code || 500).json({ error: error.message });
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { status: error.code || 500 }
+    );
   }
 }
