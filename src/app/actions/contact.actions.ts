@@ -2,8 +2,8 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import TravelContactForm from "@/model/Contact";
-import { dbConnect } from "@/lib/dbConnect";
 import { ContactFormType } from "@/lib/types";
+import dbConnect from "@/lib/dbConnect";
 
 export const contactUs = async (data: ContactFormType) => {
   const { name, email, phone, subject, message, travelType } = data;

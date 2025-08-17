@@ -1,10 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { dbConnect } from "@/lib/dbConnect";
 import { Wishlist } from "@/model/Wishlist";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
+import dbConnect from "@/lib/dbConnect";
 export type WishlistActionResponse = {
   status: "added" | "removed" | "error";
   message: string;

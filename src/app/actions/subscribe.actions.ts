@@ -1,6 +1,6 @@
 "use server";
-import { dbConnect } from "@/lib/dbConnect";
 import { TravelSubscriber } from "@/model/Subscriber";
+import dbConnect from "@/lib/dbConnect";
 
 export const subscribeActions = async (email: string) => {
   if (!email) {
