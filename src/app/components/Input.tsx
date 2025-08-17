@@ -8,7 +8,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export const Input = ({ label, error, icon, ...props }: InputProps) => (
   <div className="space-y-1">
-    <label className="block text-sm font-medium text-white">{label}</label>
+    <label className="block text-sm font-medium text-black">{label}</label>
     <div className="relative ">
       {icon && <div className="absolute left-3 top-1/2 -translate-y-1/2">{icon}</div>}
       <input

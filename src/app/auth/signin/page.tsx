@@ -53,25 +53,12 @@ export default function SignInPage() {
 
   return (
     <section className="flex w-full justify-center items-center py-8 pb-24 bg-primary-600 flex-1  h-full relative overflow-hidden pt-[60px]">
-      {/* Gradient orbs */}
-      <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 bg-gradient-to-tr from-primary-400 via-secondary-400 to-primary-700 rounded-full blur-3xl opacity-20 animate-pulse" />
-      <div className="absolute bottom-0 right-0 w-72 h-72 bg-gradient-to-tl from-secondary-500 to-primary-400 rounded-full blur-3xl opacity-10" />
 
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="relative z-10 flex w-full flex-col items-center px-4 sm:px-6 lg:px-8"
-      >
-        <motion.div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 max-w-md w-full shadow-2xl relative">
-          {/* Inner glow */}
-          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 bg-gradient-to-tr from-primary-400 via-secondary-400 to-primary-500 rounded-full blur-3xl opacity-30" />
-
-          <div className="flex flex-col items-center gap-4 relative">
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-primary-400 to-secondary-400 bg-clip-text text-transparent drop-shadow-lg">
+        <div className="flex flex-col items-center gap-4 relative bg-white text-black px-9 py-10 rounded-xl">
+            <h2 className="text-4xl font-bold text-primary-600 drop-shadow-lg">
               Sign In
             </h2>
-            <p className="text-gray-300 text-center">Welcome back, traveler!</p>
+            <p className="text-gray-600 text-center">Welcome back, traveler!</p>
 
             <form
               onSubmit={handleSubmit(onSubmit)}
@@ -83,6 +70,7 @@ export default function SignInPage() {
                 {...register("email")}
                 error={errors.email && { message: errors.email.message }}
                 placeholder="example@gmail.com"
+                className="pl-10 w-[400px] h-[40px] rounded border-gray-300 border-2"
               />
 
               <Input
@@ -92,13 +80,15 @@ export default function SignInPage() {
                 {...register("password")}
                 error={errors.password && { message: errors.password.message }}
                 placeholder="••••••••"
+                className="pl-10 w-[400px] h-[40px] rounded border-gray-300 border-2"
+
               />
 
               <div className="flex justify-end">
                 <button
                   type="button"
                   onClick={() => router.push("/auth/forgot-password")}
-                  className="text-sm text-primary-300 hover:text-secondary-300 transition-colors"
+                  className="text-sm text-primary-600  transition-colors"
                 >
                   Forgot password?
                 </button>
@@ -107,7 +97,7 @@ export default function SignInPage() {
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-primary-400 to-secondary-400 hover:opacity-90 text-white font-semibold py-4 rounded-xl shadow-lg transition-all"
+                  className="w-full bg-primary-600 hover:opacity-90 text-white font-semibold py-4 rounded"
                   disabled={loading}
                 >
                   {loading ? "Signing In..." : "Sign In"}
@@ -118,33 +108,32 @@ export default function SignInPage() {
             {/* Divider */}
             <div className="w-full flex items-center space-x-4">
               <div className="flex-1 h-px bg-white/20" />
-              <span className="text-gray-300 text-sm">OR</span>
+              <span className="text-gray-600 text-sm">OR</span>
               <div className="flex-1 h-px bg-white/20" />
             </div>
 
             {/* Google sign-in */}
             <motion.button
               whileHover={{ scale: 1.05 }}
-              onClick={() => signIn("google", { callbackUrl: "/" })}
-              className="w-full flex items-center justify-center space-x-2 bg-white/10 border border-white/20 text-white py-4 rounded-xl transition-all hover:bg-white/20"
+              onClick={() => signIn("google", { callbackUrl: "/" })}  
+              className="w-full flex items-center justify-center space-x-2 bg-black border border-white/20 text-white py-4 rounded"
             >
               <FaGoogle className="text-xl" />
               <span>Sign in with Google</span>
             </motion.button>
 
             {/* Redirect to Sign Up */}
-            <p className="text-gray-300 text-center">
+            <p className="text-gray-500 text-center">
               Don&apos;t have an account?{" "}
               <button
                 onClick={() => router.push("/auth/signup")}
-                className="text-primary-300 hover:text-secondary-300 transition-colors"
+                className="text-primary-500 transition-colors"
               >
                 Sign Up
               </button>
             </p>
           </div>
-        </motion.div>
-      </motion.div>
+
     </section>
   );
 }
