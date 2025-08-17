@@ -147,52 +147,24 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-6">Travel Services</h3>
             <ul className="space-y-3">
               <li>
-                <Link
-                  href="/flights"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Flight Booking
-                </Link>
+                Flight Booking
+
               </li>
               <li>
-                <Link
-                  href="/hotels"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Hotel Reservations
-                </Link>
+                Hotel Reservations
+
               </li>
               <li>
-                <Link
-                  href="/tours"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Guided Tours
-                </Link>
+                Guided Tours
+
               </li>
               <li>
-                <Link
-                  href="/packages"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Travel Packages
-                </Link>
+                Travel Packages
+
               </li>
+
               <li>
-                <Link
-                  href="/insurance"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Travel Insurance
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/visa"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Visa Assistance
-                </Link>
+                Visa Assistance
               </li>
             </ul>
           </div>
