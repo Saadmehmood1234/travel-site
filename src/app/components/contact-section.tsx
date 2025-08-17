@@ -307,7 +307,7 @@ export default function ContactSection() {
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full h-14 text-lg  ng-primary-600 hover:from-primary-700 hover:to-secondary-600 shadow-lg transition-all"
+                    className="w-full h-14 text-lg  bg-primary-600 hover:from-primary-700 shadow-lg transition-all"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
