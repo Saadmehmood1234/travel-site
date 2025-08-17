@@ -4,7 +4,7 @@ const passwordResetTokenSchema = new Schema(
   {
     token: { type: String, required: true, unique: true },
     expiresAt: { type: Date, required: true },
-    userId: { type: Schema.Types.ObjectId, ref: "TravelUser", required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }
 );

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { dbConnect } from "@/lib/dbConnect";
-import { TravelUser } from "@/model/User";
+import userModel from "@/model/User";
+import dbConnect from "@/lib/dbConnect";
 
 export async function POST(req: Request) {
   const { token } = await req.json();
@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
   await dbConnect();
 
-  const user = await TravelUser.findOne({
+  const user = await userModel.findOne({
     verificationToken: token,
     verificationTokenExpires: { $gt: new Date() },
   });

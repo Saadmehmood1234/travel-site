@@ -1,43 +1,52 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import Razorpay from 'razorpay';
-import crypto from 'crypto';
+import Razorpay from "razorpay";
+import crypto from "crypto";
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
   key_secret: process.env.RAZORPAY_KEY_SECRET!,
 });
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST']);
-    return res.status(405).json({ success: false, message: `Method ${req.method} not allowed` });
-  }
-
+export async function POST(req: Request) {
   try {
-    const { orderId, paymentId, signature } = req.body;
+    const { orderId, paymentId, signature } = await req.json();
 
-    // Generate the expected signature
+    if (!orderId || !paymentId || !signature) {
+      return new Response(
+        JSON.stringify({ success: false, message: "Missing required fields" }),
+        { status: 400 }
+      );
+    }
+
+    // Generate expected signature
     const expectedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
       .update(`${orderId}|${paymentId}`)
-      .digest('hex');
+      .digest("hex");
 
     if (expectedSignature === signature) {
-      // Signature is valid
-      // Here you would typically:
-      // 1. Save payment details to your database
-      // 2. Update order status
-      // 3. Send confirmation email, etc.
+      // ✅ Signature is valid
+      // 👉 Save payment details to DB, update order status, send confirmation, etc.
 
-      return res.status(200).json({ success: true });
+      return new Response(JSON.stringify({ success: true }), { status: 200 });
     } else {
-      return res.status(400).json({ success: false, message: 'Invalid signature' });
+      return new Response(
+        JSON.stringify({ success: false, message: "Invalid signature" }),
+        { status: 400 }
+      );
     }
   } catch (error) {
-    console.error('Error verifying payment:', error);
-    res.status(500).json({ success: false, message: 'Error verifying payment' });
+    console.error("Error verifying payment:", error);
+    return new Response(
+      JSON.stringify({ success: false, message: "Error verifying payment" }),
+      { status: 500 }
+    );
   }
+}
+
+// (Optional) Handle wrong HTTP methods gracefully
+export async function GET() {
+  return new Response(
+    JSON.stringify({ success: false, message: "Method not allowed" }),
+    { status: 405, headers: { Allow: "POST" } }
+  );
 }
