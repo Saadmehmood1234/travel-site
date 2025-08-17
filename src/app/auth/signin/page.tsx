@@ -52,9 +52,9 @@ export default function SignInPage() {
   }
 
   return (
-    <section className="flex w-full justify-center items-center py-8 pb-24 bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 min-h-screen relative overflow-hidden pt-[60px]">
+    <section className="flex w-full justify-center items-center py-8 pb-24 bg-primary-600 flex-1  h-full relative overflow-hidden pt-[60px]">
       {/* Gradient orbs */}
-      <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-tr from-primary-400 via-secondary-400 to-primary-700 rounded-full blur-3xl opacity-20 animate-pulse" />
+      <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 bg-gradient-to-tr from-primary-400 via-secondary-400 to-primary-700 rounded-full blur-3xl opacity-20 animate-pulse" />
       <div className="absolute bottom-0 right-0 w-72 h-72 bg-gradient-to-tl from-secondary-500 to-primary-400 rounded-full blur-3xl opacity-10" />
 
       <motion.div

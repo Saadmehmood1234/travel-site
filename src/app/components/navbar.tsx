@@ -85,7 +85,7 @@ export default function Navbar() {
               {!session ? (
                 <Link href="/auth/signin">
                   <Button className="bg-blue-600 text-white w-[130px] shadow-lg">
-                    Login
+                    Sign In
                   </Button>
                 </Link>
               ) : (
