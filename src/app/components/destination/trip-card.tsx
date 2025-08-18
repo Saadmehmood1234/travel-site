@@ -1,7 +1,7 @@
 // components/TripCard.tsx
 import { FiCalendar, FiMapPin, FiUsers, FiStar } from 'react-icons/fi';
 import { motion } from 'framer-motion';
-
+import Link from 'next/link';
 export default function TripCard({ trip }: { trip: any }) {
   return (
     <motion.div 
@@ -71,9 +71,11 @@ export default function TripCard({ trip }: { trip: any }) {
             <span className="text-gray-500 text-sm">Starting from</span>
             <div className="text-2xl font-bold">{trip.price}</div>
           </div>
+          <Link href={`/destinations/${trip.id}`}>
           <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
             View Details
           </button>
+          </Link>
         </div>
       </div>
     </motion.div>

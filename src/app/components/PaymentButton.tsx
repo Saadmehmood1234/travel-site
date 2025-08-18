@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Script from 'next/script';
 import axios from 'axios';
+import { FiArrowRight } from 'react-icons/fi';
 declare global{
     interface Window{
         Razorpay:any
@@ -54,13 +55,12 @@ const PaymentButton = () => {
       <Script 
         src="https://checkout.razorpay.com/v1/checkout.js"
       />
-      
       <button
         onClick={initiatePayment}
         disabled={loading}
-        className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold mb-3 flex items-center justify-center"
       >
-        {loading ? 'Processing...' : 'Pay Now'}
+        {loading ? 'Processing...' : 'Pay Now'} <FiArrowRight className="ml-2" />
       </button>
     </>
   );
