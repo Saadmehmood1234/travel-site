@@ -96,6 +96,24 @@ const tripDetails = {
 };
 
 export default function TripDetailPage() {
+    const handleShare = async () => {
+      console.log("Clicked")
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Check this out!",
+          text: "I found something interesting 👀",
+          url: window.location.href,
+        });
+        console.log("Content shared successfully");
+      } catch (err) {
+        console.error("Error sharing:", err);
+      }
+    } else {
+      alert("Sharing not supported in this browser.");
+    }
+  };
+
   return (
     <div className="bg-gray-50">
       {/* Hero Section */}
@@ -321,7 +339,7 @@ export default function TripDetailPage() {
                     Enquire Now
                   </button>
                   <div className="flex justify-center mt-4">
-                    <button className="text-gray-500 hover:text-gray-700 flex items-center">
+                    <button onClick={handleShare} className="text-gray-500 hover:text-gray-700 flex items-center">
                       <FiShare2 className="mr-2" /> Share this trip
                     </button>
                   </div>

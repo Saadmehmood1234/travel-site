@@ -18,7 +18,7 @@ async function dbConnect() {
   if (!cached.promise) {
     cached.promise = mongoose
       .connect(MONGO_URI, {
-        dbName: "flight", // 👈 change to your DB name
+        dbName: "flight", 
       })
       .then((mongoose) => {
         console.log("✅ MongoDB connected");

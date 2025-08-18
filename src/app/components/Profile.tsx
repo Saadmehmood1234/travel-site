@@ -45,7 +45,7 @@ export function Profile() {
   ];
 
   return (
-    <div className="flex justify-center p-4 md:p-8">
+    <div className="flex justify-center p-4 md:p-8  mt-24">
       <Card className="w-full max-w-4xl shadow-xl rounded-2xl overflow-hidden border-0 bg-white/95 backdrop-blur-sm">
         <div className="relative h-40 bg-gradient-to-r from-primary-500 to-secondary-500">
           <div className="absolute -bottom-16 left-6">
