@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition, startTransition } from "react";
 import {
   FiCalendar,
   FiMapPin,
@@ -15,11 +15,13 @@ import ImageGallery from "@/app/components/destination/image-gallery";
 import ItineraryDay from "@/app/components/destination/ItineraryDay";
 import FAQItem from "@/app/components/destination/faq-item";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { getProductById } from "@/app/actions/product.actions";
 import { SerializedProduct } from "@/types/product";
-
-// Define the trip interface based on your product data
+import { useSession } from "next-auth/react";
+import { toggleWishlist } from "@/app/actions/wishlist.actions.ts";
+import toast from "react-hot-toast";
+import { Heart } from "lucide-react";
 interface TripDetails {
   id: string;
   title: string;
@@ -51,93 +53,107 @@ interface TripDetails {
 export default function TripDetailPage() {
   const params = useParams();
   const id = params.id as string;
-  
+  const { data: session } = useSession();
+  const router = useRouter();
   const [tripDetails, setTripDetails] = useState<TripDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [favorites, setFavorites] = useState<string[]>([]);
   useEffect(() => {
     async function fetchTripDetails() {
       try {
         setLoading(true);
         const result = await getProductById(id);
-        
+
         if (result.success && result.data) {
           const product = result.data;
-          
-          // Transform the API data to match the frontend structure
+
           const transformedData: TripDetails = {
             id: product._id,
             title: product.name,
             subtitle: product.location,
-            images: [product.image], // Using the main image
+            images: [product.image],
             duration: product.duration,
             difficulty: product.difficulty || "Moderate",
             groupSize: product.groupSize || "12-15",
             rating: product.rating,
             reviews: product.reviews,
-            price: `₹${product.originalPrice?.toLocaleString() || product.price.toLocaleString()}`,
-            discountPrice: product.originalPrice ? `₹${product.price.toLocaleString()}` : undefined,
-            dates: product.availableDates && product.availableDates.length > 0 
-              ? product.availableDates.map((dateStr, index) => ({
-                  id: index.toString(),
-                  date: new Date(dateStr).toLocaleDateString('en-IN', { 
-                    day: 'numeric', 
-                    month: 'short', 
-                    year: 'numeric' 
-                  }),
-                  seats: "Available"
-                }))
-              : [
-                  { id: "1", date: "Custom dates available", seats: "Contact for details" }
-                ],
+            price: `₹${
+              product.originalPrice?.toLocaleString() ||
+              product.price.toLocaleString()
+            }`,
+            discountPrice: product.originalPrice
+              ? `₹${product.price.toLocaleString()}`
+              : undefined,
+            dates:
+              product.availableDates && product.availableDates.length > 0
+                ? product.availableDates.map((dateStr, index) => ({
+                    id: index.toString(),
+                    date: new Date(dateStr).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    }),
+                    seats: "Available",
+                  }))
+                : [
+                    {
+                      id: "1",
+                      date: "Custom dates available",
+                      seats: "Contact for details",
+                    },
+                  ],
             highlights: product.highlights || [
               "Expert guides",
               "Small group experience",
-              "All equipment provided"
+              "All equipment provided",
             ],
             overview: `Experience the amazing ${product.name} in ${product.location}. ${product.duration} of adventure and exploration awaits you.`,
             itinerary: [
               {
                 day: 1,
                 title: "Arrival and Orientation",
-                description: "Meet your guide and group, get briefed on the itinerary and safety procedures.",
+                description:
+                  "Meet your guide and group, get briefed on the itinerary and safety procedures.",
                 highlights: ["Welcome session", "Equipment check"],
                 meals: ["Dinner"],
-                accommodation: "Comfortable lodging"
+                accommodation: "Comfortable lodging",
               },
               {
                 day: 2,
                 title: "Full Day Adventure",
-                description: "Immerse yourself in the experience with expert guidance and support.",
+                description:
+                  "Immerse yourself in the experience with expert guidance and support.",
                 highlights: ["Main activities", "Local cuisine"],
                 meals: ["Breakfast", "Lunch", "Dinner"],
-                accommodation: "Comfortable lodging"
-              }
+                accommodation: "Comfortable lodging",
+              },
             ],
             inclusions: product.inclusions || [
               "Professional guides",
               "All necessary equipment",
               "Accommodation as per itinerary",
-              "Meals as specified"
+              "Meals as specified",
             ],
             exclusions: product.exclusions || [
               "Personal expenses",
               "Travel insurance",
-              "Optional activities"
+              "Optional activities",
             ],
             faqs: [
               {
                 question: "What should I bring?",
-                answer: "Comfortable clothing, sturdy shoes, personal medications, and a sense of adventure!"
+                answer:
+                  "Comfortable clothing, sturdy shoes, personal medications, and a sense of adventure!",
               },
               {
                 question: "What's the cancellation policy?",
-                answer: "Full refund up to 30 days before departure. Please see our terms for details."
-              }
-            ]
+                answer:
+                  "Full refund up to 30 days before departure. Please see our terms for details.",
+              },
+            ],
           };
-          
+
           setTripDetails(transformedData);
         } else {
           setError(result.error || "Product not found");
@@ -154,7 +170,45 @@ export default function TripDetailPage() {
       fetchTripDetails();
     }
   }, [id]);
+  const handleToggleFavorite = (productId: string) => {
+    const isCurrentlyFavorite = favorites.includes(productId);
 
+    // Optimistically update the UI
+    setFavorites((prev) =>
+      isCurrentlyFavorite
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId]
+    );
+
+    // Start the transition for the server action
+    startTransition(async () => {
+      try {
+        const result = await toggleWishlist(productId);
+
+        if (result.status === "error") {
+          // Revert if there was an error
+          setFavorites((prev) =>
+            isCurrentlyFavorite
+              ? [...prev, productId]
+              : prev.filter((id) => id !== productId)
+          );
+          toast.error(result.message);
+        } else {
+          toast.success(
+            isCurrentlyFavorite ? "Removed from wishlist" : "Added to wishlist"
+          );
+        }
+      } catch (error) {
+        // Revert if there was an error
+        setFavorites((prev) =>
+          isCurrentlyFavorite
+            ? [...prev, productId]
+            : prev.filter((id) => id !== productId)
+        );
+        toast.error("Failed to update wishlist");
+      }
+    });
+  };
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -200,9 +254,8 @@ export default function TripDetailPage() {
 
   return (
     <div className="bg-gray-50">
-      {/* Hero Section */}
       <section className="relative h-96 md:h-[500px] bg-gray-900 overflow-hidden">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${tripDetails.images[0]})` }}
         />
@@ -239,18 +292,12 @@ export default function TripDetailPage() {
           </div>
         </div>
       </section>
-
-      {/* Main Content */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Left Column - Main Content */}
           <div className="lg:w-2/3">
-            {/* Image Gallery */}
             <div className="mb-8">
               <ImageGallery images={tripDetails.images} />
             </div>
-
-            {/* Highlights */}
             <section className="bg-white rounded-xl shadow-sm p-6 mb-8">
               <h2 className="text-2xl font-bold mb-4">Trip Highlights</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -265,7 +312,6 @@ export default function TripDetailPage() {
               </div>
             </section>
 
-            {/* Overview */}
             <section className="bg-white rounded-xl shadow-sm p-6 mb-8">
               <h2 className="text-2xl font-bold mb-4">Overview</h2>
               <p className="text-gray-700 mb-4">{tripDetails.overview}</p>
@@ -274,7 +320,6 @@ export default function TripDetailPage() {
               </button>
             </section>
 
-            {/* Itinerary */}
             <section className="bg-white rounded-xl shadow-sm p-6 mb-8">
               <h2 className="text-2xl font-bold mb-6">Detailed Itinerary</h2>
               <div className="space-y-6">
@@ -284,18 +329,29 @@ export default function TripDetailPage() {
               </div>
             </section>
 
-            {/* Inclusions & Exclusions */}
             <section className="bg-white rounded-xl shadow-sm p-6 mb-8">
               <h2 className="text-2xl font-bold mb-6">What's Included</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <h3 className="text-lg font-semibold mb-3 text-green-600">Inclusions</h3>
+                  <h3 className="text-lg font-semibold mb-3 text-green-600">
+                    Inclusions
+                  </h3>
                   <ul className="space-y-2">
                     {tripDetails.inclusions.map((item, index) => (
                       <li key={index} className="flex items-start">
                         <div className="bg-green-100 p-1 rounded-full mr-3 mt-0.5">
-                          <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                          <svg
+                            className="w-4 h-4 text-green-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M5 13l4 4L19 7"
+                            />
                           </svg>
                         </div>
                         <span>{item}</span>
@@ -304,13 +360,25 @@ export default function TripDetailPage() {
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-3 text-red-600">Exclusions</h3>
+                  <h3 className="text-lg font-semibold mb-3 text-red-600">
+                    Exclusions
+                  </h3>
                   <ul className="space-y-2">
                     {tripDetails.exclusions.map((item, index) => (
                       <li key={index} className="flex items-start">
                         <div className="bg-red-100 p-1 rounded-full mr-3 mt-0.5">
-                          <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                          <svg
+                            className="w-4 h-4 text-red-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M6 18L18 6M6 6l12 12"
+                            />
                           </svg>
                         </div>
                         <span>{item}</span>
@@ -320,8 +388,6 @@ export default function TripDetailPage() {
                 </div>
               </div>
             </section>
-
-            {/* FAQs */}
             <section className="bg-white rounded-xl shadow-sm p-6">
               <h2 className="text-2xl font-bold mb-6">
                 Frequently Asked Questions
@@ -338,11 +404,9 @@ export default function TripDetailPage() {
             </section>
           </div>
 
-          {/* Right Column - Booking Card */}
           <div className="lg:w-1/3">
             <div className="sticky top-6">
               <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                {/* Price Section */}
                 <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-white">
                   <div className="flex justify-between items-start mb-2">
                     <div>
@@ -358,8 +422,14 @@ export default function TripDetailPage() {
                         )}
                       </div>
                     </div>
-                    <button className="p-2 rounded-full bg-white/20 hover:bg-white/30">
-                      <FiHeart className="text-xl" />
+                     <button onClick={() =>
+                        handleToggleFavorite(tripDetails.id.toString())
+                      } className="p-2 rounded-full bg-white/20 hover:bg-white/30">
+                      <FiHeart               className={`h-5 w-5 transition-colors duration-300 ${
+                          favorites.includes(tripDetails.id.toString())
+                            ? "text-red-500 fill-current"
+                            : "text-gray-600"
+                        }`} />
                     </button>
                   </div>
                   <div className="text-sm opacity-90">
@@ -367,7 +437,6 @@ export default function TripDetailPage() {
                   </div>
                 </div>
 
-                {/* Dates Selection */}
                 <div className="p-6 border-b">
                   <h3 className="text-lg font-semibold mb-4">
                     Available Dates
@@ -392,7 +461,6 @@ export default function TripDetailPage() {
                   </div>
                 </div>
 
-                {/* Quick Facts */}
                 <div className="p-6 border-b">
                   <h3 className="text-lg font-semibold mb-4">Quick Facts</h3>
                   <div className="space-y-3">
@@ -421,9 +489,8 @@ export default function TripDetailPage() {
                   </div>
                 </div>
 
-                {/* CTA Section */}
                 <div className="p-6">
-                  <Link href={`/payment-page?productId=${tripDetails.id}`}>
+                  <Link href={`/payment-page/${tripDetails.id}`}>
                     <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold mb-3 flex items-center justify-center">
                       Book Now <FiArrowRight className="ml-2" />
                     </button>
@@ -432,14 +499,16 @@ export default function TripDetailPage() {
                     Enquire Now
                   </button>
                   <div className="flex justify-center mt-4">
-                    <button onClick={handleShare} className="text-gray-500 hover:text-gray-700 flex items-center">
+                    <button
+                      onClick={handleShare}
+                      className="text-gray-500 hover:text-gray-700 flex items-center"
+                    >
                       <FiShare2 className="mr-2" /> Share this trip
                     </button>
                   </div>
                 </div>
               </div>
 
-              {/* Need Help Section */}
               <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
                 <h3 className="text-lg font-semibold mb-3">Need Help?</h3>
                 <p className="text-gray-600 mb-4">

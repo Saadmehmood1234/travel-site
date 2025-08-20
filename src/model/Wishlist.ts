@@ -1,9 +1,10 @@
+// model/Wishlist.ts
 import { Schema, model, models } from "mongoose";
+
 export const wishlistSchema = new Schema(
   {
     customerId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+      type: String, // Changed from ObjectId to String
       required: true,
     },
     items: [

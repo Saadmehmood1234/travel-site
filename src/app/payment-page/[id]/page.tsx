@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,17 +30,40 @@ import {
   Check,
 } from "lucide-react";
 import { format } from "date-fns";
-
+import PaymentButton from "../../components/PaymentButton";
+import { useParams, useRouter } from "next/navigation";
+import { getProductById } from "../../actions/product.actions";
+import { useSession } from "next-auth/react";
+interface TripDetails {
+  id: string;
+  title: string;
+  subtitle: string;
+  images: string[];
+  duration: string;
+  difficulty: string;
+  groupSize: string;
+  rating: number;
+  reviews: number;
+  price: string;
+  discountPrice?: string;
+}
 const steps = [
+  { id: 1, name: "Destination", icon: MapPin },
   { id: 2, name: "Dates", icon: CalendarIcon },
   { id: 3, name: "Travelers", icon: Users },
   { id: 4, name: "Payment", icon: CreditCard },
 ];
 
 export default function BookingWidget() {
+  const params = useParams();
+  const id = params.id as string;
+  console.log("Id", id, params);
   const [currentStep, setCurrentStep] = useState(1);
+  const [tripDetails, setTripDetails] = useState<TripDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [bookingData, setBookingData] = useState({
-    destination: "",
+    destination: tripDetails?.title,
     checkIn: undefined as Date | undefined,
     checkOut: undefined as Date | undefined,
     adults: "2",
@@ -55,12 +78,25 @@ export default function BookingWidget() {
     cvv: "",
     cardName: "",
   });
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [bookingComplete, setBookingComplete] = useState(false);
 
   const progress = (currentStep / steps.length) * 100;
 
   const nextStep = () => {
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
+    }
+    if (currentStep === 1) {
+      if (!session) {
+        router.push("/auth/signin");
+        return;
+      }
+      setBookingData({
+        ...bookingData,
+        destination: tripDetails?.title,
+      });
     }
   };
 
@@ -69,15 +105,120 @@ export default function BookingWidget() {
       setCurrentStep(currentStep - 1);
     }
   };
+  useEffect(() => {
+    async function fetchTripDetails() {
+      try {
+        setLoading(true);
+        const result = await getProductById(id);
 
-  const handleSubmit = () => {
-    console.log("Booking submitted:", bookingData);
-    // Here you would integrate with your booking API
-    alert("Booking submitted successfully!");
+        if (result.success && result.data) {
+          const product = result.data;
+
+          const transformedData: TripDetails = {
+            id: product._id,
+            title: product.name,
+            subtitle: product.location,
+            images: [product.image],
+            duration: product.duration,
+            difficulty: product.difficulty || "Moderate",
+            groupSize: product.groupSize || "12-15",
+            rating: product.rating,
+            reviews: product.reviews,
+            price: `₹${
+              product.originalPrice?.toLocaleString() ||
+              product.price.toLocaleString()
+            }`,
+            discountPrice: product.originalPrice
+              ? `₹${product.price.toLocaleString()}`
+              : undefined,
+          };
+
+          setTripDetails(transformedData);
+        } else {
+          setError(result.error || "Product not found");
+        }
+      } catch (err) {
+        console.error("Error fetching trip details:", err);
+        setError("Failed to load trip details");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (id) {
+      fetchTripDetails();
+    }
+  }, [id]);
+  const handlePaymentSuccess = () => {
+    setBookingComplete(true);
+    if (!session) {
+      router.push("/auth/signin");
+    }
+    console.log("Booking completed:", bookingData);
   };
 
+  const calculateTotal = () => {
+    // const basePrice = {tripDetails?.price};
+    // const adultPrice = parseInt(bookingData.adults) * 500;
+    // const childPrice = parseInt(bookingData.children) * 250;
+    // const roomPrice = parseInt(bookingData.rooms) * 300;
+
+    // return basePrice + adultPrice + childPrice + roomPrice;
+    return tripDetails?.discountPrice;
+  };
+
+  const totalAmount = calculateTotal();
+
+  if (bookingComplete) {
+    return (
+      <section id="booking" className="py-20 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <Badge className="mb-4 bg-green-100 text-green-700">
+              Booking Complete
+            </Badge>
+            <h2 className="text-4xl font-heading font-bold text-gray-900 mb-4">
+              Thank You for Your Booking!
+            </h2>
+            <p className="text-xl text-gray-600">
+              Your trip has been confirmed. We've sent the details to your
+              email.
+            </p>
+          </div>
+
+          <Card className="shadow-2xl border-0">
+            <CardHeader className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-t-lg">
+              <CardTitle className="text-2xl font-heading text-center">
+                Booking Confirmed
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-8 text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Check className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                Your adventure awaits!
+              </h3>
+              <p className="text-gray-600 mb-6">
+                We've sent a confirmation email to{" "}
+                <strong>{bookingData.email}</strong>
+                with all the details of your trip.
+              </p>
+              <Button
+                onClick={() => window.location.reload()}
+                className="bg-gradient-to-r from-primary-500 to-secondary-500"
+              >
+                Book Another Trip
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+    );
+  }
+  console.log(tripDetails, bookingData);
   return (
-    <section id="booking" className="py-20 bg-white">
+    <section id="booking" className="py-20 bg-white mt-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-secondary-100 text-secondary-700 hover:bg-secondary-200">
@@ -102,7 +243,6 @@ export default function BookingWidget() {
               </Badge>
             </div>
 
-            {/* Progress Bar */}
             <div className="space-y-2">
               <Progress value={progress} className="h-2 bg-white/20" />
               <div className="flex justify-between">
@@ -135,6 +275,47 @@ export default function BookingWidget() {
           </CardHeader>
 
           <CardContent className="p-8">
+            {currentStep === 1 && (
+              <div className="space-y-6">
+                <h3 className="text-2xl font-semibold text-gray-900 mb-6">
+                  Your Destination
+                </h3>
+                <div>
+                  <p>{tripDetails?.title}</p>
+                </div>
+
+                {/* Destination Preview */}
+                {bookingData.destination && (
+                  <div className="bg-gray-50 p-4 rounded-lg mt-4">
+                    <h4 className="font-semibold mb-2">
+                      {bookingData.destination === "ladakh" &&
+                        "Ladakh Bike Trip"}
+                      {bookingData.destination === "goa" && "Goa Beach Retreat"}
+                      {bookingData.destination === "kerala" &&
+                        "Kerala Backwaters"}
+                      {bookingData.destination === "himachal" &&
+                        "Himachal Trekking"}
+                      {bookingData.destination === "rajasthan" &&
+                        "Rajasthan Cultural Tour"}
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      {bookingData.destination === "ladakh" &&
+                        "Ride through the majestic Himalayas on this 8-day adventure"}
+                      {bookingData.destination === "goa" &&
+                        "Relax on pristine beaches with this 5-day beach getaway"}
+                      {bookingData.destination === "kerala" &&
+                        "Experience serene backwaters and lush greenery on this 6-day tour"}
+                      {bookingData.destination === "himachal" &&
+                        "Challenge yourself with this 7-day trekking expedition"}
+                      {bookingData.destination === "rajasthan" &&
+                        "Immerse in royal heritage with this 5-day cultural experience"}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Step 2: Dates */}
             {currentStep === 2 && (
               <div className="space-y-6">
                 <h3 className="text-2xl font-semibold text-gray-900 mb-6">
@@ -144,6 +325,7 @@ export default function BookingWidget() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Check-in Date */}
                   <div>
+                    <Label>Check-in Date</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -173,6 +355,7 @@ export default function BookingWidget() {
 
                   {/* Check-out Date */}
                   <div>
+                    <Label>Check-out Date</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -205,6 +388,21 @@ export default function BookingWidget() {
                     </Popover>
                   </div>
                 </div>
+
+                {/* Duration Info */}
+                {bookingData.checkIn && bookingData.checkOut && (
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      Trip duration:{" "}
+                      {Math.ceil(
+                        (bookingData.checkOut.getTime() -
+                          bookingData.checkIn.getTime()) /
+                          (1000 * 60 * 60 * 24)
+                      )}{" "}
+                      days
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -344,84 +542,32 @@ export default function BookingWidget() {
             {currentStep === 4 && (
               <div className="space-y-6">
                 <h3 className="text-2xl font-semibold text-gray-900 mb-6">
-                  Payment Information
+                  Complete Your Payment
                 </h3>
-                <div className="grid grid-cols-1 gap-6">
-                  <div>
-                    <Label htmlFor="cardName">Cardholder Name</Label>
-                    <Input
-                      id="cardName"
-                      value={bookingData.cardName}
-                      onChange={(e) =>
-                        setBookingData({
-                          ...bookingData,
-                          cardName: e.target.value,
-                        })
-                      }
-                      className="h-12"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="cardNumber">Card Number</Label>
-                    <Input
-                      id="cardNumber"
-                      placeholder="1234 5678 9012 3456"
-                      value={bookingData.cardNumber}
-                      onChange={(e) =>
-                        setBookingData({
-                          ...bookingData,
-                          cardNumber: e.target.value,
-                        })
-                      }
-                      className="h-12"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="expiryDate">Expiry Date</Label>
-                      <Input
-                        id="expiryDate"
-                        placeholder="MM/YY"
-                        value={bookingData.expiryDate}
-                        onChange={(e) =>
-                          setBookingData({
-                            ...bookingData,
-                            expiryDate: e.target.value,
-                          })
-                        }
-                        className="h-12"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="cvv">CVV</Label>
-                      <Input
-                        id="cvv"
-                        placeholder="123"
-                        value={bookingData.cvv}
-                        onChange={(e) =>
-                          setBookingData({
-                            ...bookingData,
-                            cvv: e.target.value,
-                          })
-                        }
-                        className="h-12"
-                      />
-                    </div>
-                  </div>
-                </div>
 
                 {/* Booking Summary */}
-                <div className="bg-gray-50 p-6 rounded-lg mt-8">
+                <div className="bg-gray-50 p-6 rounded-lg">
                   <h4 className="text-lg font-semibold mb-4">
                     Booking Summary
                   </h4>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <div className="flex justify-between">
                       <span>Destination:</span>
-                      <span className="font-medium">
-                        {bookingData.destination || "Not selected"}
-                      </span>
+                      <span className="font-medium">{tripDetails?.title}</span>
                     </div>
+                    {bookingData.checkIn && bookingData.checkOut && (
+                      <div className="flex justify-between">
+                        <span>Duration:</span>
+                        <span className="font-medium">
+                          {Math.ceil(
+                            (bookingData.checkOut.getTime() -
+                              bookingData.checkIn.getTime()) /
+                              (1000 * 60 * 60 * 24)
+                          )}{" "}
+                          days
+                        </span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
                       <span>Travelers:</span>
                       <span className="font-medium">
@@ -433,13 +579,31 @@ export default function BookingWidget() {
                       <span>Rooms:</span>
                       <span className="font-medium">{bookingData.rooms}</span>
                     </div>
-                    <div className="border-t pt-2 mt-4">
+                    <div className="border-t pt-3 mt-3">
                       <div className="flex justify-between text-lg font-bold">
-                        <span>Total:</span>
-                        <span className="text-primary-600">$2,499</span>
+                        <span>Total Amount:</span>
+                        <span className="text-primary-600">
+                          {totalAmount?.toLocaleString()}
+                        </span>
                       </div>
                     </div>
                   </div>
+                </div>
+
+                <div className="text-center">
+                  <p className="text-gray-600 mb-4">
+                    Secure payment processed by Razorpay
+                  </p>
+                  {tripDetails?.price && (
+                    <PaymentButton
+                      amount={tripDetails?.discountPrice}
+                      onSuccess={handlePaymentSuccess}
+                      bookingData={bookingData}
+                    />
+                  )}
+                  <p className="text-sm text-gray-500 mt-4">
+                    Your payment information is encrypted and secure
+                  </p>
                 </div>
               </div>
             )}
@@ -459,19 +623,19 @@ export default function BookingWidget() {
               {currentStep < steps.length ? (
                 <Button
                   onClick={nextStep}
+                  disabled={
+                    currentStep === 2 &&
+                    (!bookingData.checkIn || !bookingData.checkOut)
+                  }
                   className="bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 px-6"
                 >
                   Next
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               ) : (
-                <Button
-                  onClick={handleSubmit}
-                  className="bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 px-8"
-                >
-                  Complete Booking
-                  <Check className="ml-2 h-4 w-4" />
-                </Button>
+                <div className="w-40">
+                  {/* Payment button is already displayed in step 4 content */}
+                </div>
               )}
             </div>
           </CardContent>
