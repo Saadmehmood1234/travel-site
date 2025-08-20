@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import {
   FiCalendar,
   FiMapPin,
@@ -14,98 +15,154 @@ import ImageGallery from "@/app/components/destination/image-gallery";
 import ItineraryDay from "@/app/components/destination/ItineraryDay";
 import FAQItem from "@/app/components/destination/faq-item";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { getProductById } from "@/app/actions/product.actions";
+import { SerializedProduct } from "@/types/product";
 
-const tripDetails = {
-  id: 1,
-  title: "Ladakh Bike Trip",
-  subtitle: "Ride through the majestic Himalayas",
-  images: [
-    "https://images.unsplash.com/photo-1581772136272-ef3ccfe4a4e5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    "https://images.unsplash.com/photo-1581772136272-ef3ccfe4a4e5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    "https://images.unsplash.com/photo-1581772136272-ef3ccfe4a4e5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    "https://images.unsplash.com/photo-1581772136272-ef3ccfe4a4e5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-  ],
-  duration: "8 Days",
-  difficulty: "Moderate",
-  groupSize: "12-15",
-  rating: 4.8,
-  reviews: 124,
-  price: "₹25,999",
-  discountPrice: "₹22,999",
-  dates: [
-    { id: 1, date: "15 Jun 2023", seats: "5 seats left" },
-    { id: 2, date: "22 Jun 2023", seats: "8 seats left" },
-    { id: 3, date: "29 Jun 2023", seats: "12 seats left" },
-  ],
-  highlights: [
-    "Pangong Lake visit",
-    "Khardung La Pass - World's highest motorable road",
-    "Nubra Valley camping",
-    "Royal Enfield bikes provided",
-    "Expert trip leader",
-  ],
-  overview:
-    "This 8-day Ladakh bike trip takes you through some of the most breathtaking landscapes in the Himalayas. Ride through high mountain passes, camp beside pristine lakes, and experience the unique culture of Ladakh. Our carefully curated itinerary ensures you see all the highlights while traveling with a group of like-minded adventurers.",
-  itinerary: [
-    {
-      day: 1,
-      title: "Arrival in Leh",
-      description:
-        "Arrive in Leh and acclimatize to the high altitude. Briefing about the trip in the evening.",
-      highlights: ["Leh Palace", "Local market visit"],
-      meals: ["Dinner"],
-      accommodation: "3-star hotel",
-    },
-    {
-      day: 2,
-      title: "Leh to Nubra Valley via Khardung La",
-      description:
-        "Start early morning for Nubra Valley via Khardung La (18,380 ft). Visit Diskit Monastery and enjoy the sand dunes.",
-      highlights: ["Khardung La Pass", "Bactrian camel ride"],
-      meals: ["Breakfast", "Dinner"],
-      accommodation: "Camp stay",
-    },
-    // More itinerary days...
-  ],
-  inclusions: [
-    "Royal Enfield bike (fuel included)",
-    "All accommodations (hotels & camps)",
-    "All meals as per itinerary",
-    "Backup vehicle throughout",
-    "Oxygen cylinders & first aid kit",
-  ],
-  exclusions: [
-    "Airfare to/from Leh",
-    "Personal expenses",
-    "Any cost arising from unforeseen circumstances",
-    "Travel insurance",
-  ],
-  faqs: [
-    {
-      question: "What's the fitness level required?",
-      answer:
-        "You should be able to ride for 5-6 hours daily. Some prior biking experience is recommended.",
-    },
-    {
-      question: "How cold does it get?",
-      answer:
-        "Daytime temperatures range from 10-20°C, while nights can drop to 0-5°C in higher areas.",
-    },
-    // More FAQs...
-  ],
-};
+// Define the trip interface based on your product data
+interface TripDetails {
+  id: string;
+  title: string;
+  subtitle: string;
+  images: string[];
+  duration: string;
+  difficulty: string;
+  groupSize: string;
+  rating: number;
+  reviews: number;
+  price: string;
+  discountPrice?: string;
+  dates: { id: string; date: string; seats: string }[];
+  highlights: string[];
+  overview: string;
+  itinerary: {
+    day: number;
+    title: string;
+    description: string;
+    highlights: string[];
+    meals: string[];
+    accommodation: string;
+  }[];
+  inclusions: string[];
+  exclusions: string[];
+  faqs: { question: string; answer: string }[];
+}
 
 export default function TripDetailPage() {
-    const handleShare = async () => {
-      console.log("Clicked")
+  const params = useParams();
+  const id = params.id as string;
+  
+  const [tripDetails, setTripDetails] = useState<TripDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchTripDetails() {
+      try {
+        setLoading(true);
+        const result = await getProductById(id);
+        
+        if (result.success && result.data) {
+          const product = result.data;
+          
+          // Transform the API data to match the frontend structure
+          const transformedData: TripDetails = {
+            id: product._id,
+            title: product.name,
+            subtitle: product.location,
+            images: [product.image], // Using the main image
+            duration: product.duration,
+            difficulty: product.difficulty || "Moderate",
+            groupSize: product.groupSize || "12-15",
+            rating: product.rating,
+            reviews: product.reviews,
+            price: `₹${product.originalPrice?.toLocaleString() || product.price.toLocaleString()}`,
+            discountPrice: product.originalPrice ? `₹${product.price.toLocaleString()}` : undefined,
+            dates: product.availableDates && product.availableDates.length > 0 
+              ? product.availableDates.map((dateStr, index) => ({
+                  id: index.toString(),
+                  date: new Date(dateStr).toLocaleDateString('en-IN', { 
+                    day: 'numeric', 
+                    month: 'short', 
+                    year: 'numeric' 
+                  }),
+                  seats: "Available"
+                }))
+              : [
+                  { id: "1", date: "Custom dates available", seats: "Contact for details" }
+                ],
+            highlights: product.highlights || [
+              "Expert guides",
+              "Small group experience",
+              "All equipment provided"
+            ],
+            overview: `Experience the amazing ${product.name} in ${product.location}. ${product.duration} of adventure and exploration awaits you.`,
+            itinerary: [
+              {
+                day: 1,
+                title: "Arrival and Orientation",
+                description: "Meet your guide and group, get briefed on the itinerary and safety procedures.",
+                highlights: ["Welcome session", "Equipment check"],
+                meals: ["Dinner"],
+                accommodation: "Comfortable lodging"
+              },
+              {
+                day: 2,
+                title: "Full Day Adventure",
+                description: "Immerse yourself in the experience with expert guidance and support.",
+                highlights: ["Main activities", "Local cuisine"],
+                meals: ["Breakfast", "Lunch", "Dinner"],
+                accommodation: "Comfortable lodging"
+              }
+            ],
+            inclusions: product.inclusions || [
+              "Professional guides",
+              "All necessary equipment",
+              "Accommodation as per itinerary",
+              "Meals as specified"
+            ],
+            exclusions: product.exclusions || [
+              "Personal expenses",
+              "Travel insurance",
+              "Optional activities"
+            ],
+            faqs: [
+              {
+                question: "What should I bring?",
+                answer: "Comfortable clothing, sturdy shoes, personal medications, and a sense of adventure!"
+              },
+              {
+                question: "What's the cancellation policy?",
+                answer: "Full refund up to 30 days before departure. Please see our terms for details."
+              }
+            ]
+          };
+          
+          setTripDetails(transformedData);
+        } else {
+          setError(result.error || "Product not found");
+        }
+      } catch (err) {
+        console.error("Error fetching trip details:", err);
+        setError("Failed to load trip details");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (id) {
+      fetchTripDetails();
+    }
+  }, [id]);
+
+  const handleShare = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Check this out!",
-          text: "I found something interesting 👀",
+          title: tripDetails?.title || "Amazing Trip",
+          text: tripDetails?.subtitle || "Check out this amazing trip!",
           url: window.location.href,
         });
-        console.log("Content shared successfully");
       } catch (err) {
         console.error("Error sharing:", err);
       }
@@ -114,10 +171,41 @@ export default function TripDetailPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading trip details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !tripDetails) {
+    return (
+      <div className="bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
+          <p className="text-gray-600 mb-4">{error || "Trip not found"}</p>
+          <Link href="/destinations">
+            <button className="bg-blue-600 text-white px-6 py-2 rounded-lg">
+              Back to Destinations
+            </button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-50">
       {/* Hero Section */}
       <section className="relative h-96 md:h-[500px] bg-gray-900 overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${tripDetails.images[0]})` }}
+        />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30 z-10" />
         <div className="container relative z-20 h-full flex items-end px-4 sm:px-6 lg:px-8 pb-12">
           <div className="max-w-3xl text-white">
@@ -158,6 +246,9 @@ export default function TripDetailPage() {
           {/* Left Column - Main Content */}
           <div className="lg:w-2/3">
             {/* Image Gallery */}
+            <div className="mb-8">
+              <ImageGallery images={tripDetails.images} />
+            </div>
 
             {/* Highlights */}
             <section className="bg-white rounded-xl shadow-sm p-6 mb-8">
@@ -194,7 +285,7 @@ export default function TripDetailPage() {
             </section>
 
             {/* Inclusions & Exclusions */}
-            {/* <section className="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <section className="bg-white rounded-xl shadow-sm p-6 mb-8">
               <h2 className="text-2xl font-bold mb-6">What's Included</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
@@ -228,7 +319,7 @@ export default function TripDetailPage() {
                   </ul>
                 </div>
               </div>
-            </section> */}
+            </section>
 
             {/* FAQs */}
             <section className="bg-white rounded-xl shadow-sm p-6">
@@ -258,11 +349,13 @@ export default function TripDetailPage() {
                       <span className="text-sm">Starting from</span>
                       <div className="flex items-end">
                         <span className="text-3xl font-bold">
-                          {tripDetails.discountPrice}
+                          {tripDetails.discountPrice || tripDetails.price}
                         </span>
-                        <span className="text-lg line-through ml-2 opacity-80">
-                          {tripDetails.price}
-                        </span>
+                        {tripDetails.discountPrice && (
+                          <span className="text-lg line-through ml-2 opacity-80">
+                            {tripDetails.price}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <button className="p-2 rounded-full bg-white/20 hover:bg-white/30">
@@ -270,7 +363,7 @@ export default function TripDetailPage() {
                     </button>
                   </div>
                   <div className="text-sm opacity-90">
-                    + ₹1,999 travel insurance (optional)
+                    + Travel insurance (optional)
                   </div>
                 </div>
 
@@ -330,7 +423,7 @@ export default function TripDetailPage() {
 
                 {/* CTA Section */}
                 <div className="p-6">
-                  <Link href="/payment-page">
+                  <Link href={`/payment-page?productId=${tripDetails.id}`}>
                     <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold mb-3 flex items-center justify-center">
                       Book Now <FiArrowRight className="ml-2" />
                     </button>

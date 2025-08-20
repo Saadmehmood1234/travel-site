@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { useEffect } from "react";
 import {
   CalendarIcon,
   Users,
@@ -30,13 +31,33 @@ import {
   Check,
 } from "lucide-react";
 import { format } from "date-fns";
-
+import { getProducts } from "../actions/product.actions";
+import { createOrder } from "../actions/order.actions";
 const steps = [
   { id: 1, name: "Destination", icon: MapPin },
   { id: 2, name: "Dates", icon: CalendarIcon },
   { id: 3, name: "Travelers", icon: Users },
   { id: 4, name: "Payment", icon: CreditCard },
 ];
+interface Trip {
+  id: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  duration: string;
+  dates: string[];
+  price: string;
+  originalPrice?: string;
+  groupSize: string;
+  difficulty: string;
+  rating: number;
+  reviews: number;
+  highlights: string[];
+  isCommunityTrip: boolean;
+  category: string;
+  featured: boolean;
+  discount: number;
+}
 
 export default function BookingWidget() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -56,6 +77,51 @@ export default function BookingWidget() {
     cvv: "",
     cardName: "",
   });
+  const [upcomingTrips, setUpcomingTrips] = useState<Trip[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchTrips() {
+      try {
+        const result = await getProducts();
+
+        if (result.success && result.data) {
+          const tripsData = result.data.map((product) => ({
+            id: product._id,
+            title: product.name,
+            subtitle: product.location,
+            image: product.image,
+            duration: product.duration,
+            dates: [],
+            price: `₹${product.price.toLocaleString()}`,
+            originalPrice: product.originalPrice
+              ? `₹${product.originalPrice.toLocaleString()}`
+              : undefined,
+            groupSize: "12-15",
+            difficulty: "Moderate",
+            rating: product.rating,
+            reviews: product.reviews,
+            highlights: [],
+            isCommunityTrip: true,
+            category: product.category,
+            featured: product.featured,
+            discount: product.discount,
+          }));
+          setUpcomingTrips(tripsData);
+        }
+      } catch (error) {
+        console.error("Error fetching trips:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTrips();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   const progress = (currentStep / steps.length) * 100;
 
@@ -71,10 +137,18 @@ export default function BookingWidget() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit =async () => {
     console.log("Booking submitted:", bookingData);
-    // Here you would integrate with your booking API
-    alert("Booking submitted successfully!");
+    setLoading(true)
+    try{
+    //  const res=await createOrder(bookingData)
+    }catch(error:any){
+      
+    }
+    finally{
+      setLoading(false)
+    }
+    
   };
 
   return (
@@ -102,8 +176,6 @@ export default function BookingWidget() {
                 Step {currentStep} of {steps.length}
               </Badge>
             </div>
-
-            {/* Progress Bar */}
             <div className="space-y-2">
               <Progress value={progress} className="h-2 bg-white/20" />
               <div className="flex justify-between">
@@ -136,7 +208,6 @@ export default function BookingWidget() {
           </CardHeader>
 
           <CardContent className="p-8">
-            {/* Step 1: Destination */}
             {currentStep === 1 && (
               <div className="space-y-6">
                 <h3 className="text-2xl font-semibold text-gray-900 mb-6">
@@ -145,6 +216,7 @@ export default function BookingWidget() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="destination">Destination</Label>
+
                     <Select
                       value={bookingData.destination}
                       onValueChange={(value) =>
@@ -155,27 +227,15 @@ export default function BookingWidget() {
                         <SelectValue placeholder="Select destination" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="bali">
-                          Tropical Paradise Bali
-                        </SelectItem>
-                        <SelectItem value="switzerland">
-                          Swiss Alps Adventure
-                        </SelectItem>
-                        <SelectItem value="maldives">
-                          Luxury Maldives Resort
-                        </SelectItem>
-                        <SelectItem value="tokyo">
-                          Tokyo Cultural Journey
-                        </SelectItem>
-                        <SelectItem value="safari">
-                          African Safari Experience
-                        </SelectItem>
-                        <SelectItem value="santorini">
-                          Santorini Sunset Escape
-                        </SelectItem>
+                        {upcomingTrips.map((trip) => (
+                          <SelectItem key={trip.id} value={trip.title}>
+                            {trip.title}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
+
                   <div>
                     <Label htmlFor="package">Package Type</Label>
                     <Select>
@@ -195,77 +255,78 @@ export default function BookingWidget() {
               </div>
             )}
 
-{currentStep === 2 && (
-  <div className="space-y-6">
-    <h3 className="text-2xl font-semibold text-gray-900 mb-6">
-      Select Your Dates
-    </h3>
+            {currentStep === 2 && (
+              <div className="space-y-6">
+                <h3 className="text-2xl font-semibold text-gray-900 mb-6">
+                  Select Your Dates
+                </h3>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {/* Check-in Date */}
-      <div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className="w-full h-12 justify-start text-left font-normal text-gray-900 border-gray-200 bg-transparent"
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {bookingData.checkIn
-                ? format(bookingData.checkIn, "PPP")
-                : "Select check-in date"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto min-w-[300px] p-4 bg-white rounded-xl shadow-xl">
-            <Calendar
-              className="w-full"
-              mode="single"
-              selected={bookingData.checkIn}
-              onSelect={(date) =>
-                setBookingData({ ...bookingData, checkIn: date })
-              }
-              disabled={(date) => date < new Date()}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Check-in Date */}
+                  <div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full h-12 justify-start text-left font-normal text-gray-900 border-gray-200 bg-transparent"
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {bookingData.checkIn
+                            ? format(bookingData.checkIn, "PPP")
+                            : "Select check-in date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto min-w-[300px] p-4 bg-white rounded-xl shadow-xl">
+                        <Calendar
+                          className="w-full"
+                          mode="single"
+                          selected={bookingData.checkIn}
+                          onSelect={(date) =>
+                            setBookingData({ ...bookingData, checkIn: date })
+                          }
+                          disabled={(date) => date < new Date()}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
 
-      {/* Check-out Date */}
-      <div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className="w-full h-12 justify-start text-left font-normal text-gray-900 border-gray-200 bg-transparent"
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {bookingData.checkOut
-                ? format(bookingData.checkOut, "PPP")
-                : "Select check-out date"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto min-w-[300px] p-4 bg-white rounded-xl shadow-xl">
-            <Calendar
-              className="w-full"
-              mode="single"
-              selected={bookingData.checkOut}
-              onSelect={(date) =>
-                setBookingData({ ...bookingData, checkOut: date })
-              }
-              disabled={(date) => {
-                if (date < new Date()) return true;
-                if (bookingData.checkIn) return date <= bookingData.checkIn;
-                return false;
-              }}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
-    </div>
-  </div>
-)}
+                  {/* Check-out Date */}
+                  <div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full h-12 justify-start text-left font-normal text-gray-900 border-gray-200 bg-transparent"
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {bookingData.checkOut
+                            ? format(bookingData.checkOut, "PPP")
+                            : "Select check-out date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto min-w-[300px] p-4 bg-white rounded-xl shadow-xl">
+                        <Calendar
+                          className="w-full"
+                          mode="single"
+                          selected={bookingData.checkOut}
+                          onSelect={(date) =>
+                            setBookingData({ ...bookingData, checkOut: date })
+                          }
+                          disabled={(date) => {
+                            if (date < new Date()) return true;
+                            if (bookingData.checkIn)
+                              return date <= bookingData.checkIn;
+                            return false;
+                          }}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Step 3: Travelers */}
             {currentStep === 3 && (
