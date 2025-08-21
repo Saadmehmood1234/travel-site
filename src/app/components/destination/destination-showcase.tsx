@@ -32,6 +32,21 @@ export default function DestinationShowcase() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Function to format dates for display
+  const formatDateForDisplay = (dateString: string): string => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateString; // Return original string if formatting fails
+    }
+  };
+
   useEffect(() => {
     async function fetchTrips() {
       try {
@@ -47,9 +62,11 @@ export default function DestinationShowcase() {
             image: product.image,
             duration: product.duration,
             dates: product.availableDates
-              ? product.availableDates.map((date) =>
-                  typeof date === "string" ? date : new Date(date).toISOString()
-                )
+              ? product.availableDates.map((date) => {
+                  // Convert to formatted date string for display
+                  const dateObj = typeof date === "string" ? new Date(date) : date;
+                  return formatDateForDisplay(dateObj.toISOString());
+                })
               : [],
             price: `₹${product.price.toLocaleString()}`,
             originalPrice: product.originalPrice
@@ -79,7 +96,7 @@ export default function DestinationShowcase() {
 
     fetchTrips();
   }, []);
-
+console.log(upcomingTrips)
   if (error) {
     return (
       <section className="py-20 bg-gradient-to-b from-gray-50 to-white">

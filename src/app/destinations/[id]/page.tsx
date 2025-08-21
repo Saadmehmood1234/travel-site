@@ -25,7 +25,7 @@ import { Heart } from "lucide-react";
 interface TripDetails {
   id: string;
   title: string;
-  subtitle: string;
+  location: string;
   images: string[];
   duration: string;
   difficulty: string;
@@ -37,16 +37,14 @@ interface TripDetails {
   dates: { id: string; date: string; seats: string }[];
   highlights: string[];
   overview: string;
-  itinerary: {
-    day: number;
-    title: string;
-    description: string;
-    highlights: string[];
-    meals: string[];
-    accommodation: string;
-  }[];
+  itinerary: string[]
   inclusions: string[];
   exclusions: string[];
+  category:string
+   featured: boolean;
+    discount: number;
+    availableDates: Date[]; 
+    isCommunityTrip: boolean;    
   faqs: { question: string; answer: string }[];
 }
 
@@ -70,8 +68,14 @@ export default function TripDetailPage() {
 
           const transformedData: TripDetails = {
             id: product._id,
+            category:product.category,
+            availableDates:product.availableDates,
+            isCommunityTrip:product.isCommunityTrip,
             title: product.name,
-            subtitle: product.location,
+            location: product.location,
+             featured: product.featured,
+             discount: product.discount,
+            itinerary:product.itinerary,
             images: [product.image],
             duration: product.duration,
             difficulty: product.difficulty || "Moderate",
@@ -109,26 +113,6 @@ export default function TripDetailPage() {
               "All equipment provided",
             ],
             overview: `Experience the amazing ${product.name} in ${product.location}. ${product.duration} of adventure and exploration awaits you.`,
-            itinerary: [
-              {
-                day: 1,
-                title: "Arrival and Orientation",
-                description:
-                  "Meet your guide and group, get briefed on the itinerary and safety procedures.",
-                highlights: ["Welcome session", "Equipment check"],
-                meals: ["Dinner"],
-                accommodation: "Comfortable lodging",
-              },
-              {
-                day: 2,
-                title: "Full Day Adventure",
-                description:
-                  "Immerse yourself in the experience with expert guidance and support.",
-                highlights: ["Main activities", "Local cuisine"],
-                meals: ["Breakfast", "Lunch", "Dinner"],
-                accommodation: "Comfortable lodging",
-              },
-            ],
             inclusions: product.inclusions || [
               "Professional guides",
               "All necessary equipment",
@@ -214,7 +198,7 @@ export default function TripDetailPage() {
       try {
         await navigator.share({
           title: tripDetails?.title || "Amazing Trip",
-          text: tripDetails?.subtitle || "Check out this amazing trip!",
+          text: tripDetails?.location || "Check out this amazing trip!",
           url: window.location.href,
         });
       } catch (err) {
@@ -274,7 +258,7 @@ export default function TripDetailPage() {
             <h1 className="text-4xl md:text-5xl font-bold mb-2">
               {tripDetails.title}
             </h1>
-            <p className="text-xl md:text-2xl mb-6">{tripDetails.subtitle}</p>
+            <p className="text-xl md:text-2xl mb-6">{tripDetails.location}</p>
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center">
                 <FiCalendar className="mr-2 text-blue-300" />
@@ -323,9 +307,7 @@ export default function TripDetailPage() {
             <section className="bg-white rounded-xl shadow-sm p-6 mb-8">
               <h2 className="text-2xl font-bold mb-6">Detailed Itinerary</h2>
               <div className="space-y-6">
-                {tripDetails.itinerary.map((day) => (
-                  <ItineraryDay key={day.day} day={day} />
-                ))}
+                {tripDetails.itinerary}
               </div>
             </section>
 

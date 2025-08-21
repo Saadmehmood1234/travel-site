@@ -39,7 +39,6 @@ const ProductSchema: Schema = new Schema(
     image: { type: String, required: true },
     featured: { type: Boolean, default: false },
     discount: { type: Number, min: 0, max: 100, default: 0 },
-
     highlights: { type: [String], default: [] },
     groupSize: { type: String, default: "12-15" },
     difficulty: { type: String, enum: ["Easy", "Moderate", "Hard"], default: "Moderate" },

@@ -155,6 +155,7 @@ export default function BookingWidget() {
       router.push("/auth/signin");
     }
     console.log("Booking completed:", bookingData);
+    
   };
 
   const calculateTotal = () => {
