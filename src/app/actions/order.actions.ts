@@ -48,37 +48,50 @@ const toObjectId = (id: string | mongoose.Types.ObjectId): mongoose.Types.Object
   }
   return id;
 };
-
+import { BookingData } from "@/types";
 // Create a new order
-export async function createOrder(formData: FormData) {
+// actions/order.actions.ts
+
+
+export async function createOrder(formData: BookingData) {
   await dbConnect();
   
   try {
-    // Parse the trips data
-    const tripsData = JSON.parse(formData.get("trips") as string);
-    
-    // Convert product IDs to ObjectIds
-    const processedTrips = tripsData.map((trip: any) => ({
-      ...trip,
-      product: toObjectId(trip.product),
-      selectedDate: new Date(trip.selectedDate)
-    }));
-
-    const orderData: OrderCreateInput = {
-      userId: toObjectId(formData.get("userId") as string),
-      trips: processedTrips,
-      totalAmount: parseFloat(formData.get("totalAmount") as string),
-      paymentMethod: formData.get("paymentMethod") as "credit-card" | "upi" | "paypal" | "cash",
-      contactInfo: JSON.parse(formData.get("contactInfo") as string),
-      specialRequests: formData.get("specialRequests") as string || undefined,
-    };
-
-    // Validate required fields
-    if (!orderData.userId || !orderData.trips || !orderData.totalAmount || 
-        !orderData.paymentMethod || !orderData.contactInfo) {
+    console.log(formData)
+    // Check if we have the required data
+    if (!formData.userId || !formData.trips || !formData.totalAmount || 
+        !formData.paymentMethod) {
       return { error: "Missing required fields" };
     }
 
+    // Parse the trips data
+    const tripsData = JSON.parse(formData.trips);
+    
+    // Convert product IDs to ObjectIds and parse currency values
+    const processedTrips = tripsData.map((trip: any) => ({
+      ...trip,
+      product: toObjectId(trip.product),
+      selectedDate: new Date(trip.selectedDate),
+      price: trip.price, // Parse the price
+      quantity: parseInt(trip.quantity) || 1 // Ensure quantity is a number
+    }));
+
+    // Calculate total amount properly
+    const calculatedTotalAmount = parseInt(formData.totalAmount)
+
+    const orderData: OrderCreateInput = {
+      userId: toObjectId(formData.userId),
+      trips: processedTrips,
+      totalAmount: calculatedTotalAmount, // Use the calculated amount
+      paymentMethod: formData.paymentMethod,
+      contactInfo: {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        phone: formData.phone
+      },
+      specialRequests: formData.specialRequests || undefined,
+    };
+console.log("Order",orderData,tripsData.totalAmount,"Saad",tripsData)
     const order = new Order(orderData);
     await order.save();
     

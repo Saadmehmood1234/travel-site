@@ -1,110 +1,175 @@
-'use client'
-import { FiCalendar, FiMapPin, FiUsers, FiStar, FiArrowRight } from 'react-icons/fi';
-import TripCard from '../components/destination/trip-card';
-const upcomingTrips = [
-  {
-    id: 1,
-    title: "Ladakh Bike Trip",
-    subtitle: "Ride through the Himalayas",
-    image: "https://images.unsplash.com/photo-1581772136272-ef3ccfe4a4e5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    duration: "8 Days",
-    dates: ["15 Jun 2023", "22 Jun 2023", "29 Jun 2023"],
-    price: "₹25,999",
-    groupSize: "12-15",
-    difficulty: "Moderate",
-    rating: 4.8,
-    reviews: 124,
-    highlights: ["Pangong Lake", "Khardung La Pass", "Nubra Valley"],
-    isCommunityTrip: true
-  },
-  {
-    id: 2,
-    title: "Spiti Valley Road Trip",
-    subtitle: "The Middle Land Adventure",
-    image: "https://images.unsplash.com/photo-1581772136272-ef3ccfe4a4e5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    duration: "7 Days",
-    dates: ["10 Jul 2023", "17 Jul 2023", "24 Jul 2023"],
-    price: "₹22,499",
-    groupSize: "10-12",
-    difficulty: "Challenging",
-    rating: 4.9,
-    reviews: 98,
-    highlights: ["Key Monastery", "Chandratal Lake", "Kunzum Pass"],
-    isCommunityTrip: true
-  },
-  // Add more trips...
-];
+"use client";
 
-export default function CommunityTrips() {
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import TripCard from "../components/destination/trip-card";
+import { getProducts } from "@/app/actions/product.actions";
+
+interface Trip {
+  id: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  duration: string;
+  dates: string[];
+  price: string;
+  originalPrice?: string;
+  groupSize: string;
+  difficulty: string;
+  rating: number;
+  reviews: number;
+  highlights: string[];
+  isCommunityTrip: boolean;
+  category: string;
+  featured: boolean;
+  discount: number;
+}
+
+export default function DestinationShowcase() {
+  const [upcomingTrips, setUpcomingTrips] = useState<Trip[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Function to format dates for display
+  const formatDateForDisplay = (dateString: string): string => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateString;  
+    }
+  };
+
+  useEffect(() => {
+    async function fetchTrips() {
+      try {
+        setLoading(true);
+        setError(null);
+        const result = await getProducts();
+
+        if (result.success && result.data) {
+          const tripsData = result.data.map((product) => ({
+            id: product._id,
+            title: product.name,
+            subtitle: product.location,
+            image: product.image,
+            duration: product.duration,
+            dates: product.availableDates
+              ? product.availableDates.map((date) => {
+                  const dateObj =
+                    typeof date === "string" ? new Date(date) : date;
+                  return formatDateForDisplay(dateObj.toISOString());
+                })
+              : [],
+            price: `₹${product.price.toLocaleString()}`,
+            originalPrice: product.originalPrice
+              ? `₹${product.originalPrice.toLocaleString()}`
+              : undefined,
+            groupSize: product.groupSize || "12-15",
+            difficulty: product.difficulty || "Moderate",
+            rating: product.rating,
+            reviews: product.reviews,
+            highlights: product.highlights || [],
+            isCommunityTrip: product.isCommunityTrip || true,
+            category: product.category,
+            featured: product.featured,
+            discount: product.discount,
+          }));
+          setUpcomingTrips(tripsData);
+        } else {
+          setError("Failed to load products");
+        }
+      } catch (err) {
+        console.error("Error fetching trips:", err);
+        setError("An error occurred while fetching data");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTrips();
+  }, []);
+  console.log(upcomingTrips);
+  if (error) {
+    return (
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="text-red-500 mb-4">Error: {error}</div>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <div className="bg-gray-50">
-      <section className="relative h-96 md:h-[500px] bg-gray-900 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30 z-10" />
-        <img
-          src="https://images.unsplash.com/photo-1503220317375-aaad61436b1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-          alt="Group Travel"
-          className="w-full h-full object-cover"
-        />
-        <div className="container relative z-20 h-full flex items-center px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl text-white">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Upcoming Community Trips</h1>
-            <p className="text-xl md:text-2xl mb-8">Join like-minded travelers on these incredible group adventures</p>
-            <div className="flex gap-4">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-semibold flex items-center gap-2">
-                Browse All Trips <FiArrowRight />
-              </button>
-              <button className="bg-transparent border-2 border-white/30 hover:border-white/60 text-white px-6 py-3 rounded-full font-medium">
-                How It Works
-              </button>
-            </div>
-          </div>
+    <section
+      id="destinations"
+      className="py-20 bg-gradient-to-b mt-12 from-gray-50 to-white"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <Badge className="mb-4 bg-primary-100 text-primary-700 hover:bg-primary-200">
+            Popular Destinations
+          </Badge>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Discover Amazing Trips
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Explore our handpicked selection of community trips to breathtaking
+            destinations around the world.
+          </p>
         </div>
-      </section>
 
-      {/* Filter Section */}
-      <section className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col md:flex-row gap-4 items-center">
-            <div className="flex-1 w-full">
-              <input
-                type="text"
-                placeholder="Search destinations..."
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="flex gap-4 w-full md:w-auto">
-              <select className="px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option>All Months</option>
-                <option>June 2023</option>
-                <option>July 2023</option>
-                <option>August 2023</option>
-              </select>
-              <select className="px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option>All Destinations</option>
-                <option>Ladakh</option>
-                <option>Spiti Valley</option>
-                <option>Himachal</option>
-              </select>
-            </div>
+        {loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-xl shadow-md overflow-hidden animate-pulse"
+              >
+                <div className="h-48 bg-gray-300"></div>
+                <div className="p-6">
+                  <div className="h-6 bg-gray-300 rounded mb-4"></div>
+                  <div className="h-4 bg-gray-300 rounded w-2/3 mb-2"></div>
+                  <div className="h-4 bg-gray-300 rounded w-1/2 mb-4"></div>
+                  <div className="flex justify-between items-center">
+                    <div className="h-6 bg-gray-300 rounded w-1/3"></div>
+                    <div className="h-10 bg-gray-300 rounded w-1/3"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      </section>
+        )}
 
-      {/* Trips Grid */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {upcomingTrips.map((trip) => (
-            <TripCard key={trip.id} trip={trip} />
-          ))}
-        </div>
-      </section>
-      
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">Traveler Stories</h2>
-          {/* Testimonial cards would go here */}
-        </div>
-      </section>
-    </div>
+        {!loading && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {upcomingTrips.map((trip) => (
+                <TripCard key={trip.id} trip={trip} />
+              ))}
+            </div>
+
+            {upcomingTrips.length === 0 && (
+              <div className="text-center py-12">
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                  No trips available
+                </h3>
+                <p className="text-gray-500">
+                  Check back later for new adventures!
+                </p>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </section>
   );
 }

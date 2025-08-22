@@ -34,6 +34,8 @@ import PaymentButton from "../../components/PaymentButton";
 import { useParams, useRouter } from "next/navigation";
 import { getProductById } from "../../actions/product.actions";
 import { useSession } from "next-auth/react";
+import { createOrder } from "@/app/actions/order.actions";
+import { parseCurrencyValue } from "@/utils/helpers";
 interface TripDetails {
   id: string;
   title: string;
@@ -46,6 +48,28 @@ interface TripDetails {
   reviews: number;
   price: string;
   discountPrice?: string;
+}
+export interface BookingData {
+  destination: string | undefined;
+  checkIn: Date | undefined;
+  checkOut: Date | undefined;
+  adults: string;
+  children: string;
+  rooms: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  cardNumber: string;
+  expiryDate: string;
+  cvv: string;
+  cardName: string;
+  specialRequests: string;
+  // Add these fields
+  userId: string;
+  trips: string; // This will be stringified JSON
+  totalAmount: string;
+  paymentMethod: "credit-card" | "upi" | "paypal" | "cash";
 }
 const steps = [
   { id: 1, name: "Destination", icon: MapPin },
@@ -62,10 +86,10 @@ export default function BookingWidget() {
   const [tripDetails, setTripDetails] = useState<TripDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [bookingData, setBookingData] = useState({
+  const [bookingData, setBookingData] = useState<BookingData>({
     destination: tripDetails?.title,
-    checkIn: undefined as Date | undefined,
-    checkOut: undefined as Date | undefined,
+    checkIn: undefined,
+    checkOut: undefined,
     adults: "2",
     children: "0",
     rooms: "1",
@@ -77,6 +101,12 @@ export default function BookingWidget() {
     expiryDate: "",
     cvv: "",
     cardName: "",
+    specialRequests: "",
+    // Initialize the new fields
+    userId: "",
+    trips: "[]",
+    totalAmount: "0",
+    paymentMethod: "credit-card", // Now this matches the type
   });
   const { data: session } = useSession();
   const router = useRouter();
@@ -149,15 +179,65 @@ export default function BookingWidget() {
       fetchTripDetails();
     }
   }, [id]);
-  const handlePaymentSuccess = () => {
-    setBookingComplete(true);
-    if (!session) {
-      router.push("/auth/signin");
-    }
-    console.log("Booking completed:", bookingData);
-    
-  };
+  // const handlePaymentSuccess = () => {
+  //   setBookingComplete(true);
+  //   if (!session) {
+  //     router.push("/auth/signin");
+  //   }
+  //   console.log("Booking completed:", bookingData);
+  // };
 
+const handlePaymentSuccess = async () => {
+  if (!session) {
+    router.push("/auth/signin");
+    return;
+  }
+
+  try {
+    // Calculate quantity and price properly
+    const quantity = parseInt(bookingData.adults) + parseInt(bookingData.children);
+    const rawPrice = tripDetails?.price || "0";
+    console.log(rawPrice.slice(1))
+    const numericPrice = parseCurrencyValue(rawPrice.slice(1));
+    const totalAmount = numericPrice * quantity;
+
+    // First, update the bookingData with the userId
+    const updatedBookingData: BookingData = {
+      ...bookingData,
+      userId: session.user.id,
+      trips: JSON.stringify([{
+        product: tripDetails?.id,
+        name: tripDetails?.title,
+        location: tripDetails?.subtitle,
+        quantity: quantity,
+        price: numericPrice, // Use the parsed numeric value
+        selectedDate: bookingData.checkIn || new Date()
+      }]),
+      totalAmount: totalAmount.toString(),
+      paymentMethod: "credit-card" as const
+    };
+
+    // Update the bookingData state if needed
+    setBookingData(updatedBookingData);
+
+    // Then create the order with the updated data
+    const result = await createOrder(updatedBookingData);
+
+    if (result.error) {
+      console.error("Order creation failed:", result.error);
+      // Handle error (show toast, etc.)
+      return;
+    }
+
+    // Success - set booking complete and log
+    setBookingComplete(true);
+    console.log("Booking completed:", updatedBookingData);
+    console.log("Order created with ID:", result.orderId);
+
+  } catch (error) {
+    console.error("Error in payment success handler:", error);
+  }
+};
   const calculateTotal = () => {
     // const basePrice = {tripDetails?.price};
     // const adultPrice = parseInt(bookingData.adults) * 500;
@@ -602,6 +682,7 @@ export default function BookingWidget() {
                       bookingData={bookingData}
                     />
                   )}
+                  {/* <button onClick={handlePaymentSuccess}>Pay</button> */}
                   <p className="text-sm text-gray-500 mt-4">
                     Your payment information is encrypted and secure
                   </p>
