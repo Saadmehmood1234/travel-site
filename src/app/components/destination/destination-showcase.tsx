@@ -27,7 +27,7 @@ interface Trip {
   discount: number;
 }
 
-export default function DestinationShowcase() {
+export default function   DestinationShowcase() {
   const [upcomingTrips, setUpcomingTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

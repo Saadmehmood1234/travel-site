@@ -1,8 +1,10 @@
 "use server";
 
+import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
 import Product from "@/model/product.model"
 import { IProduct, SerializedProduct, ProductCategory } from "@/types/product";
+import { getServerSession } from "next-auth";
 
 const serializeProduct = (product: IProduct): SerializedProduct => ({
   ...product.toObject(),
@@ -137,6 +139,11 @@ export const createProduct = async (
   data?: SerializedProduct;
   error?: string;
 }> => {
+    const session = await getServerSession(authOptions);
+  
+    if (!session?.user?.id) {
+      return { success: false, error: "Please Login" };
+    }
   try {
     await dbConnect();
 
@@ -155,7 +162,6 @@ export const createProduct = async (
   }
 };
 
-// Utility function to serialize product for frontend
 
 
 export const updateProduct = async (
@@ -166,6 +172,11 @@ export const updateProduct = async (
   data?: SerializedProduct;
   error?: string;
 }> => {
+    const session = await getServerSession(authOptions);
+  
+    if (!session?.user?.id) {
+      return { success: false, error: "Please Login" };
+    }
   try {
     await dbConnect();
     const product = await Product.findByIdAndUpdate(id, updateData, {
@@ -196,6 +207,11 @@ export const deleteProduct = async (
   success: boolean;
   error?: string;
 }> => {
+    const session = await getServerSession(authOptions);
+  
+    if (!session?.user?.id) {
+      return { success: false, error: "Please Login" };
+    }
   try {
     await dbConnect();
     const result = await Product.findByIdAndDelete(id);

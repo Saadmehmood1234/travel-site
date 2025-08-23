@@ -4,14 +4,14 @@ import { Schema, model, models } from "mongoose";
 export const wishlistSchema = new Schema(
   {
     customerId: {
-      type: String, // Changed from ObjectId to String
+      type: String,
       required: true,
     },
     items: [
       {
         productId: {
           type: Schema.Types.ObjectId,
-          ref: "Destination", 
+          ref: "Product", 
           required: true,
         },
         addedAt: {

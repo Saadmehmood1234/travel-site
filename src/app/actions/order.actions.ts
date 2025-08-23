@@ -1,11 +1,13 @@
 "use server";
-
+import { BookingData } from "@/types";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import mongoose, { Types } from "mongoose";
 import Order from "@/model/order.model";
 import dbConnect from "@/lib/dbConnect";
-
+import User from "@/model/User";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 export interface OrderCreateInput {
   userId: mongoose.Types.ObjectId | string;
   trips: {
@@ -29,72 +31,81 @@ export interface OrderCreateInput {
   bookingDate?: Date;
 }
 
-// Helper function to safely convert to ObjectId
-const toObjectId = (id: string | mongoose.Types.ObjectId): mongoose.Types.ObjectId => {
-  if (typeof id === 'string') {
-    // Check if it's already a valid ObjectId
+const toObjectId = (
+  id: string | mongoose.Types.ObjectId
+): mongoose.Types.ObjectId => {
+  if (typeof id === "string") {
     if (mongoose.isValidObjectId(id)) {
       return new mongoose.Types.ObjectId(id);
     }
-    // If it's a numeric string from mock data, create a consistent ObjectId
-    // In production, you should only use valid ObjectIds
     const numericId = parseInt(id, 10);
     if (!isNaN(numericId)) {
-      // Create a deterministic ObjectId from numeric ID for mock data
-      const hexString = numericId.toString(16).padStart(24, '0');
+      const hexString = numericId.toString(16).padStart(24, "0");
       return new mongoose.Types.ObjectId(hexString);
     }
     throw new Error(`Invalid ID format: ${id}`);
   }
   return id;
 };
-import { BookingData } from "@/types";
-// Create a new order
-// actions/order.actions.ts
-
 
 export async function createOrder(formData: BookingData) {
   await dbConnect();
-  
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return { success: false, error: "Please Login" };
+  }
+
   try {
-    console.log(formData)
-    // Check if we have the required data
-    if (!formData.userId || !formData.trips || !formData.totalAmount || 
-        !formData.paymentMethod) {
+    console.log(formData);
+    if (
+      !formData.userId ||
+      !formData.trips ||
+      !formData.totalAmount ||
+      !formData.paymentMethod
+    ) {
       return { error: "Missing required fields" };
     }
-
-    // Parse the trips data
     const tripsData = JSON.parse(formData.trips);
-    
-    // Convert product IDs to ObjectIds and parse currency values
+
     const processedTrips = tripsData.map((trip: any) => ({
       ...trip,
       product: toObjectId(trip.product),
       selectedDate: new Date(trip.selectedDate),
-      price: trip.price, // Parse the price
-      quantity: parseInt(trip.quantity) || 1 // Ensure quantity is a number
+      price: trip.price,
+      quantity: parseInt(trip.quantity) || 1,
     }));
 
-    // Calculate total amount properly
-    const calculatedTotalAmount = parseInt(formData.totalAmount)
+    const calculatedTotalAmount = parseInt(formData.totalAmount);
+    const users = await User.find({ email: session?.user?.email });
+    console.log("Found users:", users);
 
+    if (!users || users.length === 0) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    const user = users[0];
+    const userId = user._id;
+    console.log("UserId", userId);
     const orderData: OrderCreateInput = {
-      userId: toObjectId(formData.userId),
+      userId: userId,
       trips: processedTrips,
-      totalAmount: calculatedTotalAmount, // Use the calculated amount
+      totalAmount: calculatedTotalAmount,
       paymentMethod: formData.paymentMethod,
       contactInfo: {
         name: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
-        phone: formData.phone
+        phone: formData.phone,
       },
       specialRequests: formData.specialRequests || undefined,
     };
-console.log("Order",orderData,tripsData.totalAmount,"Saad",tripsData)
+    console.log("Order", orderData, tripsData.totalAmount, "Saad", tripsData);
     const order = new Order(orderData);
     await order.save();
-    
+
     revalidatePath("/orders");
     return { success: true, orderId: order._id.toString() };
   } catch (error) {
@@ -102,19 +113,23 @@ console.log("Order",orderData,tripsData.totalAmount,"Saad",tripsData)
     return { error: "Failed to create order" };
   }
 }
-// Get order by ID
+
 export async function getOrder(orderId: string) {
   await dbConnect();
-  
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return { success: false, error: "Please Login" };
+  }
   try {
     const order = await Order.findById(orderId)
       .populate("userId", "name email")
       .populate("trips.product", "name images");
-    
+
     if (!order) {
       return { error: "Order not found" };
     }
-    
+
     return { order: JSON.parse(JSON.stringify(order)) };
   } catch (error) {
     console.error("Get order error:", error);
@@ -122,25 +137,44 @@ export async function getOrder(orderId: string) {
   }
 }
 
-// Get orders by user ID
-export async function getOrdersByUser(userId: string, page = 1, limit = 10) {
+export async function getOrdersByUser(email: string, page = 1, limit = 10) {
   await dbConnect();
-  
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return { success: false, error: "Please Login" };
+  }
   try {
     const skip = (page - 1) * limit;
-    
+    console.log("Searching for user with email:", email);
+
+    const users = await User.find({ email });
+    console.log("Found users:", users);
+
+    if (!users || users.length === 0) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    const user = users[0];
+    const userId = user._id;
+    console.log("UserId", userId);
+    console.log(await Order.find({ userId }));
     const orders = await Order.find({ userId })
       .sort({ bookingDate: -1 })
       .skip(skip)
       .limit(limit)
       .populate("trips.product", "name images");
-    
+
     const total = await Order.countDocuments({ userId });
-    
-    return { 
-      orders: JSON.parse(JSON.stringify(orders)), 
+
+    return {
+      success: true,
+      orders: JSON.parse(JSON.stringify(orders)),
       totalPages: Math.ceil(total / limit),
-      currentPage: page
+      currentPage: page,
     };
   } catch (error) {
     console.error("Get user orders error:", error);
@@ -148,27 +182,30 @@ export async function getOrdersByUser(userId: string, page = 1, limit = 10) {
   }
 }
 
-// Get all orders (for admin)
 export async function getAllOrders(page = 1, limit = 10, status?: string) {
   await dbConnect();
-  
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return { success: false, error: "Please Login" };
+  }
   try {
     const skip = (page - 1) * limit;
     const filter = status ? { status } : {};
-    
+
     const orders = await Order.find(filter)
       .sort({ bookingDate: -1 })
       .skip(skip)
       .limit(limit)
       .populate("userId", "name email")
       .populate("trips.product", "name");
-    
+
     const total = await Order.countDocuments(filter);
-    
-    return { 
-      orders: JSON.parse(JSON.stringify(orders)), 
+
+    return {
+      orders: JSON.parse(JSON.stringify(orders)),
       totalPages: Math.ceil(total / limit),
-      currentPage: page
+      currentPage: page,
     };
   } catch (error) {
     console.error("Get all orders error:", error);
@@ -176,26 +213,29 @@ export async function getAllOrders(page = 1, limit = 10, status?: string) {
   }
 }
 
-// Update order status
 export async function updateOrderStatus(orderId: string, status: string) {
   await dbConnect();
-  
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return { success: false, error: "Please Login" };
+  }
   try {
     const validStatuses = ["pending", "confirmed", "cancelled", "completed"];
     if (!validStatuses.includes(status)) {
       return { error: "Invalid status" };
     }
-    
+
     const order = await Order.findByIdAndUpdate(
       orderId,
       { status },
       { new: true }
     );
-    
+
     if (!order) {
       return { error: "Order not found" };
     }
-    
+
     revalidatePath("/orders");
     revalidatePath(`/orders/${orderId}`);
     return { success: true, order: JSON.parse(JSON.stringify(order)) };
@@ -205,26 +245,32 @@ export async function updateOrderStatus(orderId: string, status: string) {
   }
 }
 
-// Update payment status
-export async function updatePaymentStatus(orderId: string, paymentStatus: string) {
+export async function updatePaymentStatus(
+  orderId: string,
+  paymentStatus: string
+) {
   await dbConnect();
-  
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return { success: false, error: "Please Login" };
+  }
   try {
     const validStatuses = ["unpaid", "paid", "refunded"];
     if (!validStatuses.includes(paymentStatus)) {
       return { error: "Invalid payment status" };
     }
-    
+
     const order = await Order.findByIdAndUpdate(
       orderId,
       { paymentStatus },
       { new: true }
     );
-    
+
     if (!order) {
       return { error: "Order not found" };
     }
-    
+
     revalidatePath("/orders");
     revalidatePath(`/orders/${orderId}`);
     return { success: true, order: JSON.parse(JSON.stringify(order)) };
@@ -234,17 +280,20 @@ export async function updatePaymentStatus(orderId: string, paymentStatus: string
   }
 }
 
-// Delete order
 export async function deleteOrder(orderId: string) {
   await dbConnect();
-  
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return { success: false, error: "Please Login" };
+  }
   try {
     const order = await Order.findByIdAndDelete(orderId);
-    
+
     if (!order) {
       return { error: "Order not found" };
     }
-    
+
     revalidatePath("/orders");
     return { success: true };
   } catch (error) {
@@ -253,33 +302,33 @@ export async function deleteOrder(orderId: string) {
   }
 }
 
-// Send order confirmation email
 export async function sendOrderConfirmation(orderId: string) {
   await dbConnect();
-  
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return { success: false, error: "Please Login" };
+  }
   try {
     const order = await Order.findById(orderId)
       .populate("userId", "name email")
       .populate("trips.product", "name");
-    
+
     if (!order) {
       return { error: "Order not found" };
     }
-    
-    // In a real application, you would integrate with an email service
-    // like Resend, SendGrid, or Nodemailer here
+
     console.log("Sending confirmation email for order:", orderId);
     console.log("To:", order.contactInfo.email);
     console.log("Order details:", {
       orderId: order._id,
       customer: order.contactInfo.name,
       trips: order.trips,
-      totalAmount: order.totalAmount
+      totalAmount: order.totalAmount,
     });
-    
-    // Simulate email sending
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     return { success: true, message: "Confirmation email sent successfully" };
   } catch (error) {
     console.error("Send confirmation error:", error);
@@ -287,26 +336,29 @@ export async function sendOrderConfirmation(orderId: string) {
   }
 }
 
-// Get order statistics
 export async function getOrderStats() {
   await dbConnect();
-  
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return { success: false, error: "Please Login" };
+  }
   try {
     const totalOrders = await Order.countDocuments();
     const pendingOrders = await Order.countDocuments({ status: "pending" });
     const completedOrders = await Order.countDocuments({ status: "completed" });
     const totalRevenue = await Order.aggregate([
       { $match: { paymentStatus: "paid" } },
-      { $group: { _id: null, total: { $sum: "$totalAmount" } } }
+      { $group: { _id: null, total: { $sum: "$totalAmount" } } },
     ]);
-    
+
     const revenue = totalRevenue.length > 0 ? totalRevenue[0].total : 0;
-    
+
     return {
       totalOrders,
       pendingOrders,
       completedOrders,
-      revenue
+      revenue,
     };
   } catch (error) {
     console.error("Get order stats error:", error);

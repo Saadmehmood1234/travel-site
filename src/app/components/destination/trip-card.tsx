@@ -15,7 +15,7 @@ export default function TripCard({ trip }: { trip: any }) {
           className="w-full h-48 md:h-56 object-cover"
         />
         {trip.isCommunityTrip && (
-          <div className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+          <div className="absolute top-4 left-4 bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-3 py-1 rounded-full text-sm font-medium">
             Community Trip
           </div>
         )}
@@ -72,7 +72,7 @@ export default function TripCard({ trip }: { trip: any }) {
             <div className="text-2xl font-bold">{trip.price}</div>
           </div>
           <Link href={`/destinations/${trip.id}`}>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
+          <button className="bg-gradient-to-r from-primary-600 to-secondary-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
             View Details
           </button>
           </Link>

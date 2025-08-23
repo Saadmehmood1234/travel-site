@@ -4,7 +4,7 @@ import Link from "next/link"
 
 export default function TermsConditions() {
   return (
-    <div className="bg-white">
+    <div className="bg-white mt-12">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

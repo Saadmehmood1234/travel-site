@@ -675,14 +675,14 @@ const handlePaymentSuccess = async () => {
                   <p className="text-gray-600 mb-4">
                     Secure payment processed by Razorpay
                   </p>
-                  {tripDetails?.price && (
+                  {/* {tripDetails?.price && (
                     <PaymentButton
                       amount={tripDetails?.discountPrice}
                       onSuccess={handlePaymentSuccess}
                       bookingData={bookingData}
                     />
-                  )}
-                  {/* <button onClick={handlePaymentSuccess}>Pay</button> */}
+                  )} */}
+                  <button onClick={handlePaymentSuccess}>Pay</button>
                   <p className="text-sm text-gray-500 mt-4">
                     Your payment information is encrypted and secure
                   </p>

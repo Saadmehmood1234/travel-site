@@ -1,38 +1,85 @@
-"use server";
-import { TravelSubscriber } from "@/model/Subscriber";
-import dbConnect from "@/lib/dbConnect";
+// app/actions/subscriber-actions.ts
+'use server';
 
-export const subscribeActions = async (email: string) => {
-  if (!email) {
-    return {
-      success: false,
-      message: "Email is required",
-    };
-  }
+import mongoose from 'mongoose';
+import { TravelSubscriber } from '@/model/Subscriber';
+import { revalidatePath } from 'next/cache';
+import dbConnect from '@/lib/dbConnect';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+
+export async function addSubscriber(prevState: any, formData: FormData) {
+    const session = await getServerSession(authOptions);
   
+    if (!session?.user?.id) {
+      return { success: false, error: "Please Login" };
+    }
   try {
-    await dbConnect()
-    const existingSubscriber = await TravelSubscriber.findOne({ email });
-
-    if (existingSubscriber) {
-      return {
-        success: false,
-        message: "You are already subscribed",
+    await dbConnect();
+    
+    const email = formData.get('email') as string;
+    
+    if (!email) {
+      return { 
+        success: false, 
+        message: 'Email is required' 
       };
     }
-
-    const newSubscriber = await TravelSubscriber.create({ email });
-
-    return {
-      success: true,
-      message: "Subscription successful",
-      data: newSubscriber,
+    const existingSubscriber = await TravelSubscriber.findOne({ email });
+    
+    if (existingSubscriber) {
+      return { 
+        success: false, 
+        message: 'This email is already subscribed' 
+      };
+    }
+    await TravelSubscriber.create({ email });
+    
+    revalidatePath('/subscribers');
+    
+    return { 
+      success: true, 
+      message: 'Successfully subscribed!' 
     };
   } catch (error) {
-    console.error("Error subscribing:", error);
-    return {
-      success: false,
-      message: "An error occurred while subscribing",
+    console.error('Error adding subscriber:', error);
+    return { 
+      success: false, 
+      message: 'An error occurred while subscribing' 
     };
   }
-};
+}
+export async function getSubscribers() {
+  try {
+    await dbConnect();
+    
+    const subscribers = await TravelSubscriber.find({})
+      .sort({ createdAt: -1 })
+      .lean();
+    
+    return JSON.parse(JSON.stringify(subscribers));
+  } catch (error) {
+    console.error('Error fetching subscribers:', error);
+    return [];
+  }
+}
+export async function deleteSubscriber(id: string) {
+  try {
+    await dbConnect();
+    
+    await TravelSubscriber.findByIdAndDelete(id);
+    
+    revalidatePath('/subscribers');
+    
+    return { 
+      success: true, 
+      message: 'Subscriber deleted successfully' 
+    };
+  } catch (error) {
+    console.error('Error deleting subscriber:', error);
+    return { 
+      success: false, 
+      message: 'Error deleting subscriber' 
+    };
+  }
+}

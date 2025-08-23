@@ -57,7 +57,7 @@ export default function Navbar() {
 
       {/* Main Navbar */}
       <nav
-        className='bg-primary-600 text-white py-2 px-4 text-sm'
+        className='bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-2 px-4 text-sm'
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">

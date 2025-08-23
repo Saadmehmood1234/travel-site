@@ -20,7 +20,7 @@ const PaymentButton = ({ amount, onSuccess, bookingData }: PaymentButtonProps) =
 
   const initiatePayment = async () => {
     setLoading(true);
-    
+    console.log("Ammount",amount)
     try {
       const response = await fetch('/api/create-order', {
         method: "POST",
@@ -28,7 +28,7 @@ const PaymentButton = ({ amount, onSuccess, bookingData }: PaymentButtonProps) =
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          amount: amount && parseInt(amount) * 100,
+          amount: amount && parseInt(amount.slice(1)) * 100,
           currency: "INR",
           receipt: `booking_${Date.now()}`,
           notes: {

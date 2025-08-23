@@ -14,37 +14,16 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { subscribeActions } from "../actions/subscribe.actions";
+
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 export default function Footer() {
   const [email, setEmail] = useState("");
   const { data: session } = useSession();
   const router = useRouter();
-  const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!session) {
-      router.push("/auth/signin");
-      return;
-    }
-    try {
-      const response = await subscribeActions(email);
-
-      if (!response.success) {
-        toast.error(response.message || "Subscription failed");
-        return;
-      }
-
-      toast.success(response.message || "Subscription successful");
-      setEmail("");
-    } catch (error: any) {
-      console.error("Error in handleSubscribe:", error);
-      toast.error(error.message);
-    }
-  };
 
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
@@ -54,7 +33,7 @@ export default function Footer() {
                 <img src="/logo.png" />
               </div>
             </div>
-            <p className="text-gray-300 mb-6 leading-relaxed">
+            <p className="text-gray-100 mb-6 leading-relaxed">
               Your trusted travel partner for unforgettable adventures around
               the world. We create personalized experiences that turn your
               travel dreams into reality.
@@ -94,7 +73,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/destinations"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-gray-100 hover:text-white transition-colors"
                 >
                   Destinations
                 </Link>
@@ -102,7 +81,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="#booking"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-gray-100 hover:text-white transition-colors"
                 >
                   Book Now
                 </Link>
@@ -110,7 +89,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="#about"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-gray-100 hover:text-white transition-colors"
                 >
                   About Us
                 </Link>
@@ -119,7 +98,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="#contact"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-gray-100 hover:text-white transition-colors"
                 >
                   Contact
                 </Link>
@@ -161,7 +140,7 @@ export default function Footer() {
             <div className="space-y-4 mb-6">
               <div className="flex items-center space-x-3">
                 <MapPin className="h-5 w-5 text-primary-400" />
-                <span className="text-gray-300 text-sm">
+                <span className="text-gray-100 text-sm">
                   Second Floor, A-245, Devli Rd, opp. Honda Showroom, near
                   Vishal Mega Mart, Khanpur Village, Khanpur, New Delhi, Delhi
                   110062
@@ -169,11 +148,11 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-secondary-400" />
-                <span className="text-gray-300 text-sm">+91-9310682414</span>
+                <span className="text-gray-100 text-sm">+91-9310682414</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-primary-400" />
-                <span className="text-gray-300 text-sm">
+                <span className="text-gray-100 text-sm">
                   info@cloudshipholidays.com
                 </span>
               </div>
@@ -186,20 +165,20 @@ export default function Footer() {
         {/* Bottom Footer */}
         <div className="border-t border-gray-800 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="text-gray-400 text-sm">
+            <div className="text-gray-100 text-sm">
               © {new Date().getFullYear()} Cloudship Holidays. All rights
               reserved.
             </div>
             <div className="flex space-x-6 text-sm">
               <Link
                 href="/privacy"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-100 hover:text-white transition-colors"
               >
                 Privacy Policy
               </Link>
               <Link
                 href="/terms"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-100 hover:text-white transition-colors"
               >
                 Terms of Service
               </Link>

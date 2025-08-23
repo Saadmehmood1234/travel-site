@@ -157,20 +157,17 @@ export default function TripDetailPage() {
   const handleToggleFavorite = (productId: string) => {
     const isCurrentlyFavorite = favorites.includes(productId);
 
-    // Optimistically update the UI
     setFavorites((prev) =>
       isCurrentlyFavorite
         ? prev.filter((id) => id !== productId)
         : [...prev, productId]
     );
 
-    // Start the transition for the server action
     startTransition(async () => {
       try {
         const result = await toggleWishlist(productId);
 
         if (result.status === "error") {
-          // Revert if there was an error
           setFavorites((prev) =>
             isCurrentlyFavorite
               ? [...prev, productId]
@@ -183,7 +180,6 @@ export default function TripDetailPage() {
           );
         }
       } catch (error) {
-        // Revert if there was an error
         setFavorites((prev) =>
           isCurrentlyFavorite
             ? [...prev, productId]
@@ -227,7 +223,7 @@ export default function TripDetailPage() {
           <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
           <p className="text-gray-600 mb-4">{error || "Trip not found"}</p>
           <Link href="/destinations">
-            <button className="bg-blue-600 text-white px-6 py-2 rounded-lg">
+            <button className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-6 py-2 rounded-lg">
               Back to Destinations
             </button>
           </Link>
@@ -247,7 +243,7 @@ export default function TripDetailPage() {
         <div className="container relative z-20 h-full flex items-end px-4 sm:px-6 lg:px-8 pb-12">
           <div className="max-w-3xl text-white">
             <div className="flex items-center gap-2 mb-4">
-              <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+              <span className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-3 py-1 rounded-full text-sm font-medium">
                 Community Trip
               </span>
               <span className="flex items-center bg-blue-50 text-blue-800 px-2 py-1 rounded text-sm">
@@ -389,7 +385,7 @@ export default function TripDetailPage() {
           <div className="lg:w-1/3">
             <div className="sticky top-6">
               <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-white">
+                <div className="bg-gradient-to-r from-primary-600 to-secondary-600 p-6 text-white">
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <span className="text-sm">Starting from</span>
@@ -473,7 +469,7 @@ export default function TripDetailPage() {
 
                 <div className="p-6">
                   <Link href={`/payment-page/${tripDetails.id}`}>
-                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold mb-3 flex items-center justify-center">
+                    <button className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold mb-3 flex items-center justify-center">
                       Book Now <FiArrowRight className="ml-2" />
                     </button>
                   </Link>

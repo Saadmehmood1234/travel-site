@@ -1,3 +1,4 @@
+
 import Navbar from "./components/navbar"
 
 import DestinationShowcase from "./components/destination/destination-showcase"
@@ -18,7 +19,7 @@ export default function Home() {
       <HeroSection/>
       <DestinationShowcase />
       <BookingWidget />
-      <SpecialOffers />
+      {/* <SpecialOffers /> */}
       <FloatWhatsapp/>
       <Testimonials />
       <AboutUs />
