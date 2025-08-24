@@ -21,6 +21,14 @@ export const getProducts = async (): Promise<{
   try {
     await dbConnect();
     const products = await Product.find({});
+    
+    if (products.length === 0) {
+      return {
+        success: true,
+        data: [], // Return empty array instead of undefined
+      };
+    }
+    
     return {
       success: true,
       data: products.map(serializeProduct),

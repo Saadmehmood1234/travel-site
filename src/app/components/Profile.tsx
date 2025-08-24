@@ -7,11 +7,9 @@ import {
   Heart,
   Package,
   User,
-  Settings,
   CreditCard,
-  Globe,
-  Bell,
-  HelpCircle,
+  FileText,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +20,6 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import SignOutButton from "./SignOutButton";
 import { useSession } from "next-auth/react";
@@ -32,7 +29,8 @@ import {
   getWishlistWithProducts,
 } from "../actions/wishlist.actions.ts";
 import { getOrdersByUser } from "../actions/order.actions";
-import { OrderCreateInput } from "@/types";
+import Invoice from "./Invoice";
+import { IOrder, OrdersResponse } from "@/types/order";
 
 interface WishlistItem {
   productId: {
@@ -48,46 +46,21 @@ interface WishlistData {
   items: WishlistItem[];
   count: number;
 }
-interface OrderTrip {
-  product: {
-    _id: string;
-    name: string;
-    images: string[];
-  };
-  quantity: number;
-  price: number;
-}
 
-interface Order {
-  _id: string;
-  userId: string;
-  trips: OrderTrip[];
-  totalAmount: number;
-  status: string;
-  bookingDate: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface OrdersResponse {
-  orders: Order[];
-  totalPages: number;
-  currentPage: number;
-  error?: string;
-  success?: boolean;
-  message?: string;
-}
 export function Profile() {
   const [activeTab, setActiveTab] = useState("account");
   const [wishlistData, setWishlistData] = useState<WishlistData | null>(null);
   const [wishlistCount, setWishlistCount] = useState(0);
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<IOrder[]>([]);
   const [ordersPage, setOrdersPage] = useState(1);
   const [ordersTotalPages, setOrdersTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [ordersLoading, setOrdersLoading] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
+
   useEffect(() => {
     if (session?.user?.id) {
       fetchWishlistCount();
@@ -118,13 +91,13 @@ export function Profile() {
       if (result.success && result.data) {
         setWishlistData(result.data);
       }
-      console.log(result.data);
     } catch (error) {
       console.error("Error fetching wishlist data:", error);
     } finally {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     const fetchUserOrder = async () => {
       if (!session?.user?.email) return;
@@ -138,9 +111,23 @@ export function Profile() {
           console.error("Error fetching orders:", result.error);
           return;
         }
-        
+
         if (result.orders) {
-          setOrders(result.orders);
+          const convertedOrders: IOrder[] = result.orders.map((order: any) => ({
+            ...order,
+            bookingDate: new Date(order.bookingDate),
+            createdAt: new Date(order.createdAt),
+            updatedAt: new Date(order.updatedAt),
+            trips: order.trips.map((trip: any) => ({
+              ...trip,
+              selectedDate: new Date(trip.selectedDate),
+              product:
+                typeof trip.product === "object"
+                  ? trip.product
+                  : { _id: trip.product, name: "", images: [] },
+            })),
+          }));
+          setOrders(convertedOrders);
           setOrdersTotalPages(result.totalPages || 1);
         }
       } catch (error) {
@@ -154,16 +141,21 @@ export function Profile() {
       fetchUserOrder();
     }
   }, [activeTab, session]);
+
+  const handleViewInvoice = (order: IOrder) => {
+    setSelectedOrder(order);
+    setIsInvoiceOpen(true);
+  };
+
+  const closeInvoice = () => {
+    setIsInvoiceOpen(false);
+    setSelectedOrder(null);
+  };
+
   if (!session) {
     router.push("/auth/signin");
     return null;
   }
-
-  const stats = [
-    { label: "Trips", value: 0 },
-    { label: "Countries", value: 0 },
-    { label: "Points", value: 0 },
-  ];
 
   return (
     <div className="flex justify-center p-4 md:p-8 mt-24">
@@ -227,14 +219,7 @@ export function Profile() {
                     </Badge>
                   )}
                 </Button>
-                <Button
-                  variant={activeTab === "payments" ? "secondary" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => setActiveTab("payments")}
-                >
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  Payments
-                </Button>
+
               </nav>
 
               <Separator />
@@ -242,7 +227,6 @@ export function Profile() {
             <div className="w-full md:w-3/4">
               {activeTab === "account" && (
                 <div className="space-y-6">
-
                   <Card>
                     <CardHeader className="font-semibold">
                       Personal Information
@@ -253,7 +237,6 @@ export function Profile() {
                           <label className="text-sm text-gray-500">Name</label>
                           <p className="font-medium"> {session?.user?.name}</p>
                         </div>
-
                         <div>
                           <label className="text-sm text-gray-500">Email</label>
                           <p className="font-medium"> {session?.user?.email}</p>
@@ -261,7 +244,6 @@ export function Profile() {
                         <div>
                           <label className="text-sm text-gray-500">Phone</label>
                           <p className="font-medium">
-                            {" "}
                             {session?.user?.phone || "Not provided"}
                           </p>
                         </div>
@@ -306,45 +288,73 @@ export function Profile() {
                               {order.status}
                             </Badge>
                           </div>
-
                           <Separator className="my-3" />
-
                           <div className="space-y-3">
-                            {order.trips.map((trip, index) => (
-                              <div
-                                key={index}
-                                className="flex items-center gap-3"
-                              >
-                                {trip.product.images &&
-                                  trip.product.images.length > 0 && (
+                            {order.trips.map((trip, index) => {
+                              const isProductPopulated = (
+                                product: any
+                              ): product is {
+                                _id: string;
+                                name: string;
+                                images: string[];
+                              } => {
+                                return (
+                                  typeof product === "object" &&
+                                  product !== null &&
+                                  "name" in product
+                                );
+                              };
+
+                              const product = isProductPopulated(trip.product)
+                                ? trip.product
+                                : {
+                                    _id: trip.product.toString(),
+                                    name: "Unknown Product",
+                                    images: [],
+                                  };
+
+                              const tripName = trip.name || product.name;
+                              const tripImage =
+                                product.images && product.images.length > 0
+                                  ? product.images[0]
+                                  : null;
+
+                              return (
+                                <div
+                                  key={index}
+                                  className="flex items-center gap-3"
+                                >
+                                  {tripImage && (
                                     <div className="relative h-16 w-16 rounded-md overflow-hidden">
                                       <Image
                                         src={
-                                          trip.product.images[0] ||
+                                          tripImage ||
                                           "/placeholder-destination.jpg"
                                         }
-                                        alt={trip.product.name}
+                                        alt={tripName}
                                         fill
                                         className="object-cover"
                                       />
                                     </div>
                                   )}
-                                <div className="flex-1">
-                                  <p className="font-medium">
-                                    {trip.product.name}
-                                  </p>
-                                  <p className="text-sm text-gray-500">
-                                    {trip.quantity}{" "}
-                                    {trip.quantity > 1 ? "people" : "person"} •
-                                    ${trip.price}
-                                  </p>
+                                  <div className="flex-1">
+                                    <p className="font-medium">{tripName}</p>
+                                    <p className="text-sm text-gray-500">
+                                      {trip.quantity}{" "}
+                                      {trip.quantity > 1 ? "people" : "person"}{" "}
+                                      • ${trip.price}
+                                    </p>
+                                    {trip.location && (
+                                      <p className="text-sm text-gray-400">
+                                        {trip.location}
+                                      </p>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
-
                           <Separator className="my-3" />
-
                           <div className="flex justify-between items-center">
                             <p className="text-sm text-gray-500">
                               {order.trips.length}{" "}
@@ -354,33 +364,18 @@ export function Profile() {
                               Total: ${order.totalAmount}
                             </p>
                           </div>
+                          <div className="mt-4">
+                            <Button
+                              onClick={() => handleViewInvoice(order)}
+                              variant="outline"
+                              className="w-full flex items-center gap-2"
+                            >
+                              <FileText className="h-4 w-4" />
+                              View Invoice
+                            </Button>
+                          </div>
                         </Card>
                       ))}
-
-                      {/* Pagination */}
-                      {ordersTotalPages > 1 && (
-                        <div className="flex justify-center gap-2 mt-6">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={ordersPage === 1}
-                            onClick={() => setOrdersPage((prev) => prev - 1)}
-                          >
-                            Previous
-                          </Button>
-                          <span className="flex items-center px-3 text-sm">
-                            Page {ordersPage} of {ordersTotalPages}
-                          </span>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={ordersPage === ordersTotalPages}
-                            onClick={() => setOrdersPage((prev) => prev + 1)}
-                          >
-                            Next
-                          </Button>
-                        </div>
-                      )}
                     </div>
                   ) : (
                     <Card className="p-8 text-center">
@@ -458,17 +453,6 @@ export function Profile() {
                   )}
                 </div>
               )}
-              {activeTab === "payments" && (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold">Payment Methods</h3>
-                  <Card className="p-4">
-                    <div className="text-center text-gray-500">
-                      <CreditCard className="h-12 w-12 mx-auto mb-4" />
-                      <p>No payment methods added yet</p>
-                    </div>
-                  </Card>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -476,6 +460,31 @@ export function Profile() {
           <SignOutButton />
         </CardFooter>
       </Card>
+
+      {isInvoiceOpen && selectedOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
+              <h3 className="text-xl font-semibold">Invoice</h3>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={closeInvoice}
+                className="h-8 w-8"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="p-6">
+              <Invoice
+                order={{
+                  ...selectedOrder,
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
