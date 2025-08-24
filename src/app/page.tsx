@@ -18,7 +18,7 @@ export default function Home() {
       <Navbar />
       <HeroSection/>
       <DestinationShowcase />
-      <BookingWidget />
+      {/* <BookingWidget /> */}
       {/* <SpecialOffers /> */}
       <FloatWhatsapp/>
       <Testimonials />

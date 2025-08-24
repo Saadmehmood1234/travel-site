@@ -36,6 +36,7 @@ import { getProductById } from "../../actions/product.actions";
 import { useSession } from "next-auth/react";
 import { createOrder } from "@/app/actions/order.actions";
 import { parseCurrencyValue } from "@/utils/helpers";
+
 interface TripDetails {
   id: string;
   title: string;
@@ -48,7 +49,9 @@ interface TripDetails {
   reviews: number;
   price: string;
   discountPrice?: string;
+  availableDates?: Date[]; // Add available dates to trip details
 }
+
 export interface BookingData {
   destination: string | undefined;
   checkIn: Date | undefined;
@@ -65,23 +68,25 @@ export interface BookingData {
   cvv: string;
   cardName: string;
   specialRequests: string;
-  // Add these fields
   userId: string;
-  trips: string; // This will be stringified JSON
+  trips: string;
   totalAmount: string;
   paymentMethod: "credit-card" | "upi" | "paypal" | "cash";
 }
+
 const steps = [
   { id: 1, name: "Destination", icon: MapPin },
   { id: 2, name: "Dates", icon: CalendarIcon },
   { id: 3, name: "Travelers", icon: Users },
   { id: 4, name: "Payment", icon: CreditCard },
 ];
-
+const parseDuration = (duration: string): number => {
+  const match = duration.match(/(\d+)\s*day/i);
+  return match ? parseInt(match[1]) : 1;
+};
 export default function BookingWidget() {
   const params = useParams();
   const id = params.id as string;
-  console.log("Id", id, params);
   const [currentStep, setCurrentStep] = useState(1);
   const [tripDetails, setTripDetails] = useState<TripDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -102,12 +107,12 @@ export default function BookingWidget() {
     cvv: "",
     cardName: "",
     specialRequests: "",
-    // Initialize the new fields
     userId: "",
     trips: "[]",
     totalAmount: "0",
-    paymentMethod: "credit-card", // Now this matches the type
+    paymentMethod: "credit-card",
   });
+
   const { data: session } = useSession();
   const router = useRouter();
   const [bookingComplete, setBookingComplete] = useState(false);
@@ -135,6 +140,7 @@ export default function BookingWidget() {
       setCurrentStep(currentStep - 1);
     }
   };
+
   useEffect(() => {
     async function fetchTripDetails() {
       try {
@@ -144,6 +150,14 @@ export default function BookingWidget() {
         if (result.success && result.data) {
           const product = result.data;
 
+          // Transform available dates if they exist
+          // Transform available dates if they exist
+          const availableDates =
+            product.availableDates && Array.isArray(product.availableDates)
+              ? product.availableDates.map(
+                  (dateString: any) => new Date(dateString)
+                )
+              : undefined;
           const transformedData: TripDetails = {
             id: product._id,
             title: product.name,
@@ -161,6 +175,7 @@ export default function BookingWidget() {
             discountPrice: product.originalPrice
               ? `₹${product.price.toLocaleString()}`
               : undefined,
+            availableDates: availableDates, // Add available dates
           };
 
           setTripDetails(transformedData);
@@ -179,72 +194,55 @@ export default function BookingWidget() {
       fetchTripDetails();
     }
   }, [id]);
-  // const handlePaymentSuccess = () => {
-  //   setBookingComplete(true);
-  //   if (!session) {
-  //     router.push("/auth/signin");
-  //   }
-  //   console.log("Booking completed:", bookingData);
-  // };
 
-const handlePaymentSuccess = async () => {
-  if (!session) {
-    router.push("/auth/signin");
-    return;
-  }
-
-  try {
-    // Calculate quantity and price properly
-    const quantity = parseInt(bookingData.adults) + parseInt(bookingData.children);
-    const rawPrice = tripDetails?.price || "0";
-    console.log(rawPrice.slice(1))
-    const numericPrice = parseCurrencyValue(rawPrice.slice(1));
-    const totalAmount = numericPrice * quantity;
-
-    // First, update the bookingData with the userId
-    const updatedBookingData: BookingData = {
-      ...bookingData,
-      userId: session.user.id,
-      trips: JSON.stringify([{
-        product: tripDetails?.id,
-        name: tripDetails?.title,
-        location: tripDetails?.subtitle,
-        quantity: quantity,
-        price: numericPrice, // Use the parsed numeric value
-        selectedDate: bookingData.checkIn || new Date()
-      }]),
-      totalAmount: totalAmount.toString(),
-      paymentMethod: "credit-card" as const
-    };
-
-    // Update the bookingData state if needed
-    setBookingData(updatedBookingData);
-
-    // Then create the order with the updated data
-    const result = await createOrder(updatedBookingData);
-
-    if (result.error) {
-      console.error("Order creation failed:", result.error);
-      // Handle error (show toast, etc.)
+  const handlePaymentSuccess = async () => {
+    if (!session) {
+      router.push("/auth/signin");
       return;
     }
 
-    // Success - set booking complete and log
-    setBookingComplete(true);
-    console.log("Booking completed:", updatedBookingData);
-    console.log("Order created with ID:", result.orderId);
+    try {
+      const quantity =
+        parseInt(bookingData.adults) + parseInt(bookingData.children);
+      const rawPrice = tripDetails?.price || "0";
+      const numericPrice = parseCurrencyValue(rawPrice.slice(1));
+      const totalAmount = numericPrice * quantity;
 
-  } catch (error) {
-    console.error("Error in payment success handler:", error);
-  }
-};
+      const updatedBookingData: BookingData = {
+        ...bookingData,
+        userId: session.user.id,
+        trips: JSON.stringify([
+          {
+            product: tripDetails?.id,
+            name: tripDetails?.title,
+            location: tripDetails?.subtitle,
+            quantity: quantity,
+            price: numericPrice,
+            selectedDate: bookingData.checkIn || new Date(),
+          },
+        ]),
+        totalAmount: totalAmount.toString(),
+        paymentMethod: "credit-card" as const,
+      };
+
+      setBookingData(updatedBookingData);
+
+      const result = await createOrder(updatedBookingData);
+
+      if (result.error) {
+        console.error("Order creation failed:", result.error);
+        return;
+      }
+
+      setBookingComplete(true);
+      console.log("Booking completed:", updatedBookingData);
+      console.log("Order created with ID:", result.orderId);
+    } catch (error) {
+      console.error("Error in payment success handler:", error);
+    }
+  };
+
   const calculateTotal = () => {
-    // const basePrice = {tripDetails?.price};
-    // const adultPrice = parseInt(bookingData.adults) * 500;
-    // const childPrice = parseInt(bookingData.children) * 250;
-    // const roomPrice = parseInt(bookingData.rooms) * 300;
-
-    // return basePrice + adultPrice + childPrice + roomPrice;
     return tripDetails?.discountPrice;
   };
 
@@ -282,8 +280,8 @@ const handlePaymentSuccess = async () => {
               </h3>
               <p className="text-gray-600 mb-6">
                 We've sent a confirmation email to{" "}
-                <strong>{bookingData.email}</strong>
-                with all the details of your trip.
+                <strong>{bookingData.email}</strong> with all the details of
+                your trip.
               </p>
               <Button
                 onClick={() => window.location.reload()}
@@ -297,7 +295,7 @@ const handlePaymentSuccess = async () => {
       </section>
     );
   }
-  console.log(tripDetails, bookingData);
+
   return (
     <section id="booking" className="py-20 bg-white mt-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -365,31 +363,13 @@ const handlePaymentSuccess = async () => {
                   <p>{tripDetails?.title}</p>
                 </div>
 
-                {/* Destination Preview */}
                 {bookingData.destination && (
                   <div className="bg-gray-50 p-4 rounded-lg mt-4">
                     <h4 className="font-semibold mb-2">
-                      {bookingData.destination === "ladakh" &&
-                        "Ladakh Bike Trip"}
-                      {bookingData.destination === "goa" && "Goa Beach Retreat"}
-                      {bookingData.destination === "kerala" &&
-                        "Kerala Backwaters"}
-                      {bookingData.destination === "himachal" &&
-                        "Himachal Trekking"}
-                      {bookingData.destination === "rajasthan" &&
-                        "Rajasthan Cultural Tour"}
+                      {bookingData.destination}
                     </h4>
                     <p className="text-sm text-gray-600">
-                      {bookingData.destination === "ladakh" &&
-                        "Ride through the majestic Himalayas on this 8-day adventure"}
-                      {bookingData.destination === "goa" &&
-                        "Relax on pristine beaches with this 5-day beach getaway"}
-                      {bookingData.destination === "kerala" &&
-                        "Experience serene backwaters and lush greenery on this 6-day tour"}
-                      {bookingData.destination === "himachal" &&
-                        "Challenge yourself with this 7-day trekking expedition"}
-                      {bookingData.destination === "rajasthan" &&
-                        "Immerse in royal heritage with this 5-day cultural experience"}
+                      {tripDetails?.subtitle}
                     </p>
                   </div>
                 )}
@@ -407,31 +387,87 @@ const handlePaymentSuccess = async () => {
                   {/* Check-in Date */}
                   <div>
                     <Label>Check-in Date</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full h-12 justify-start text-left font-normal text-gray-900 border-gray-200 bg-transparent"
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {bookingData.checkIn
-                            ? format(bookingData.checkIn, "PPP")
-                            : "Select check-in date"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto min-w-[300px] p-4 bg-white rounded-xl shadow-xl">
-                        <Calendar
-                          className="w-full"
-                          mode="single"
-                          selected={bookingData.checkIn}
-                          onSelect={(date) =>
-                            setBookingData({ ...bookingData, checkIn: date })
-                          }
-                          disabled={(date) => date < new Date()}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+
+                    {/* If product has available dates, show a dropdown */}
+                    {tripDetails?.availableDates &&
+                    tripDetails.availableDates.length > 0 ? (
+                      <Select
+                        value={
+                          bookingData.checkIn
+                            ? bookingData.checkIn.toISOString()
+                            : undefined
+                        }
+                        // Replace the onValueChange handler in the check-in date Select component
+                        onValueChange={(value) => {
+                          const selectedDate = new Date(value);
+                          const durationDays = tripDetails?.duration
+                            ? parseDuration(tripDetails.duration)
+                            : 1;
+                          const checkoutDate = new Date(selectedDate);
+                          checkoutDate.setDate(
+                            checkoutDate.getDate() + durationDays
+                          );
+
+                          setBookingData({
+                            ...bookingData,
+                            checkIn: selectedDate,
+                            checkOut: checkoutDate,
+                          });
+                        }}
+                      >
+                        <SelectTrigger className="h-12">
+                          <SelectValue placeholder="Select available date" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {tripDetails.availableDates.map((date, index) => (
+                            <SelectItem key={index} value={date.toISOString()}>
+                              {format(date, "PPP")}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      // If no available dates, show calendar as before
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full h-12 justify-start text-left font-normal text-gray-900 border-gray-200 bg-transparent"
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {bookingData.checkIn
+                              ? format(bookingData.checkIn, "PPP")
+                              : "Select check-in date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto min-w-[300px] p-4 bg-white rounded-xl shadow-xl">
+                          <Calendar
+                            className="w-full"
+                            mode="single"
+                            selected={bookingData.checkIn}
+                            onSelect={(date) => {
+                              if (date) {
+                                const durationDays = tripDetails?.duration
+                                  ? parseDuration(tripDetails.duration)
+                                  : 1;
+                                const checkoutDate = new Date(date);
+                                checkoutDate.setDate(
+                                  checkoutDate.getDate() + durationDays
+                                );
+
+                                setBookingData({
+                                  ...bookingData,
+                                  checkIn: date,
+                                  checkOut: checkoutDate,
+                                });
+                              }
+                            }}
+                            disabled={(date) => date < new Date()}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    )}
                   </div>
 
                   {/* Check-out Date */}
@@ -682,15 +718,12 @@ const handlePaymentSuccess = async () => {
                       bookingData={bookingData}
                     />
                   )}
-                  {/* <button onClick={handlePaymentSuccess}>Pay</button> */}
                   <p className="text-sm text-gray-500 mt-4">
                     Your payment information is encrypted and secure
                   </p>
                 </div>
               </div>
             )}
-
-            {/* Navigation Buttons */}
             <div className="flex justify-between mt-8 pt-6 border-t">
               <Button
                 variant="outline"

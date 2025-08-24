@@ -22,7 +22,7 @@ export default function Navbar() {
 
     },
     {
-      href: "#booking",
+      href: "destinations",
       label: "Book Now",
     },
     {

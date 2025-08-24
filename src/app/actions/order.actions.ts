@@ -8,6 +8,7 @@ import dbConnect from "@/lib/dbConnect";
 import User from "@/model/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { sendBookingConfirmation } from "@/utils/sendOrderEmail";
 export interface OrderCreateInput {
   userId: mongoose.Types.ObjectId | string;
   trips: {
@@ -105,7 +106,14 @@ export async function createOrder(formData: BookingData) {
     console.log("Order", orderData, tripsData.totalAmount, "Saad", tripsData);
     const order = new Order(orderData);
     await order.save();
-
+    await sendBookingConfirmation(
+      formData.email,
+      {
+        trips: processedTrips,
+        totalAmount: calculatedTotalAmount,
+      },
+      `${formData.firstName} ${formData.lastName}`
+    );
     revalidatePath("/orders");
     return { success: true, orderId: order._id.toString() };
   } catch (error) {
@@ -366,16 +374,19 @@ export async function getOrderStats() {
   }
 }
 
-
-export async function updateOrderPaymentStatus(orderId: string, paymentStatus: "paid" | "refunded", paymentId?: string) {
+export async function updateOrderPaymentStatus(
+  orderId: string,
+  paymentStatus: "paid" | "refunded",
+  paymentId?: string
+) {
   await dbConnect();
-  
+
   try {
     const order = await Order.findByIdAndUpdate(
       orderId,
-      { 
+      {
         paymentStatus,
-        ...(paymentId && { paymentId }) // Store payment ID if provided
+        ...(paymentId && { paymentId }), // Store payment ID if provided
       },
       { new: true }
     );
