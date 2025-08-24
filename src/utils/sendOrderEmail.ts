@@ -37,9 +37,9 @@ export async function sendOrderConfirmationEmail(
   const mailOptions = {
     from: `"Prime Flix" <${process.env.SMTP_EMAIL}>`,
     to: email,
-    subject: `Your PrimeFlix Order #${orderData.orderId}`,
+    subject: `Your Cloudship Holidays Order #${orderData.orderId}`,
     headers: {
-      "X-Mailer": "PrimeFlix",
+      "X-Mailer": "Cloudship Holidays",
       "X-Priority": "1",
       Importance: "high",
     },
@@ -73,7 +73,7 @@ export async function sendOrderConfirmationEmail(
     
     <div class="content">
         <div class="order-number">Order #${orderData.orderId}</div>
-        <div class="thank-you">Hi there, thank you for shopping with PrimeFlix. Your order is confirmed and will be processed shortly.</div>
+        <div class="thank-you">Hi there, thank you for shopping with Cloudship Holidays. Your order is confirmed and will be processed shortly.</div>
         
         <table class="order-items">
             <thead>
@@ -135,7 +135,7 @@ export async function sendOrderConfirmationEmail(
     </div>
     
     <div class="footer">
-        <p>© ${new Date().getFullYear()} PrimeFlix. All rights reserved.</p>
+        <p>© ${new Date().getFullYear()} Cloudship Holidays. All rights reserved.</p>
         <p>${process.env.NEXTAUTH_URL}</p>
     </div>
 </body>
@@ -143,7 +143,7 @@ export async function sendOrderConfirmationEmail(
     `,
     text: `Order Confirmation #${orderData.orderId}
 
-Thank you for your order at PrimeFlix!
+Thank you for your order at Cloudship Holidays!
 
 Order Details:
 ${orderData.items
@@ -164,7 +164,7 @@ View your order: ${process.env.NEXTAUTH_URL}/account/orders
 
 Need help? Reply to this email or visit ${process.env.NEXTAUTH_URL}/contact
 
-© ${new Date().getFullYear()} PrimeFlix
+© ${new Date().getFullYear()} Cloudship Holidays
 ${process.env.NEXTAUTH_URL}
 `,
   };
