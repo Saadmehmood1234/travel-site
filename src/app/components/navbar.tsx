@@ -25,10 +25,10 @@ export default function Navbar() {
       href: "destinations",
       label: "Book Now",
     },
-    {
-      href: "#about",
-      label: "About",
-    },
+    // {
+    //   href: "#about",
+    //   label: "About",
+    // },
     {
       href: "#contact",
       label: "Contact",
