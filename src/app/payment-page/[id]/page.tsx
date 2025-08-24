@@ -526,7 +526,7 @@ export default function BookingWidget() {
                 <h3 className="text-2xl font-semibold text-gray-900 mb-6">
                   Traveler Information
                 </h3>
-                {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <div>
                     <Label>Adults</Label>
                     <Select
@@ -587,7 +587,7 @@ export default function BookingWidget() {
                       </SelectContent>
                     </Select>
                   </div>
-                </div> */}
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
