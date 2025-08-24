@@ -8,7 +8,7 @@ import dbConnect from "@/lib/dbConnect";
 import User from "@/model/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { sendBookingConfirmation } from "@/utils/sendOrderEmail";
+import { sendBookingConfirmation } from "@/lib/sendOrder";
 export interface OrderCreateInput {
   userId: mongoose.Types.ObjectId | string;
   trips: {
