@@ -11,7 +11,7 @@ const destinations = [
   {
     id: 1,
     title: "Discover Paris",
-    subtitle: "Romantic getaways starting at $599",
+    subtitle: "Romantic getaways starting at ₹599",
     highlight: "Eiffel Tower views included",
     image: "https://images.unsplash.com/photo-1431274172761-fca41d930114?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     cta: "Book Paris Flight",
@@ -20,7 +20,7 @@ const destinations = [
   {
     id: 2,
     title: "Explore Maldives",
-    subtitle: "Tropical paradise from $899",
+    subtitle: "Tropical paradise from ₹899",
     highlight: "Overwater bungalows available",
     image: "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80",
     cta: "View Maldives Packages",
@@ -29,7 +29,7 @@ const destinations = [
   {
     id: 3,
     title: "Experience Tokyo",
-    subtitle: "Cultural adventures from $799",
+    subtitle: "Cultural adventures from ₹799",
     highlight: "Cherry blossom season special",
     image: "https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     cta: "Explore Tokyo Tours",
@@ -38,7 +38,7 @@ const destinations = [
   {
     id: 4,
     title: "Visit New York",
-    subtitle: "City breaks from $399",
+    subtitle: "City breaks from ₹399",
     highlight: "Broadway show packages",
     image: "https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     cta: "Find NYC Deals",

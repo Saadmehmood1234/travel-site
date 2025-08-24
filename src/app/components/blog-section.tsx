@@ -83,7 +83,7 @@ const blogPosts = [
   },
   {
     id: 6,
-    title: "Budget Travel: Exploring Europe on $50 a Day",
+    title: "Budget Travel: Exploring Europe on ₹50 a Day",
     excerpt:
       "Discover how to travel through Europe without breaking the bank. Tips on budget accommodation, cheap eats, free attractions, and money-saving transportation options.",
     image:

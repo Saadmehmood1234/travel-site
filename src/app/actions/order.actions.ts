@@ -349,7 +349,7 @@ export async function getOrderStats() {
     const completedOrders = await Order.countDocuments({ status: "completed" });
     const totalRevenue = await Order.aggregate([
       { $match: { paymentStatus: "paid" } },
-      { $group: { _id: null, total: { $sum: "$totalAmount" } } },
+      { $group: { _id: null, total: { $sum: "₹totalAmount" } } },
     ]);
 
     const revenue = totalRevenue.length > 0 ? totalRevenue[0].total : 0;
@@ -363,5 +363,30 @@ export async function getOrderStats() {
   } catch (error) {
     console.error("Get order stats error:", error);
     return { error: "Failed to fetch order statistics" };
+  }
+}
+
+
+export async function updateOrderPaymentStatus(orderId: string, paymentStatus: "paid" | "refunded", paymentId?: string) {
+  await dbConnect();
+  
+  try {
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      { 
+        paymentStatus,
+        ...(paymentId && { paymentId }) // Store payment ID if provided
+      },
+      { new: true }
+    );
+
+    if (!order) {
+      return { success: false, error: "Order not found" };
+    }
+
+    return { success: true, order };
+  } catch (error) {
+    console.error("Error updating payment status:", error);
+    return { success: false, error: "Failed to update payment status" };
   }
 }

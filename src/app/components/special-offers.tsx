@@ -171,7 +171,7 @@ export default function SpecialOffers() {
                               <div className="text-3xl font-bold text-gray-900">
                                 {offer.type === "percentage"
                                   ? `${offer.discount}%`
-                                  : `$${offer.discount}`}
+                                  : `₹${offer.discount}`}
                               </div>
                               <div className="text-sm text-gray-600">OFF</div>
                             </div>

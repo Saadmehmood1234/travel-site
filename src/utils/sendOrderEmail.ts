@@ -99,14 +99,14 @@ export async function sendOrderConfirmationEmail(
                         </div>
                     </td>
                     <td>${item.quantity}</td>
-                    <td>$${item.price.toFixed(2)}</td>
+                    <td>₹${item.price.toFixed(2)}</td>
                 </tr>
                 `
                   )
                   .join("")}
                 <tr class="total-row">
                     <td colspan="2" style="text-align: right;">Total:</td>
-                    <td>$${orderData.totalAmount.toFixed(2)}</td>
+                    <td>₹${orderData.totalAmount.toFixed(2)}</td>
                 </tr>
             </tbody>
         </table>
@@ -149,11 +149,11 @@ Order Details:
 ${orderData.items
   .map(
     (item) =>
-      `- ${item.name} (Qty: ${item.quantity}) - $${item.price.toFixed(2)}`
+      `- ${item.name} (Qty: ${item.quantity}) - ₹${item.price.toFixed(2)}`
   )
   .join("\n")}
 
-Total: $${orderData.totalAmount.toFixed(2)}
+Total: ₹${orderData.totalAmount.toFixed(2)}
 ${
   orderData.deliveryDate
     ? `Estimated Delivery: ${orderData.deliveryDate}\n`

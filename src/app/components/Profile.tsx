@@ -342,7 +342,7 @@ export function Profile() {
                                     <p className="text-sm text-gray-500">
                                       {trip.quantity}{" "}
                                       {trip.quantity > 1 ? "people" : "person"}{" "}
-                                      • ${trip.price}
+                                      • ₹{trip.price}
                                     </p>
                                     {trip.location && (
                                       <p className="text-sm text-gray-400">
@@ -361,7 +361,7 @@ export function Profile() {
                               {order.trips.length > 1 ? "items" : "item"}
                             </p>
                             <p className="font-bold">
-                              Total: ${order.totalAmount}
+                              Total: ₹{order.totalAmount}
                             </p>
                           </div>
                           <div className="mt-4">
