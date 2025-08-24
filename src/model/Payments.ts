@@ -1,0 +1,70 @@
+import mongoose, { Schema, Document, Types } from "mongoose";
+
+export interface IPayment extends Document {
+  // Razorpay Information
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
+  razorpaySignature: string;
+  amount: number;
+  currency: string;
+  status: "created" | "attempted" | "paid" | "failed";
+  userName: string;
+  userEmail: string;
+  userPhone: string;
+
+  // Timestamps
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const PaymentSchema: Schema = new Schema(
+  {
+    // Razorpay Information
+    razorpayOrderId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    razorpayPaymentId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    razorpaySignature: {
+      type: String,
+      required: true,
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+    currency: {
+      type: String,
+      default: "INR",
+    },
+    status: {
+      type: String,
+      enum: ["created", "attempted", "paid", "failed"],
+      default: "created",
+    },
+
+    userName: {
+      type: String,
+      required: true,
+    },
+    userEmail: {
+      type: String,
+      required: true,
+    },
+    userPhone: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export default mongoose.models.Payments ||
+  mongoose.model<IPayment>("Payments", PaymentSchema);

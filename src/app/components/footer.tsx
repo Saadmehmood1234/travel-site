@@ -17,10 +17,19 @@ import toast from "react-hot-toast";
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import PaynowButton from "./PaynowButton";
+
 export default function Footer() {
   const [email, setEmail] = useState("");
   const { data: session } = useSession();
   const router = useRouter();
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  const handlePaymentSuccess = () => {
+    setPaymentSuccess(true);
+    toast.success("Payment completed successfully!");
+    // You can add additional logic here after successful payment
+  };
 
   return (
     <footer className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white">
@@ -103,7 +112,21 @@ export default function Footer() {
                   Contact
                 </Link>
               </li>
-            
+              <li>
+                {session ? (
+                  <PaynowButton
+                    onSuccess={handlePaymentSuccess}
+                  />
+                ) : (
+                  <Button 
+                    variant="link" 
+                    className="text-gray-100 hover:text-white p-0 h-auto"
+                    onClick={() => router.push("/auth/signin")}
+                  >
+                    Sign in to make payment
+                  </Button>
+                )}
+              </li>
             </ul>
           </div>
 
@@ -113,21 +136,16 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 Flight Booking
-
               </li>
               <li>
                 Hotel Reservations
-
               </li>
               <li>
                 Guided Tours
-
               </li>
               <li>
                 Travel Packages
-
               </li>
-
               <li>
                 Visa Assistance
               </li>
@@ -157,8 +175,6 @@ export default function Footer() {
                 </span>
               </div>
             </div>
-
-         
           </div>
         </div>
 
@@ -182,8 +198,6 @@ export default function Footer() {
               >
                 Terms of Service
               </Link>
-         
-          
             </div>
           </div>
         </div>
