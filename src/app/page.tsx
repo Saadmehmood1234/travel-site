@@ -21,9 +21,9 @@ export default function Home() {
       {/* <BookingWidget /> */}
       {/* <SpecialOffers /> */}
       <FloatWhatsapp/>
-      <Testimonials />
-      <AboutUs />
-      <BlogSection />
+      {/* <Testimonials /> */}
+      {/* <AboutUs />
+      <BlogSection /> */}
       <ContactSection />
       <Footer />
     </div>
