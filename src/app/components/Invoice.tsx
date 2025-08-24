@@ -13,6 +13,7 @@ interface InvoiceProps {
   order: IOrder;
 }
 const Invoice: React.FC<InvoiceProps> = ({ order }) => {
+  console.log(order)
   const invoiceRef = useRef<HTMLDivElement>(null);
 
   const formatDate = (date: Date) => format(new Date(date), "MMMM dd, yyyy");
@@ -20,7 +21,7 @@ const Invoice: React.FC<InvoiceProps> = ({ order }) => {
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
     }).format(amount);
 
   const getPaymentMethodDisplay = (method: string) => {
@@ -240,7 +241,7 @@ const Invoice: React.FC<InvoiceProps> = ({ order }) => {
                       {formatCurrency(trip.price)}
                     </td>
                     <td className="px-3 py-2 md:px-4 md:py-3 text-sm font-semibold text-gray-700">
-                      {formatCurrency(trip.price * trip.quantity)}
+                      {formatCurrency(trip.price )}
                     </td>
                   </tr>
                 ))}
@@ -248,36 +249,6 @@ const Invoice: React.FC<InvoiceProps> = ({ order }) => {
             </table>
           </div>
         </div>
-        <div className="flex justify-end mb-8">
-          <div className="w-full md:w-80">
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Subtotal:</span>
-                <span className="text-gray-700">{formatCurrency(subtotal)}</span>
-              </div>
-              
-              <div className="border-t pt-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold text-gray-800">Total Amount:</span>
-                  <span className="text-xl font-bold text-green-600">
-                    {formatCurrency(order.totalAmount)}
-                  </span>
-                </div>
-              </div>
-              
-              {order.paymentStatus === "paid" && (
-                <div className="flex justify-between items-center pt-2 border-t">
-                  <span className="text-sm text-gray-600">Amount Paid:</span>
-                  <span className="text-sm font-semibold text-green-600">
-                    {formatCurrency(order.totalAmount)}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-
         <div className="border-t-2 border-gray-200 pt-6">
           <div className="mb-4">
             <h4 className="font-semibold text-gray-800 mb-2">Terms & Conditions</h4>

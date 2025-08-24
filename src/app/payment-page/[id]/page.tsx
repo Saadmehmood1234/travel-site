@@ -149,9 +149,6 @@ export default function BookingWidget() {
 
         if (result.success && result.data) {
           const product = result.data;
-
-          // Transform available dates if they exist
-          // Transform available dates if they exist
           const availableDates =
             product.availableDates && Array.isArray(product.availableDates)
               ? product.availableDates.map(
@@ -175,7 +172,7 @@ export default function BookingWidget() {
             discountPrice: product.originalPrice
               ? `₹${product.price.toLocaleString()}`
               : undefined,
-            availableDates: availableDates, // Add available dates
+            availableDates: availableDates,
           };
 
           setTripDetails(transformedData);
@@ -206,7 +203,7 @@ export default function BookingWidget() {
         parseInt(bookingData.adults) + parseInt(bookingData.children);
       const rawPrice = tripDetails?.price || "0";
       const numericPrice = parseCurrencyValue(rawPrice.slice(1));
-      const totalAmount = numericPrice * quantity;
+      const totalAmount = numericPrice;
 
       const updatedBookingData: BookingData = {
         ...bookingData,
@@ -217,7 +214,7 @@ export default function BookingWidget() {
             name: tripDetails?.title,
             location: tripDetails?.subtitle,
             quantity: quantity,
-            price: numericPrice,
+            price: tripDetails?.discountPrice?.slice(1),
             selectedDate: bookingData.checkIn || new Date(),
           },
         ]),
@@ -247,7 +244,7 @@ export default function BookingWidget() {
   };
 
   const totalAmount = calculateTotal();
-
+  console.log("Just for testing",tripDetails);
   if (bookingComplete) {
     return (
       <section id="booking" className="py-20 bg-white">
