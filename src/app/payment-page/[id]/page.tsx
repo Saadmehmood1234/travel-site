@@ -247,7 +247,7 @@ export default function BookingWidget() {
   console.log("Just for testing",tripDetails);
   if (bookingComplete) {
     return (
-      <section id="booking" className="py-20 bg-white">
+      <section id="booking" className="py-20 bg-white mt-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <Badge className="mb-4 bg-green-100 text-green-700">
@@ -714,7 +714,7 @@ export default function BookingWidget() {
                   </p>
                   {tripDetails?.price && (
                     <PaymentButton
-                      amount={tripDetails?.discountPrice}
+                      amount={Number(tripDetails?.discountPrice?.toString().slice(1))}
                       onSuccess={handlePaymentSuccess}
                       bookingData={bookingData}
                     />

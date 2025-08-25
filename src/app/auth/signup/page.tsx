@@ -52,12 +52,12 @@ export default function SignUpPage() {
   };
 
   return (
-    <section className="flex w-full justify-center items-center py-8 pb-24 bg-primary-600 flex-1 h-full relative overflow-hidden pt-[60px]">
-      <div className="flex flex-col items-center gap-4 relative bg-white text-black px-9 py-10 rounded-xl">
-        <h2 className="text-4xl font-bold text-primary-600 drop-shadow-lg">
+    <section className="flex w-full mt-12 max-md:mt-20 justify-center items-center min-h-screen bg-primary-600 px-4 py-8 md:py-16 relative overflow-hidden">
+      <div className="flex flex-col items-center gap-4 relative bg-white text-black px-6 py-8 md:px-9 md:py-10 rounded-xl w-full max-w-md">
+        <h2 className="text-3xl md:text-4xl font-bold text-primary-600 drop-shadow-lg">
           Create Account
         </h2>
-        <p className="text-gray-600 text-center">
+        <p className="text-gray-600 text-center text-sm md:text-base">
           Join us and start your journey!
         </p>
 
@@ -71,7 +71,7 @@ export default function SignUpPage() {
             {...register("name")}
             error={errors.name && { message: errors.name.message }}
             placeholder="John Doe"
-            className="pl-10 w-[400px] h-[40px] rounded border-gray-300 border-2"
+            className="pl-10 w-full h-[40px] rounded border-gray-300 border-2"
           />
 
           <Input
@@ -80,7 +80,7 @@ export default function SignUpPage() {
             {...register("email")}
             error={errors.email && { message: errors.email.message }}
             placeholder="example@gmail.com"
-            className="pl-10 w-[400px] h-[40px] rounded border-gray-300 border-2"
+            className="pl-10 w-full h-[40px] rounded border-gray-300 border-2"
           />
 
           <Input
@@ -89,7 +89,7 @@ export default function SignUpPage() {
             {...register("phone")}
             error={errors.phone && { message: errors.phone.message }}
             placeholder="9876543210"
-            className="pl-10 w-[400px] h-[40px] rounded border-gray-300 border-2"
+            className="pl-10 w-full h-[40px] rounded border-gray-300 border-2"
           />
 
           <Input
@@ -99,13 +99,13 @@ export default function SignUpPage() {
             {...register("password")}
             error={errors.password && { message: errors.password.message }}
             placeholder="••••••••"
-            className="pl-10 w-[400px] h-[40px] rounded border-gray-300 border-2"
+            className="pl-10 w-full h-[40px] rounded border-gray-300 border-2"
           />
 
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               type="submit"
-              className="w-full bg-primary-600 hover:opacity-90 text-white font-semibold py-4 rounded"
+              className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 hover:opacity-90 text-white font-semibold py-3 md:py-4 rounded"
               disabled={loading}
             >
               {loading ? "Signing Up..." : "Sign Up"}
@@ -115,23 +115,23 @@ export default function SignUpPage() {
 
         {/* Divider */}
         <div className="w-full flex items-center space-x-4">
-          <div className="flex-1 h-px bg-white/20" />
+          <div className="flex-1 h-px bg-gray-300" />
           <span className="text-gray-600 text-sm">OR</span>
-          <div className="flex-1 h-px bg-white/20" />
+          <div className="flex-1 h-px bg-gray-300" />
         </div>
 
         {/* Google sign-up */}
         <motion.button
           whileHover={{ scale: 1.05 }}
           onClick={() => signIn("google", { callbackUrl: "/" })}
-          className="w-full flex items-center justify-center space-x-2 bg-black border border-white/20 text-white py-4 rounded"
+          className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600border border-gray-300 text-white py-3 md:py-4 rounded"
         >
           <FaGoogle className="text-xl" />
           <span>Sign up with Google</span>
         </motion.button>
 
         {/* Redirect to Sign In */}
-        <p className="text-gray-500 text-center">
+        <p className="text-gray-500 text-center text-sm md:text-base">
           Already have an account?{" "}
           <button
             onClick={() => router.push("/auth/signin")}

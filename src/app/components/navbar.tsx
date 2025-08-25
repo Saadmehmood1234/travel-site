@@ -39,7 +39,7 @@ export default function Navbar() {
       {/* Top Bar */}
       <div className=" text-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center px-2 space-x-4">
             <div className="flex items-center">
               <Phone className="h-4 w-4 mr-1" />
               <span>+91-9310682414</span>
@@ -84,9 +84,12 @@ export default function Navbar() {
 
               {!session ? (
                 <Link href="/auth/signin">
-                  <Button className="bg-blue-600 text-white w-[130px] shadow-lg">
-                    Sign In
-                  </Button>
+                  <Button className="flex items-center gap-2 px-2 py-2 rounded-sm font-semibold text-white
+                 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 
+                 hover:opacity-90 transition-all
+                 backdrop-blur-md border border-white/20">
+                      Login
+                    </Button>
                 </Link>
               ) : (
                 <Link href="/profile">
@@ -142,7 +145,10 @@ export default function Navbar() {
                 ) : (
                   <Link href="/profile">
                     <div className="flex gap-2 justify-start items-center">
-                      <Button>Profile</Button>
+                      <Button className="flex items-center gap-2 px-2 py-2 rounded-sm font-semibold text-white
+                 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 
+                 hover:opacity-90 transition-all
+                 backdrop-blur-md border border-white/20">Profile</Button>
                       <SignOutButton />
                     </div>
                   </Link>

@@ -431,9 +431,9 @@ export default function TripDetailPage() {
                             {dateItem.seats}
                           </div>
                         </div>
-                        <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                        {/* <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
                           Book Now
-                        </div>
+                        </div> */}
                       </div>
                     ))}
                   </div>
@@ -460,10 +460,10 @@ export default function TripDetailPage() {
                         {tripDetails.groupSize}
                       </span>
                     </div>
-                    <div className="flex justify-between">
+                    {/* <div className="flex justify-between">
                       <span className="text-gray-600">Age Group</span>
                       <span className="font-medium">18-45 years</span>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
@@ -473,9 +473,7 @@ export default function TripDetailPage() {
                       Book Now <FiArrowRight className="ml-2" />
                     </button>
                   </Link>
-                  <button className="w-full border border-blue-600 text-blue-600 py-3 rounded-lg font-medium flex items-center justify-center">
-                    Enquire Now
-                  </button>
+
                   <div className="flex justify-center mt-4">
                     <button
                       onClick={handleShare}
@@ -493,9 +491,11 @@ export default function TripDetailPage() {
                   Our travel experts are available 24/7 to help you with your
                   booking.
                 </p>
+                <Link href="/#contact">
                 <button className="text-blue-600 font-medium">
                   Chat with us
                 </button>
+                </Link>
               </div>
             </div>
           </div>

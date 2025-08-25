@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
+ 
     const order = await razorpay.orders.create({
       amount: amount, // Use the amount from the request
       currency: currency || "INR", // Use currency from request or default to INR
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
       notes: notes || {},
     });
 
-    console.log("Order created:", order.id);
+    console.log("Saad MehmoodOrder created:", order.id);
 
     return NextResponse.json({
       success: true,

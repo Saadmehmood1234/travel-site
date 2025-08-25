@@ -10,7 +10,7 @@ declare global {
 }
 
 interface PaymentButtonProps {
-  amount: string | undefined;
+  amount:   number;
   onSuccess: () => void;
   bookingData: any;
 }
@@ -24,15 +24,16 @@ const PaymentButton = ({
 
   const initiatePayment = async () => {
     setLoading(true);
-    console.log("Ammount", amount);
+    console.log("Ammount", Math.round(amount * 100) );
     try {
+      const amountInPaise = Math.round(amount * 100);
       const response = await fetch("/api/create-order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: amount && parseInt(amount.slice(1)) * 100,
+          amount: amountInPaise,
           currency: "INR",
           receipt: `booking_${Date.now()}`,
           notes: {
@@ -51,6 +52,7 @@ const PaymentButton = ({
         description: "Trip Booking Payment",
         order_id: data.orderid,
         handler: async function (response: any) {
+          console.log(response)
           const verificationResponse = await fetch("/api/verify-payment", {
             method: "POST",
             headers: {
@@ -96,7 +98,7 @@ const PaymentButton = ({
       <button
         onClick={initiatePayment}
         disabled={loading}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold mb-3 flex items-center justify-center disabled:opacity-50"
+        className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white py-3 rounded-lg font-semibold mb-3 flex items-center justify-center disabled:opacity-50"
       >
         {loading ? "Processing..." : `Pay ₹${amount?.toLocaleString()}`}{" "}
         <FiArrowRight className="ml-2" />
