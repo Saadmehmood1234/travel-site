@@ -20,7 +20,7 @@ export default function Home() {
             <BookingWidget />
       <DestinationShowcase />
 
-      {/* <SpecialOffers /> */}
+      <SpecialOffers />
       <FloatWhatsapp/>
       {/* <Testimonials /> */}
       {/* <AboutUs />

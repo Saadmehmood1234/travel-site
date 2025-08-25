@@ -1,27 +1,38 @@
-"use server"
+"use server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import TravelContactForm from "@/model/Contact";
-import { ContactFormType } from "@/lib/types";
+import { ContactFormType } from "@/types/contact";
 import dbConnect from "@/lib/dbConnect";
 import { z } from "zod";
 
-// Add Zod schema
+// Updated Zod schema
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
   phone: z.string().optional().or(z.literal("")),
-  subject: z.string().min(5, "Subject must be at least 5 characters"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-  travelType: z.string().min(1, "Please select a travel type") // Simplified enum validation
+  destination: z.string().optional(),
+  travelDate: z.string().optional(),
+  flightRequired: z.enum(["Yes", "No"]).optional(),
+  adults: z.number().min(1).max(20).optional(),
+  children: z.number().min(0).max(20).optional(),
+  tripPlanningStatus: z.string().optional(),
+  timeToBook: z.string().optional(),
+  additionalDetails: z.string().optional(),
 });
 
 export const contactUs = async (data: ContactFormType) => {
   try {
-    contactFormSchema.parse(data);
+    // Convert string numbers to actual numbers
+    const processedData = {
+      ...data,
+      adults: data.adults ? Number(data.adults) : 1,
+      children: data.children ? Number(data.children) : 0,
+    };
+    
+    contactFormSchema.parse(processedData);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      // Use issues instead of errors
       return {
         success: false,
         message: error.issues[0].message,
@@ -45,9 +56,14 @@ export const contactUs = async (data: ContactFormType) => {
       name: data.name,
       email: data.email,
       phone: data.phone,
-      subject: data.subject,
-      message: data.message,
-      travelType: data.travelType,
+      destination: data.destination,
+      travelDate: data.travelDate ? new Date(data.travelDate) : undefined,
+      flightRequired: data.flightRequired,
+      adults: data.adults || 1,
+      children: data.children || 0,
+      tripPlanningStatus: data.tripPlanningStatus,
+      timeToBook: data.timeToBook,
+      additionalDetails: data.additionalDetails,
     });
 
     await contactForm.save();
@@ -60,5 +76,5 @@ export const contactUs = async (data: ContactFormType) => {
       message: "Failed to send message",
       error: error instanceof Error ? error.message : "Unknown error",
     };
-  }
+  };
 };
