@@ -5,6 +5,25 @@ import { useState } from "react";
 import { getAirlineName } from "@/lib/Destinations";
 import FlightDetailModal from "./FlightDetailModal";
 
+// Update the Flight interface to match what FlightDetailModal expects
+interface FlightSegment {
+  airline: string;
+  flightNumber: string;
+  departure: {
+    airport: string;
+    time: string;
+    terminal?: string;
+    datetime: string;
+  };
+  arrival: {
+    airport: string;
+    time: string;
+    terminal?: string;
+    datetime: string;
+  };
+  duration: string;
+}
+
 interface Flight {
   id: string;
   airline: string;
@@ -14,18 +33,22 @@ interface Flight {
     time: string;
     city: string;
     date: string;
+    datetime: string;
   };
   arrival: {
     airport: string;
     time: string;
     city: string;
     date: string;
+    datetime: string;
   };
   duration: string;
+  durationMinutes: number;
   price: number;
   currency: string;
   seatsAvailable: number;
   stops: number;
+  segments: FlightSegment[];
 }
 
 interface FlightCardProps {
@@ -169,12 +192,6 @@ export default function FlightCard({
             {flight.seatsAvailable}{" "}
             {flight.seatsAvailable === 1 ? "seat" : "seats"} left
           </p>
-          {/* <Button
-            onClick={() => onBook(flight)}
-            className="w-full sm:w-auto bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white rounded-lg text-sm py-2"
-          >
-            Book Now
-          </Button> */}
           <Button
             onClick={() => setShowDetail(true)}
             className="w-full sm:w-auto bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white rounded-lg text-sm py-2"
