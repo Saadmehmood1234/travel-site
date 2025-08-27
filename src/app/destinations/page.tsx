@@ -31,8 +31,6 @@ export default function DestinationShowcase() {
   const [upcomingTrips, setUpcomingTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Function to format dates for display
   const formatDateForDisplay = (dateString: string): string => {
     try {
       const date = new Date(dateString);
@@ -42,7 +40,7 @@ export default function DestinationShowcase() {
         year: "numeric",
       });
     } catch (error) {
-      console.error("Error formatting date:", error);
+
       return dateString;  
     }
   };
@@ -87,7 +85,7 @@ export default function DestinationShowcase() {
           setError("Failed to load products");
         }
       } catch (err) {
-        console.error("Error fetching trips:", err);
+
         setError("An error occurred while fetching data");
       } finally {
         setLoading(false);
@@ -96,7 +94,6 @@ export default function DestinationShowcase() {
 
     fetchTrips();
   }, []);
-  console.log(upcomingTrips);
   if (error) {
     return (
       <section className="py-20 bg-gradient-to-b from-gray-50 to-white">

@@ -143,7 +143,7 @@ export default function TripDetailPage() {
           setError(result.error || "Product not found");
         }
       } catch (err) {
-        console.error("Error fetching trip details:", err);
+
         setError("Failed to load trip details");
       } finally {
         setLoading(false);
@@ -198,7 +198,7 @@ export default function TripDetailPage() {
           url: window.location.href,
         });
       } catch (err) {
-        console.error("Error sharing:", err);
+
       }
     } else {
       alert("Sharing not supported in this browser.");

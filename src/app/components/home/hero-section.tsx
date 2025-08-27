@@ -1,4 +1,4 @@
-// components/HeroSection.tsx
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -82,7 +82,6 @@ export default function HeroSection() {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      {/* Background Slideshow */}
       <div className="absolute inset-0">
         <AnimatePresence initial={false} custom={direction}>
           <motion.div
@@ -96,13 +95,9 @@ export default function HeroSection() {
             style={{ backgroundImage: `url(${currentDestination.image})` }}
           />
         </AnimatePresence>
-
-        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
       </div>
-
-      {/* Content */}
       <div className="relative z-10 flex h-full items-center">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl lg:max-w-3xl xl:max-w-4xl">

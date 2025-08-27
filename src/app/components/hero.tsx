@@ -6,7 +6,6 @@ import Link from "next/link"
 export default function Hero() {
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden ">
-      {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
           src="/placeholder.svg?height=1080&width=1920"
@@ -18,7 +17,6 @@ export default function Hero() {
         <div className="absolute inset-0 bg-black bg-opacity-40" />
       </div>
 
-      {/* Content */}
       <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
           Discover Your Next
@@ -45,7 +43,6 @@ export default function Hero() {
           </Button>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-16">
           <div className="flex flex-col items-center">
             <MapPin className="h-8 w-8 text-blue-400 mb-2" />

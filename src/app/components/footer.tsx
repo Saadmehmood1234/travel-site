@@ -28,14 +28,12 @@ export default function Footer() {
   const handlePaymentSuccess = () => {
     setPaymentSuccess(true);
     toast.success("Payment completed successfully!");
-    // You can add additional logic here after successful payment
   };
 
   return (
     <footer className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-3 mb-6">
               <div className="w-52">
@@ -74,8 +72,6 @@ export default function Footer() {
               </a>
             </div>
           </div>
-
-          {/* Quick Links */}
           <div>
             <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
             <ul className="space-y-3">
@@ -129,8 +125,6 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-
-          {/* Travel Services */}
           <div>
             <h3 className="text-lg font-semibold mb-6">Travel Services</h3>
             <ul className="space-y-3">
@@ -151,8 +145,6 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-
-          {/* Contact & Newsletter */}
           <div>
             <h3 className="text-lg font-semibold mb-6">Stay Connected</h3>
             <div className="space-y-4 mb-6">
@@ -178,7 +170,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Footer */}
         <div className="border-t border-gray-800 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-gray-100 text-sm">

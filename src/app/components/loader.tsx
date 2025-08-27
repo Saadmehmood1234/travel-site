@@ -124,9 +124,3 @@ export function ButtonLoader() {
     </div>
   );
 }
-
-// Usage examples:
-// 1. For full page loading: <GlobalLoader />
-// 2. For content sections: <ContentLoader />
-// 3. For cards: <CardLoader />
-// 4. For buttons: <ButtonLoader />

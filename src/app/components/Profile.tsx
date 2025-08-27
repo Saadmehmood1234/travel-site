@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, startTransition } from "react";
 import Image from "next/image";
 import {
   LogOut,
@@ -27,10 +27,13 @@ import { useRouter } from "next/navigation";
 import {
   getWishlistCount,
   getWishlistWithProducts,
+  toggleWishlist,
 } from "../actions/wishlist.actions.ts";
 import { getOrdersByUser } from "../actions/order.actions";
 import Invoice from "./Invoice";
 import { IOrder, OrdersResponse } from "@/types/order";
+import Link from "next/link";
+import toast from "react-hot-toast";
 
 interface WishlistItem {
   productId: {
@@ -59,6 +62,7 @@ export function Profile() {
   const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null);
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const { data: session } = useSession();
+  const [favorites, setFavorites] = useState<string[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -80,7 +84,7 @@ export function Profile() {
         setWishlistCount(result.count || 0);
       }
     } catch (error) {
-      console.error("Error fetching wishlist count:", error);
+
     }
   };
 
@@ -92,7 +96,6 @@ export function Profile() {
         setWishlistData(result.data);
       }
     } catch (error) {
-      console.error("Error fetching wishlist data:", error);
     } finally {
       setLoading(false);
     }
@@ -105,10 +108,8 @@ export function Profile() {
       setOrdersLoading(true);
       try {
         const result = await getOrdersByUser(session.user.email);
-        console.log("Myorder result:", result);
 
         if (result.error) {
-          console.error("Error fetching orders:", result.error);
           return;
         }
 
@@ -131,7 +132,6 @@ export function Profile() {
           setOrdersTotalPages(result.totalPages || 1);
         }
       } catch (error) {
-        console.error("Error fetching orders:", error);
       } finally {
         setOrdersLoading(false);
       }
@@ -156,6 +156,40 @@ export function Profile() {
     router.push("/auth/signin");
     return null;
   }
+
+  const handleToggleFavorite = (productId: string) => {
+    const isCurrentlyFavorite = favorites.includes(productId);
+
+    setFavorites((prev) =>
+      isCurrentlyFavorite
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId]
+    );
+
+    startTransition(async () => {
+      try {
+        const result = await toggleWishlist(productId);
+
+        if (result.status === "error") {
+          setFavorites((prev) =>
+            isCurrentlyFavorite
+              ? [...prev, productId]
+              : prev.filter((id) => id !== productId)
+          );
+          toast.error(result.message);
+        } else {
+          toast.success("Removed from wishlist");
+        }
+      } catch (error) {
+        setFavorites((prev) =>
+          isCurrentlyFavorite
+            ? [...prev, productId]
+            : prev.filter((id) => id !== productId)
+        );
+        toast.error("Failed to update wishlist");
+      }
+    });
+  };
 
   return (
     <div className="flex justify-center p-4 md:p-8 mt-24">
@@ -219,7 +253,6 @@ export function Profile() {
                     </Badge>
                   )}
                 </Button>
-
               </nav>
 
               <Separator />
@@ -405,8 +438,8 @@ export function Profile() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {wishlistData.items.map((item) => (
                         <Card
-                          key={item.productId._id}
                           className="group overflow-hidden"
+                          key={item.productId._id}
                         >
                           <div className="relative h-40">
                             <Image
@@ -419,7 +452,14 @@ export function Profile() {
                               className="object-cover group-hover:scale-105 transition-transform"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                            <Heart className="absolute top-3 right-3 h-6 w-6 text-red-500 fill-red-500" />
+                            <Heart
+                              onClick={() =>
+                                handleToggleFavorite(
+                                  item?.productId?._id.toString()
+                                )
+                              }
+                              className="absolute top-3 right-3 h-6 w-6 text-red-500 fill-red-500 cursor-pointer"
+                            />
                           </div>
                           <CardContent className="p-4">
                             <h4 className="font-medium">
@@ -432,6 +472,11 @@ export function Profile() {
                               Saved on{" "}
                               {new Date(item.addedAt).toLocaleDateString()}
                             </p>
+                            <Link href={`/destinations/${item.productId._id}`}>
+                              <Button className="mt-2 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 ">
+                                View Detail
+                              </Button>
+                            </Link>
                           </CardContent>
                         </Card>
                       ))}

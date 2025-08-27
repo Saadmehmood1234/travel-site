@@ -1,4 +1,4 @@
-// components/FAQItem.tsx
+
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { useState } from 'react';
 

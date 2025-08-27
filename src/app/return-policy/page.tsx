@@ -5,7 +5,6 @@ import Link from "next/link"
 export default function CancellationPolicy() {
   return (
     <div className="bg-white">
-      {/* Hero Section */}
       <div className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex justify-center mb-4">
@@ -17,8 +16,6 @@ export default function CancellationPolicy() {
           </p>
         </div>
       </div>
-
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="prose prose-lg max-w-4xl mx-auto text-gray-600">
           <p className="lead">
@@ -31,7 +28,6 @@ export default function CancellationPolicy() {
             </h2>
             
             <div className="space-y-6">
-              {/* Policy 1 */}
               <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-lg">
                 <div className="flex items-start">
                   <Ban className="h-6 w-6 flex-shrink-0 text-red-500 mt-1 mr-3" />
@@ -41,8 +37,6 @@ export default function CancellationPolicy() {
                   </div>
                 </div>
               </div>
-              
-              {/* Policy 2 */}
               <div className="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-r-lg">
                 <div className="flex items-start">
                   <CalendarX className="h-6 w-6 flex-shrink-0 text-amber-500 mt-1 mr-3" />
@@ -52,8 +46,6 @@ export default function CancellationPolicy() {
                   </div>
                 </div>
               </div>
-              
-              {/* Policy 3 */}
               <div className="bg-orange-50 border-l-4 border-orange-500 p-6 rounded-r-lg">
                 <div className="flex items-start">
                   <Clock className="h-6 w-6 flex-shrink-0 text-orange-500 mt-1 mr-3" />
@@ -64,7 +56,6 @@ export default function CancellationPolicy() {
                 </div>
               </div>
               
-              {/* Policy 4 */}
               <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-lg">
                 <div className="flex items-start">
                   <AlertTriangle className="h-6 w-6 flex-shrink-0 text-red-500 mt-1 mr-3" />
@@ -74,8 +65,6 @@ export default function CancellationPolicy() {
                   </div>
                 </div>
               </div>
-              
-              {/* Policy 5 */}
               <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
                 <div className="flex items-start">
                   <CloudRain className="h-6 w-6 flex-shrink-0 text-blue-500 mt-1 mr-3" />
@@ -85,8 +74,6 @@ export default function CancellationPolicy() {
                   </div>
                 </div>
               </div>
-              
-              {/* Policy 6 */}
               <div className="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-r-lg">
                 <div className="flex items-start">
                   <CalendarX className="h-6 w-6 flex-shrink-0 text-amber-500 mt-1 mr-3" />

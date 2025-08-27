@@ -41,7 +41,6 @@ function VerifyEmailContent() {
 
   return (
     <section className="flex justify-center items-center min-h-screen bg-gradient-to-br from-primary-500 via-primary-400 to-secondary-500 relative overflow-hidden">
-      {/* Floating plane icon */}
       <motion.div
         animate={{ y: [0, -10, 0] }}
         transition={{ repeat: Infinity, duration: 3 }}
@@ -49,8 +48,6 @@ function VerifyEmailContent() {
       >
         <Plane size={48} className="text-white" />
       </motion.div>
-
-      {/* Glassmorphism card */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}

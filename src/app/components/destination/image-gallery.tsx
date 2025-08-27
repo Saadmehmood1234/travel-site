@@ -1,4 +1,4 @@
-// components/ImageGallery.tsx
+
 import { useState } from 'react';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
@@ -25,7 +25,6 @@ export default function ImageGallery({ images }: { images: string[] }) {
         className="w-full h-full object-cover"
       />
       
-      {/* Navigation Arrows */}
       <button 
         onClick={goToPrev}
         className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 text-white p-2 rounded-full hover:bg-black/60 transition-all"
@@ -39,7 +38,6 @@ export default function ImageGallery({ images }: { images: string[] }) {
         <FiChevronRight className="text-xl" />
       </button>
       
-      {/* Thumbnails */}
       <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
         {images.map((_, index) => (
           <button

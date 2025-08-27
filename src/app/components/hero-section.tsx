@@ -28,6 +28,7 @@ import {
 import { format } from "date-fns";
 import Image from "next/image";
 import useSWR from "swr";
+import toast from "react-hot-toast";
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 export default function HeroSection() {
   const [searchData, setSearchData] = useState({
@@ -38,7 +39,6 @@ export default function HeroSection() {
     type: "flights",
     isLoading: false,
   });
-  console.log(searchData);
   const [query, setQuery] = useState("");
   const { data: locations } = useSWR(
     query.length > 2
@@ -97,11 +97,9 @@ export default function HeroSection() {
       }
 
       const data = await res.json();
-      console.log("Search results:", data);
       return data;
     } catch (error) {
-      console.error(error);
-      alert(
+      toast.error(
         `Search failed: ${
           error instanceof Error ? error.message : "Unknown error"
         }`

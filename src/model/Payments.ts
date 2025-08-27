@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface IPayment extends Document {
-  // Razorpay Information
   razorpayOrderId: string;
   razorpayPaymentId: string;
   razorpaySignature: string;
@@ -11,15 +10,12 @@ export interface IPayment extends Document {
   userName: string;
   userEmail: string;
   userPhone: string;
-
-  // Timestamps
   createdAt: Date;
   updatedAt: Date;
 }
 
 const PaymentSchema: Schema = new Schema(
   {
-    // Razorpay Information
     razorpayOrderId: {
       type: String,
       required: true,

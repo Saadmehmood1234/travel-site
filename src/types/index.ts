@@ -36,9 +36,8 @@ export interface BookingData {
   cvv: string;
   cardName: string;
   specialRequests: string;
-  // Add these fields
   userId: string;
-  trips: string; // This will be stringified JSON
+  trips: string; 
   totalAmount: string;
   paymentMethod: "credit-card" | "upi" | "paypal" | "cash";
 }

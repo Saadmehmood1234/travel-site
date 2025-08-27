@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Script from "next/script";
 import { FiArrowRight } from "react-icons/fi";
+import toast from "react-hot-toast";
 
 declare global {
   interface Window {
@@ -24,7 +25,6 @@ const PaymentButton = ({
 
   const initiatePayment = async () => {
     setLoading(true);
-    console.log("Ammount", Math.round(amount * 100) );
     try {
       const amountInPaise = Math.round(amount * 100);
       const response = await fetch("/api/create-order", {
@@ -52,7 +52,6 @@ const PaymentButton = ({
         description: "Trip Booking Payment",
         order_id: data.orderid,
         handler: async function (response: any) {
-          console.log(response)
           const verificationResponse = await fetch("/api/verify-payment", {
             method: "POST",
             headers: {
@@ -66,7 +65,7 @@ const PaymentButton = ({
           if (result.success) {
             onSuccess();
           } else {
-            alert("Payment verification failed");
+            toast.error("Payment verification failed");
           }
         },
         prefill: {
@@ -82,8 +81,7 @@ const PaymentButton = ({
       const rzp1 = new window.Razorpay(options);
       rzp1.open();
     } catch (error) {
-      console.error("Payment error:", error);
-      alert("Payment failed. Please try again.");
+      toast.error("Payment failed. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -232,8 +232,6 @@ export default function BookingWidget() {
       }
 
       setBookingComplete(true);
-      console.log("Booking completed:", updatedBookingData);
-      console.log("Order created with ID:", result.orderId);
     } catch (error) {
       console.error("Error in payment success handler:", error);
     }
@@ -244,7 +242,6 @@ export default function BookingWidget() {
   };
 
   const totalAmount = calculateTotal();
-  console.log("Just for testing",tripDetails);
   if (bookingComplete) {
     return (
       <section id="booking" className="py-20 bg-white mt-12">
@@ -372,8 +369,6 @@ export default function BookingWidget() {
                 )}
               </div>
             )}
-
-            {/* Step 2: Dates */}
             {currentStep === 2 && (
               <div className="space-y-6">
                 <h3 className="text-2xl font-semibold text-gray-900 mb-6">
@@ -381,11 +376,8 @@ export default function BookingWidget() {
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Check-in Date */}
                   <div>
                     <Label>Check-in Date</Label>
-
-                    {/* If product has available dates, show a dropdown */}
                     {tripDetails?.availableDates &&
                     tripDetails.availableDates.length > 0 ? (
                       <Select
@@ -394,7 +386,6 @@ export default function BookingWidget() {
                             ? bookingData.checkIn.toISOString()
                             : undefined
                         }
-                        // Replace the onValueChange handler in the check-in date Select component
                         onValueChange={(value) => {
                           const selectedDate = new Date(value);
                           const durationDays = tripDetails?.duration
@@ -424,7 +415,6 @@ export default function BookingWidget() {
                         </SelectContent>
                       </Select>
                     ) : (
-                      // If no available dates, show calendar as before
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
@@ -466,8 +456,6 @@ export default function BookingWidget() {
                       </Popover>
                     )}
                   </div>
-
-                  {/* Check-out Date */}
                   <div>
                     <Label>Check-out Date</Label>
                     <Popover>
@@ -502,8 +490,6 @@ export default function BookingWidget() {
                     </Popover>
                   </div>
                 </div>
-
-                {/* Duration Info */}
                 {bookingData.checkIn && bookingData.checkOut && (
                   <div className="bg-blue-50 p-4 rounded-lg">
                     <p className="text-sm text-blue-800">
@@ -520,7 +506,6 @@ export default function BookingWidget() {
               </div>
             )}
 
-            {/* Step 3: Travelers */}
             {currentStep === 3 && (
               <div className="space-y-6">
                 <h3 className="text-2xl font-semibold text-gray-900 mb-6">
@@ -655,15 +640,11 @@ export default function BookingWidget() {
                 </div>
               </div>
             )}
-
-            {/* Step 4: Payment */}
             {currentStep === 4 && (
               <div className="space-y-6">
                 <h3 className="text-2xl font-semibold text-gray-900 mb-6">
                   Complete Your Payment
                 </h3>
-
-                {/* Booking Summary */}
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <h4 className="text-lg font-semibold mb-4">
                     Booking Summary
@@ -750,7 +731,6 @@ export default function BookingWidget() {
                 </Button>
               ) : (
                 <div className="w-40">
-                  {/* Payment button is already displayed in step 4 content */}
                 </div>
               )}
             </div>

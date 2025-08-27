@@ -96,7 +96,6 @@ export default function Testimonials() {
   return (
     <section className="py-20 bg-gradient-to-br from-primary-50 via-white to-secondary-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-primary-100 text-primary-700 hover:bg-primary-200">⭐ Customer Reviews</Badge>
           <h2 className="text-4xl  md:text-5xl font-heading font-bold text-gray-900 mb-6">
@@ -110,13 +109,10 @@ export default function Testimonials() {
             journeys with us.
           </p>
         </div>
-
-        {/* Main Testimonial */}
         <div className="relative max-w-4xl mx-auto mb-12">
           <Card className="border-0 shadow-2xl overflow-hidden">
             <CardContent className="p-0">
               <div className="grid grid-cols-1 lg:grid-cols-2">
-                {/* Image/Video Section */}
                 <div className="relative h-64 lg:h-auto">
                   <Image
                     src={currentTestimonial.image || "/placeholder.svg"}
@@ -125,42 +121,25 @@ export default function Testimonials() {
                     className="object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-
-
-
-                  {/* Destination Badge */}
                   <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
                     <span className="text-sm font-medium text-gray-900">{currentTestimonial.destination}</span>
                   </div>
-
-                  {/* Verified Badge */}
                   {currentTestimonial.verified && (
                     <div className="absolute top-4 right-4 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center">
                       ✓ Verified
                     </div>
                   )}
                 </div>
-
-                {/* Content Section */}
                 <div className="p-8 lg:p-12 flex flex-col justify-center">
-                  {/* Quote Icon */}
                   <Quote className="h-12 w-12 text-primary-200 mb-6" />
-
-                  {/* Rating */}
                   <div className="flex items-center mb-4">
                     {[...Array(currentTestimonial.rating)].map((_, i) => (
                       <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                     ))}
                     <span className="ml-2 text-sm text-gray-600">({currentTestimonial.rating}.0)</span>
                   </div>
-
-                  {/* Title */}
                   <h3 className="text-2xl font-bold text-gray-900 mb-4">{currentTestimonial.title}</h3>
-
-                  {/* Comment */}
                   <p className="text-gray-600 mb-6 leading-relaxed text-lg">"{currentTestimonial.comment}"</p>
-
-                  {/* Author Info */}
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-semibold text-gray-900 text-lg">{currentTestimonial.name}</h4>
@@ -172,8 +151,6 @@ export default function Testimonials() {
               </div>
             </CardContent>
           </Card>
-
-          {/* Navigation Arrows */}
           <button
             onClick={prevTestimonial}
             className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-10"

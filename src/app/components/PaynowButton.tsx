@@ -40,7 +40,6 @@ const PaynowButton = ({ onSuccess }: PaymentButtonProps) => {
     setLoading(true);
     
     try {
-      // Convert amount to paise (Razorpay expects amount in smallest currency unit)
       const amountInPaise = Math.round(parseFloat(data.amount) * 100);
       
       const response = await fetch("/api/create-order", {
@@ -115,7 +114,6 @@ const PaynowButton = ({ onSuccess }: PaymentButtonProps) => {
       const rzp1 = new window.Razorpay(options);
       rzp1.open();
     } catch (error) {
-      console.error("Payment error:", error);
       alert("Payment failed. Please try again.");
     } finally {
       setLoading(false);

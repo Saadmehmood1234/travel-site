@@ -104,15 +104,11 @@ export default function SignInPage() {
             </Button>
           </motion.div>
         </form>
-
-        {/* Divider */}
         <div className="w-full flex items-center space-x-4">
           <div className="flex-1 h-px bg-gray-300" />
           <span className="text-gray-600 text-sm">OR</span>
           <div className="flex-1 h-px bg-gray-300" />
         </div>
-
-        {/* Google sign-in */}
         <motion.button
           whileHover={{ scale: 1.05 }}
           onClick={() => signIn("google", { callbackUrl: "/" })}
@@ -122,7 +118,6 @@ export default function SignInPage() {
           <span>Sign in with Google</span>
         </motion.button>
 
-        {/* Redirect to Sign Up */}
         <p className="text-gray-500 text-center text-sm md:text-base">
           Don&apos;t have an account?{" "}
           <button

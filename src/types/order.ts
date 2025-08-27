@@ -1,4 +1,3 @@
-// types/order.ts
 import { Types } from "mongoose";
 
 export interface OrderTrip {

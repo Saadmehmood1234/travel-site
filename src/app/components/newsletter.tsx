@@ -13,7 +13,6 @@ export default function Newsletter() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the email to your backend
     setIsSubscribed(true)
     setEmail("")
   }

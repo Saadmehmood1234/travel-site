@@ -5,7 +5,6 @@ import Link from "next/link"
 export default function TermsConditions() {
   return (
     <div className="bg-white mt-12">
-      {/* Hero Section */}
       <div className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex justify-center mb-4">
@@ -17,8 +16,6 @@ export default function TermsConditions() {
           </p>
         </div>
       </div>
-
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="prose prose-lg max-w-4xl mx-auto text-gray-600">
           <p className="lead font-medium">

@@ -13,7 +13,6 @@ interface InvoiceProps {
   order: IOrder;
 }
 const Invoice: React.FC<InvoiceProps> = ({ order }) => {
-  console.log(order)
   const invoiceRef = useRef<HTMLDivElement>(null);
 
   const formatDate = (date: Date) => format(new Date(date), "MMMM dd, yyyy");
@@ -57,7 +56,6 @@ const Invoice: React.FC<InvoiceProps> = ({ order }) => {
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
       pdf.save(`invoice-${order._id.slice(-8).toUpperCase()}.pdf`);
     } catch (error) {
-      console.error('Error generating PDF:', error);
     }
   };
 

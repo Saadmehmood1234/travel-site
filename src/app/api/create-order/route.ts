@@ -9,13 +9,8 @@ const razorpay = new Razorpay({
 
 export async function POST(request: NextRequest) {
   try {
-    // Parse the request body to get the payment details
     const body = await request.json();
     const { amount, currency, receipt, notes } = body;
-
-    console.log("Received payment request:", body);
-
-    // Validate required fields
     if (!amount || !currency) {
       return NextResponse.json(
         { success: false, message: "Amount and currency are required" },
@@ -24,13 +19,11 @@ export async function POST(request: NextRequest) {
     }
  
     const order = await razorpay.orders.create({
-      amount: amount, // Use the amount from the request
-      currency: currency || "INR", // Use currency from request or default to INR
+      amount: amount, 
+      currency: currency || "INR", 
       receipt: receipt || "receipt_" + Math.random().toString(36).substring(7),
       notes: notes || {},
     });
-
-    console.log("Saad MehmoodOrder created:", order.id);
 
     return NextResponse.json({
       success: true,

@@ -1,4 +1,4 @@
-// components/TripCard.tsx
+
 import { FiCalendar, FiMapPin, FiUsers, FiStar } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import Link from 'next/link';

@@ -1,4 +1,3 @@
-// model/Wishlist.ts
 import { Schema, model, models } from "mongoose";
 
 export const wishlistSchema = new Schema(

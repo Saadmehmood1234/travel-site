@@ -40,7 +40,6 @@ export default function ForgotPasswordPage() {
     setError(null);
     try {
       const formData = new FormData();
-      console.log("values", values);
       formData.append("email", values.email);
       const response = await sendPasswordResetEmail(formData);
       if (!response.success) {
@@ -103,7 +102,7 @@ export default function ForgotPasswordPage() {
                 className="w-full flex flex-col gap-4"
               >
                 <Input
-                  label="Email"
+                  label=""
                   icon={<Mail className="h-5 w-5 text-primary-400" />}
                   {...register("email")}
                   error={

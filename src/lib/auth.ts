@@ -1,4 +1,4 @@
-// app/api/auth/[...nextauth]/route.ts
+
 import NextAuth from "next-auth";
 import dbConnect from "./dbConnect";
 import userModel from "@/model/User";

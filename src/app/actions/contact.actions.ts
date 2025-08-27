@@ -6,7 +6,6 @@ import { ContactFormType } from "@/types/contact";
 import dbConnect from "@/lib/dbConnect";
 import { z } from "zod";
 
-// Updated Zod schema
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
@@ -23,7 +22,6 @@ const contactFormSchema = z.object({
 
 export const contactUs = async (data: ContactFormType) => {
   try {
-    // Convert string numbers to actual numbers
     const processedData = {
       ...data,
       adults: data.adults ? Number(data.adults) : 1,

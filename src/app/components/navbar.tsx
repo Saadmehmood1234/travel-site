@@ -14,29 +14,26 @@ export default function Navbar() {
     {
       href: "/",
       label: "Home",
-
     },
     {
       href: "destinations",
       label: "Destinations",
-
     },
     {
-      href: "destinations",
-      label: "Book Now",
+      href: "flights",
+      label: "Flight",
     },
-    // {
-    //   href: "#about",
-    //   label: "About",
-    // },
+    {
+      href: "#about",
+      label: "About",
+    },
     {
       href: "#contact",
       label: "Contact",
-    }
+    },
   ];
   return (
     <div className="fixed  w-full z-50 flex flex-col gap-3 bg-white pt-5 top-0">
-      {/* Top Bar */}
       <div className=" text-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center px-2 space-x-4">
@@ -54,11 +51,7 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-
-      {/* Main Navbar */}
-      <nav
-        className='bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-2 px-4 text-sm'
-      >
+      <nav className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-2 px-4 text-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center space-x-3">
@@ -66,30 +59,28 @@ export default function Navbar() {
                 <img src="/logo.png" />
               </div>
             </Link>
-
-            {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-8 gap-2">
-              {
-                navLinks && navLinks?.map((n,i) => (
+              {navLinks &&
+                navLinks?.map((n, i) => (
                   <Link
-                  key={i}
+                    key={i}
                     href={`/${n?.href}`}
                     className="text-white hover:text-gray-200 border-b-2 border-transparent hover:border-white transition-colors font-medium px-3 py-2"
                   >
                     {n?.label}
                   </Link>
-                ))
-              }
-
+                ))}
 
               {!session ? (
                 <Link href="/auth/signin">
-                  <Button className="flex items-center gap-2 px-2 py-2 rounded-sm font-semibold text-white
+                  <Button
+                    className="flex items-center gap-2 px-2 py-2 rounded-sm font-semibold text-white
                  bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 
                  hover:opacity-90 transition-all
-                 backdrop-blur-md border border-white/20">
-                      Login
-                    </Button>
+                 backdrop-blur-md border border-white/20"
+                  >
+                    Login
+                  </Button>
                 </Link>
               ) : (
                 <Link href="/profile">
@@ -103,8 +94,6 @@ export default function Navbar() {
                 </Link>
               )}
             </div>
-
-            {/* Mobile menu button */}
             <div className="md:hidden">
               <button
                 onClick={() => setIsOpen(!isOpen)}
@@ -119,22 +108,19 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Mobile Menu */}
           {isOpen && (
             <div className="md:hidden mt-4 pb-4 border-t">
               <div className="flex flex-col space-y-4 pt-4">
-                {
-                  navLinks && navLinks?.map((n,i) => (
+                {navLinks &&
+                  navLinks?.map((n, i) => (
                     <Link
-                    key={i}
+                      key={i}
                       href={`/${n?.href}`}
                       className="text-white hover:font-bold hover:text-gray-50 font-medium"
-
                     >
                       {n?.label}
                     </Link>
-                  ))
-                }
+                  ))}
 
                 {!session ? (
                   <Link href="/auth/signin">
@@ -145,10 +131,14 @@ export default function Navbar() {
                 ) : (
                   <Link href="/profile">
                     <div className="flex gap-2 justify-start items-center">
-                      <Button className="flex items-center gap-2 px-2 py-2 rounded-sm font-semibold text-white
+                      <Button
+                        className="flex items-center gap-2 px-2 py-2 rounded-sm font-semibold text-white
                  bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 
                  hover:opacity-90 transition-all
-                 backdrop-blur-md border border-white/20">Profile</Button>
+                 backdrop-blur-md border border-white/20"
+                      >
+                        Profile
+                      </Button>
                       <SignOutButton />
                     </div>
                   </Link>

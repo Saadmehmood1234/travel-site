@@ -11,14 +11,13 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
-console.log("Before",razorpay_order_id, razorpay_payment_id, razorpay_signature)
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return NextResponse.json(
         { success: false, message: "Missing payment details" },
         { status: 400 }
       );
     }
-console.log("After",razorpay_order_id, razorpay_payment_id, razorpay_signature)
+
 
     const generated_signature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)

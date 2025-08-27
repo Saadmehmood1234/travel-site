@@ -5,11 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, User, ArrowRight, Clock, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState} from "react";
 import {
-  addSubscriber,
-  deleteSubscriber,
-  getSubscribers,
+  addSubscriber
 } from "../actions/subscribe.actions";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
@@ -96,20 +94,6 @@ const blogPosts = [
   },
 ];
 
-const categories = [
-  "All",
-  "Beach Destinations",
-  "Adventure Travel",
-  "Food & Culture",
-  "Photography",
-  "Luxury Travel",
-  "Budget Travel",
-];
-interface Subscriber {
-  _id: string;
-  email: string;
-  createdAt: string;
-}
 export default function BlogSection() {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -125,7 +109,6 @@ export default function BlogSection() {
   return (
     <section id="blog" className="py-20 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-primary-100 text-primary-700 hover:bg-primary-200">
             📖 Travel Blog
@@ -142,8 +125,6 @@ export default function BlogSection() {
             adventurers.
           </p>
         </div>
-
-        {/* Featured Post */}
         <div className="mb-16">
           <Card className="overflow-hidden border-0 shadow-2xl">
             <div className="grid grid-cols-1 lg:grid-cols-2">
@@ -197,8 +178,6 @@ export default function BlogSection() {
             </div>
           </Card>
         </div>
-
-        {/* Blog Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {blogPosts.slice(1).map((post) => (
             <Card
@@ -252,8 +231,6 @@ export default function BlogSection() {
             </Card>
           ))}
         </div>
-
-        {/* Newsletter Signup */}
         <div className="bg-gradient-to-r from-primary-500 to-secondary-500 rounded-2xl p-8 text-center text-white">
           <h3 className="text-2xl font-heading font-bold mb-4">
             Stay Updated with Travel Tips

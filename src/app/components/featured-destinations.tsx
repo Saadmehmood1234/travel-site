@@ -13,7 +13,6 @@ async function getFeaturedDestinations() {
     const destinations = await res.json()
     return destinations.filter((dest: any) => dest.featured).slice(0, 6)
   } catch (error) {
-    console.error("Error fetching destinations:", error)
     return []
   }
 }

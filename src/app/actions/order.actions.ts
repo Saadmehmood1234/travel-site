@@ -58,7 +58,6 @@ export async function createOrder(formData: BookingData) {
   }
 
   try {
-    console.log(formData);
     if (
       !formData.userId ||
       !formData.trips ||
@@ -79,7 +78,6 @@ export async function createOrder(formData: BookingData) {
 
     const calculatedTotalAmount = parseInt(formData.totalAmount);
     const users = await User.find({ email: session?.user?.email });
-    console.log("Found users:", users);
 
     if (!users || users.length === 0) {
       return {
@@ -90,7 +88,6 @@ export async function createOrder(formData: BookingData) {
 
     const user = users[0];
     const userId = user._id;
-    console.log("UserId", userId);
     const orderData: OrderCreateInput = {
       userId: userId,
       trips: processedTrips,
@@ -103,7 +100,6 @@ export async function createOrder(formData: BookingData) {
       },
       specialRequests: formData.specialRequests || undefined,
     };
-    console.log("Order", orderData, tripsData.totalAmount, "Saad", tripsData);
     const order = new Order(orderData);
     await order.save();
     await sendBookingConfirmation(
@@ -140,7 +136,6 @@ export async function getOrder(orderId: string) {
 
     return { order: JSON.parse(JSON.stringify(order)) };
   } catch (error) {
-    console.error("Get order error:", error);
     return { error: "Failed to fetch order" };
   }
 }
@@ -154,10 +149,8 @@ export async function getOrdersByUser(email: string, page = 1, limit = 10) {
   }
   try {
     const skip = (page - 1) * limit;
-    console.log("Searching for user with email:", email);
 
     const users = await User.find({ email });
-    console.log("Found users:", users);
 
     if (!users || users.length === 0) {
       return {
@@ -168,8 +161,6 @@ export async function getOrdersByUser(email: string, page = 1, limit = 10) {
 
     const user = users[0];
     const userId = user._id;
-    console.log("UserId", userId);
-    console.log(await Order.find({ userId }));
     const orders = await Order.find({ userId })
       .sort({ bookingDate: -1 })
       .skip(skip)
@@ -216,7 +207,6 @@ export async function getAllOrders(page = 1, limit = 10, status?: string) {
       currentPage: page,
     };
   } catch (error) {
-    console.error("Get all orders error:", error);
     return { error: "Failed to fetch orders" };
   }
 }
@@ -288,61 +278,6 @@ export async function updatePaymentStatus(
   }
 }
 
-export async function deleteOrder(orderId: string) {
-  await dbConnect();
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    return { success: false, error: "Please Login" };
-  }
-  try {
-    const order = await Order.findByIdAndDelete(orderId);
-
-    if (!order) {
-      return { error: "Order not found" };
-    }
-
-    revalidatePath("/orders");
-    return { success: true };
-  } catch (error) {
-    console.error("Delete order error:", error);
-    return { error: "Failed to delete order" };
-  }
-}
-
-export async function sendOrderConfirmation(orderId: string) {
-  await dbConnect();
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    return { success: false, error: "Please Login" };
-  }
-  try {
-    const order = await Order.findById(orderId)
-      .populate("userId", "name email")
-      .populate("trips.product", "name");
-
-    if (!order) {
-      return { error: "Order not found" };
-    }
-
-    console.log("Sending confirmation email for order:", orderId);
-    console.log("To:", order.contactInfo.email);
-    console.log("Order details:", {
-      orderId: order._id,
-      customer: order.contactInfo.name,
-      trips: order.trips,
-      totalAmount: order.totalAmount,
-    });
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    return { success: true, message: "Confirmation email sent successfully" };
-  } catch (error) {
-    console.error("Send confirmation error:", error);
-    return { error: "Failed to send confirmation email" };
-  }
-}
 
 export async function getOrderStats() {
   await dbConnect();
@@ -386,7 +321,7 @@ export async function updateOrderPaymentStatus(
       orderId,
       {
         paymentStatus,
-        ...(paymentId && { paymentId }), // Store payment ID if provided
+        ...(paymentId && { paymentId }), 
       },
       { new: true }
     );

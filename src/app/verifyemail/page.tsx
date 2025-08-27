@@ -39,7 +39,6 @@ export default function VerifyEmail() {
 
   return (
     <section className="flex w-full justify-center items-center py-8 pb-24 bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 min-h-screen relative overflow-hidden">
-      {/* Decorative gradient orbs */}
       <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-tr from-primary-400 via-secondary-400 to-primary-700 rounded-full blur-3xl opacity-20 animate-pulse" />
       <div className="absolute bottom-0 right-0 w-72 h-72 bg-gradient-to-tl from-secondary-500 to-primary-400 rounded-full blur-3xl opacity-10" />
 
@@ -50,7 +49,6 @@ export default function VerifyEmail() {
         className="relative z-10 flex w-full flex-col items-center px-4 sm:px-6 lg:px-8"
       >
         <motion.div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 max-w-md w-full shadow-2xl relative overflow-hidden">
-          {/* Inner glow effect */}
           <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 bg-gradient-to-tr from-primary-400 via-secondary-400 to-primary-500 rounded-full blur-3xl opacity-30" />
 
           <div className="flex flex-col items-center gap-4 relative">

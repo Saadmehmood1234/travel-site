@@ -7,7 +7,8 @@ const nextConfig: NextConfig = {
       "lh3.googleusercontent.com",
       "pixabay.com",
       "cdn.pixabay.com",
-      "images.unsplash.com" // 👈 add this
+      "images.unsplash.com",
+      "www.turismoasiatico.com", // 👈 added this
     ],
     remotePatterns: [
       {
