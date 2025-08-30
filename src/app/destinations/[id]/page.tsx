@@ -516,7 +516,7 @@ if (error || !tripDetails) {
                 </div>
 
                 <div className="p-6 space-y-4">
-                  <Link href="/#contact">
+                  <Link href="/contact">
                     <button className="w-full mb-2 bg-transparent border-2 border-primary-600 hover:border-primary-700 text-primary-600 hover:text-primary-700 hover:bg-primary-50 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center">
                       Enquire Now <Contact className="ml-2 h-5 w-5" />
                     </button>
