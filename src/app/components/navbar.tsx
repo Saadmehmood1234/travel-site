@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Plane, Phone, Mail, ChevronDown } from "lucide-react";
+import { Menu, X, Plane, Phone, Mail, ChevronDown, ChevronRight } from "lucide-react";
 import { useSession } from "next-auth/react";
 import SignOutButton from "./SignOutButton";
 import { Profile } from "./Profile";
@@ -24,6 +24,7 @@ interface DestinationCategory {
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDestinationsOpen, setIsDestinationsOpen] = useState(false);
+  const [isMobileDestinationsOpen, setIsMobileDestinationsOpen] = useState(false);
   const { data: session } = useSession();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,7 +67,7 @@ export default function Navbar() {
             id: product._id,
             title: product.name,
             subtitle: product.location,
-            category: product.category || "Domestic", // Default category
+            category: product.category || "Domestic",
           }));
           setTrips(tripsData);
         } else {
@@ -82,7 +83,6 @@ export default function Navbar() {
     fetchTrips();
   }, []);
 
-  // Categorize trips for the dropdown menu
   const categorizeTrips = (trips: Trip[]): DestinationCategory[] => {
     const categories: { [key: string]: Trip[] } = {};
     
@@ -94,7 +94,6 @@ export default function Navbar() {
       categories[category].push(trip);
     });
 
-    // Convert to array format for rendering
     return Object.entries(categories).map(([category, items]) => ({
       category,
       items: items.slice(0, 6).map(item => ({
@@ -104,16 +103,13 @@ export default function Navbar() {
     }));
   };
 
-  // Get destination menu data (combine static and dynamic)
   const getDestinationMenu = (): DestinationCategory[] => {
     const apiCategories = categorizeTrips(trips);
     
-    // If we have API data, use it; otherwise fall back to static data
     if (apiCategories.length > 0) {
       return apiCategories;
     }
 
-    // Fallback static data
     return [
       {
         category: "Popular Destinations",
@@ -215,7 +211,6 @@ export default function Navbar() {
                     </Link>
                   )}
 
-                  {/* Destinations Dropdown Menu */}
                   {n.hasMenu && isDestinationsOpen && (
                     <div
                       className="absolute top-full left-0 mt-2 w-[600px] bg-white rounded-lg shadow-2xl border border-gray-200 p-6"
@@ -313,19 +308,77 @@ export default function Navbar() {
             <div className="md:hidden mt-4 pb-4 border-t">
               <div className="flex flex-col space-y-4 pt-4">
                 {navLinks.map((n, i) => (
-                  <Link
-                    key={i}
-                    href={n.hasMenu ? "/destinations" : `/${n.href}`}
-                    className="text-white hover:font-bold hover:text-gray-50 font-medium"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {n.label}
-                  </Link>
+                  <div key={i}>
+                    {n.hasMenu ? (
+                      <div className="flex flex-col">
+                        <button
+                          onClick={() => setIsMobileDestinationsOpen(!isMobileDestinationsOpen)}
+                          className="text-white hover:font-bold hover:text-gray-50 font-medium flex items-center justify-between w-full py-2"
+                        >
+                          <span>{n.label}</span>
+                          <ChevronRight className={`h-4 w-4 transition-transform ${isMobileDestinationsOpen ? 'rotate-90' : ''}`} />
+                        </button>
+                        
+                        {isMobileDestinationsOpen && (
+                          <div className="pl-4 mt-2 space-y-3 border-l border-white/20 ml-2">
+                            {loading ? (
+                              <div className="text-white/70 text-sm">Loading destinations...</div>
+                            ) : error ? (
+                              <div className="text-white/70 text-sm">Failed to load destinations</div>
+                            ) : (
+                              <>
+                                {destinationMenu.map((section, sectionIndex) => (
+                                  <div key={sectionIndex} className="space-y-2">
+                                    <h4 className="text-white/80 font-medium text-sm">
+                                      {section.category}
+                                    </h4>
+                                    <div className="space-y-1 pl-2">
+                                      {section.items.map((item, itemIndex) => (
+                                        <Link
+                                          key={itemIndex}
+                                          href={item.href}
+                                          className="text-white/70 hover:text-white text-sm block py-1"
+                                          onClick={() => {
+                                            setIsOpen(false);
+                                            setIsMobileDestinationsOpen(false);
+                                          }}
+                                        >
+                                          {item.name}
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  </div>
+                                ))}
+                                <Link
+                                  href="/destinations"
+                                  className="text-white hover:text-white font-medium text-sm flex items-center pt-2"
+                                  onClick={() => {
+                                    setIsOpen(false);
+                                    setIsMobileDestinationsOpen(false);
+                                  }}
+                                >
+                                  View All Destinations →
+                                </Link>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <Link
+                        href={`/${n.href}`}
+                        className="text-white hover:font-bold hover:text-gray-50 font-medium block py-2"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {n.label}
+                      </Link>
+                    )}
+                  </div>
                 ))}
 
                 {!session ? (
                   <Link href="/auth/signin">
-                    <Button className="bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white">
+                    <Button className="bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white w-full">
                       Login
                     </Button>
                   </Link>
