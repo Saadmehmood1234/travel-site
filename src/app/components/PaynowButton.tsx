@@ -134,7 +134,7 @@ const PaynowButton = ({ onSuccess }: PaymentButtonProps) => {
       
       <button
         onClick={() => setShowModal(true)}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold mb-3 flex items-center justify-center"
+        className="w-48 bg-gradient-to-r from-primary-600 to-secondary-600 border border-gray-300 hover:bg-gradient-to-r hover:from-primary-800 hover:to-secondary-800 text-white py-3 rounded-lg font-semibold mb-3 flex items-center justify-center"
       >
         Make a Payment <FiArrowRight className="ml-2" />
       </button>
@@ -230,7 +230,7 @@ const PaynowButton = ({ onSuccess }: PaymentButtonProps) => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 w-48 bg-gradient-to-r from-primary-600 to-secondary-600 border border-gray-300 hover:bg-gradient-to-r hover:from-primary-800 hover:to-secondary-800  text-white py-3 rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Processing..." : "Proceed to Pay"}
                 </button>

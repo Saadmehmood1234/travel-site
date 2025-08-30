@@ -21,7 +21,7 @@ import { SerializedProduct } from "@/types/product";
 import { useSession } from "next-auth/react";
 import { toggleWishlist } from "@/app/actions/wishlist.actions.ts";
 import toast from "react-hot-toast";
-import { Heart } from "lucide-react";
+import { Contact, Heart } from "lucide-react";
 interface TripDetails {
   id: string;
   title: string;
@@ -37,14 +37,14 @@ interface TripDetails {
   dates: { id: string; date: string; seats: string }[];
   highlights: string[];
   overview: string;
-  itinerary: string[]
+  itinerary: string[];
   inclusions: string[];
   exclusions: string[];
-  category:string
-   featured: boolean;
-    discount: number;
-    availableDates: Date[]; 
-    isCommunityTrip: boolean;    
+  category: string;
+  featured: boolean;
+  discount: number;
+  availableDates: Date[];
+  isCommunityTrip: boolean;
   faqs: { question: string; answer: string }[];
 }
 
@@ -68,14 +68,14 @@ export default function TripDetailPage() {
 
           const transformedData: TripDetails = {
             id: product._id,
-            category:product.category,
-            availableDates:product.availableDates,
-            isCommunityTrip:product.isCommunityTrip,
+            category: product.category,
+            availableDates: product.availableDates,
+            isCommunityTrip: product.isCommunityTrip,
             title: product.name,
             location: product.location,
-             featured: product.featured,
-             discount: product.discount,
-            itinerary:product.itinerary,
+            featured: product.featured,
+            discount: product.discount,
+            itinerary: product.itinerary,
             images: [product.image],
             duration: product.duration,
             difficulty: product.difficulty || "Moderate",
@@ -143,7 +143,6 @@ export default function TripDetailPage() {
           setError(result.error || "Product not found");
         }
       } catch (err) {
-
         setError("Failed to load trip details");
       } finally {
         setLoading(false);
@@ -197,9 +196,7 @@ export default function TripDetailPage() {
           text: tripDetails?.location || "Check out this amazing trip!",
           url: window.location.href,
         });
-      } catch (err) {
-
-      }
+      } catch (err) {}
     } else {
       alert("Sharing not supported in this browser.");
     }
@@ -215,22 +212,70 @@ export default function TripDetailPage() {
       </div>
     );
   }
+if (error || !tripDetails) {
+  return (
+    <div className=" min-h-screen flex items-center justify-center px-4">
+      <div className="max-w-md w-full text-center p-8 transform hover:scale-105 transition-transform duration-200">
+        <div className="mb-6">
+          <div className="w-20 h-20 mx-auto bg-gradient-to-r from-red-100 to-pink-100 rounded-full flex items-center justify-center">
+            <svg 
+              className="w-10 h-10 text-red-500" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.966-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" 
+              />
+            </svg>
+          </div>
+        </div>
 
-  if (error || !tripDetails) {
-    return (
-      <div className="bg-gray-50 min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
-          <p className="text-gray-600 mb-4">{error || "Trip not found"}</p>
+        <h2 className="text-2xl font-bold text-gray-800 mb-3">
+          Oops! Something went wrong
+        </h2>
+        
+        <p className="text-gray-600 mb-6 leading-relaxed">
+          {error || "We couldn't find the trip you're looking for. It might have been moved or no longer available."}
+        </p>
+
+        <div className="space-y-3">
           <Link href="/destinations">
-            <button className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-6 py-2 rounded-lg">
-              Back to Destinations
+            <button className="w-full mb-2 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+              🌟 Explore Other Destinations
+            </button>
+          </Link>
+          
+          <Link href="/">
+            <button className="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition-all duration-200">
+              🏠 Back to Home
             </button>
           </Link>
         </div>
+        <div className="mt-6 pt-6 border-t border-gray-100">
+          <p className="text-sm text-gray-500 mb-2">Need help?</p>
+          <div className="flex justify-center space-x-4">
+            <a 
+              href="tel:+919310682414" 
+              className="text-primary-600 hover:text-primary-700 text-sm flex items-center"
+            >
+              📞 +91-9310682414
+            </a>
+           <Link href="/#contact"
+              className="text-primary-600 hover:text-primary-700 text-sm flex items-center"
+            >
+              ✉️ Contact Support
+  
+            </Link>
+          </div>
+        </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   return (
     <div className="bg-gray-50">
@@ -302,9 +347,7 @@ export default function TripDetailPage() {
 
             <section className="bg-white rounded-xl shadow-sm p-6 mb-8">
               <h2 className="text-2xl font-bold mb-6">Detailed Itinerary</h2>
-              <div className="space-y-6">
-                {tripDetails.itinerary}
-              </div>
+              <div className="space-y-6">{tripDetails.itinerary}</div>
             </section>
 
             <section className="bg-white rounded-xl shadow-sm p-6 mb-8">
@@ -400,14 +443,19 @@ export default function TripDetailPage() {
                         )}
                       </div>
                     </div>
-                     <button onClick={() =>
+                    <button
+                      onClick={() =>
                         handleToggleFavorite(tripDetails.id.toString())
-                      } className="p-2 rounded-full bg-white/20 hover:bg-white/30">
-                      <FiHeart               className={`h-5 w-5 transition-colors duration-300 ${
+                      }
+                      className="p-2 rounded-full bg-white/20 hover:bg-white/30"
+                    >
+                      <FiHeart
+                        className={`h-5 w-5 transition-colors duration-300 ${
                           favorites.includes(tripDetails.id.toString())
                             ? "text-red-500 fill-current"
                             : "text-gray-600"
-                        }`} />
+                        }`}
+                      />
                     </button>
                   </div>
                   <div className="text-sm opacity-90">
@@ -467,19 +515,25 @@ export default function TripDetailPage() {
                   </div>
                 </div>
 
-                <div className="p-6">
-                  <Link href={`/payment-page/${tripDetails.id}`}>
-                    <button className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold mb-3 flex items-center justify-center">
-                      Book Now <FiArrowRight className="ml-2" />
+                <div className="p-6 space-y-4">
+                  <Link href="/#contact">
+                    <button className="w-full mb-2 bg-transparent border-2 border-primary-600 hover:border-primary-700 text-primary-600 hover:text-primary-700 hover:bg-primary-50 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center">
+                      Enquire Now <Contact className="ml-2 h-5 w-5" />
                     </button>
                   </Link>
 
-                  <div className="flex justify-center mt-4">
+                  <Link href={`/payment-page/${tripDetails.id}`}>
+                    <button className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg">
+                      Book Now <FiArrowRight className="ml-2 h-5 w-5" />
+                    </button>
+                  </Link>
+
+                  <div className="flex justify-center mt-4 pt-4 border-t border-gray-200">
                     <button
                       onClick={handleShare}
-                      className="text-gray-500 hover:text-gray-700 flex items-center"
+                      className="text-gray-500 hover:text-gray-700 flex items-center transition-colors duration-200"
                     >
-                      <FiShare2 className="mr-2" /> Share this trip
+                      <FiShare2 className="mr-2 h-4 w-4" /> Share this trip
                     </button>
                   </div>
                 </div>
@@ -492,9 +546,9 @@ export default function TripDetailPage() {
                   booking.
                 </p>
                 <Link href="/#contact">
-                <button className="text-blue-600 font-medium">
-                  Chat with us
-                </button>
+                  <button className="text-blue-600 font-medium">
+                    Chat with us
+                  </button>
                 </Link>
               </div>
             </div>

@@ -36,9 +36,11 @@ export default function Footer() {
         <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-52">
-                <img src="/logo.png" />
-              </div>
+              <Link href="/">
+                <div className="w-52 bg-white rounded-full">
+                  <img src="/logo.png" />
+                </div>
+              </Link>
             </div>
             <p className="text-gray-100 mb-6 leading-relaxed">
               Your trusted travel partner for unforgettable adventures around
@@ -99,7 +101,7 @@ export default function Footer() {
                   About Us
                 </Link>
               </li>
-        
+
               <li>
                 <Link
                   href="#contact"
@@ -109,40 +111,18 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                {session ? (
-                  <PaynowButton
-                    onSuccess={handlePaymentSuccess}
-                  />
-                ) : (
-                  <Button 
-                    variant="link" 
-                    className="text-gray-100 hover:text-white p-0 h-auto"
-                    onClick={() => router.push("/auth/signin")}
-                  >
-                    Sign in to make payment
-                  </Button>
-                )}
+                <PaynowButton onSuccess={handlePaymentSuccess} />
               </li>
             </ul>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-6">Travel Services</h3>
             <ul className="space-y-3">
-              <li>
-                Flight Booking
-              </li>
-              <li>
-                Hotel Reservations
-              </li>
-              <li>
-                Guided Tours
-              </li>
-              <li>
-                Travel Packages
-              </li>
-              <li>
-                Visa Assistance
-              </li>
+              <li>Flight Booking</li>
+              <li>Hotel Reservations</li>
+              <li>Guided Tours</li>
+              <li>Travel Packages</li>
+              <li>Visa Assistance</li>
             </ul>
           </div>
           <div>

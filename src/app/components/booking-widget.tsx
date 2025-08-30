@@ -36,6 +36,7 @@ import { getProducts } from "../actions/product.actions";
 import { useSession } from "next-auth/react";
 import { createOrder } from "@/app/actions/order.actions";
 import { parseCurrencyValue } from "@/utils/helpers";
+import toast from "react-hot-toast";
 
 interface TripDetails {
   id: string;
@@ -129,6 +130,7 @@ export default function BookingWidget() {
         const result = await getProducts();
 
         if (result.success && result.data) {
+          console.log(result.data)
           const transformedData: TripDetails[] = result.data.map((product) => ({
             id: product._id,
             title: product.name,
@@ -164,10 +166,6 @@ export default function BookingWidget() {
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
     }
-    if (currentStep === 1 && !session) {
-      router.push("/auth/signin");
-      return;
-    }
   };
 
   const prevStep = () => {
@@ -189,43 +187,55 @@ export default function BookingWidget() {
   };
 
   const handlePaymentSuccess = async () => {
-    if (!session || !selectedTrip) {
-      router.push("/auth/signin");
+  if (!selectedTrip) {
+    router.push("/");
+    return;
+  }
+
+  try {
+    const adults = parseInt(bookingData.adults) || 0;
+    const children = parseInt(bookingData.children) || 0;
+    const quantity = adults + children;
+    
+    // Calculate total amount based on quantity
+    const basePrice = selectedTrip.originalPrice || selectedTrip.price;
+    const totalAmount = basePrice * quantity;
+    
+    console.log("Total amount:", totalAmount, "Quantity:", quantity, "Base price:", basePrice);
+
+    const updatedBookingData: BookingData = {
+      ...bookingData,
+      userId: session?.user.id || "", // Handle guest users
+      trips: JSON.stringify([
+        {
+          product: selectedTrip.id,
+          name: selectedTrip.title,
+          location: selectedTrip.subtitle,
+          quantity: quantity,
+          price: totalAmount, // Use the calculated total amount
+          selectedDate: bookingData.checkIn || new Date(),
+        },
+      ]),
+      totalAmount: totalAmount.toString(),
+      paymentMethod: "credit-card" as const,
+    };
+
+    const result = await createOrder(updatedBookingData);
+
+    if (result.error) {
+      console.error("Order creation failed:", result.error);
+      toast.error("Order creation failed. Please contact support.");
       return;
     }
 
-    try {
-      const quantity =
-        parseInt(bookingData.adults) + parseInt(bookingData.children);
-      const totalAmount = selectedTrip.originalPrice || selectedTrip.price;
-
-      const updatedBookingData: BookingData = {
-        ...bookingData,
-        userId: session.user.id,
-        trips: JSON.stringify([
-          {
-            product: selectedTrip.id,
-            name: selectedTrip.title,
-            location: selectedTrip.subtitle,
-            quantity: quantity,
-            price: totalAmount,
-            selectedDate: bookingData.checkIn || new Date(),
-          },
-        ]),
-        totalAmount: totalAmount.toString(),
-        paymentMethod: "credit-card" as const,
-      };
-
-      const result = await createOrder(updatedBookingData);
-
-      if (result.error) {
-        return;
-      }
-
-      setBookingComplete(true);
-    } catch (error) {
-    }
-  };
+    setBookingComplete(true);
+    toast.success("Booking confirmed! Check your email for details.");
+    
+  } catch (error) {
+    console.error("Error in payment success handler:", error);
+    toast.error("An error occurred. Please contact support.");
+  }
+};
 
   const calculateTotal = () => {
     if (!selectedTrip) return 0;
@@ -492,7 +502,7 @@ export default function BookingWidget() {
                       </Popover>
                     )}
                   </div>
-                  <div>
+                  {/* <div>
                     <Label>Check-out Date</Label>
                     <Input
                       value={
@@ -503,7 +513,7 @@ export default function BookingWidget() {
                       className="h-12"
                       readOnly
                     />
-                  </div>
+                  </div> */}
                 </div>
 
                 {bookingData.checkIn && bookingData.checkOut && (
@@ -700,7 +710,7 @@ export default function BookingWidget() {
                 <div className="w-40">
                   {selectedTrip && (
                     <PaymentButton
-                      amount={totalAmount}
+                      amount={selectedTrip?.price}
                       onSuccess={handlePaymentSuccess}
                       bookingData={bookingData}
                     />

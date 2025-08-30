@@ -17,21 +17,23 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
- 
+
     const order = await razorpay.orders.create({
-      amount: amount, 
-      currency: currency || "INR", 
+      amount: amount,
+      currency: currency || "INR",
       receipt: receipt || "receipt_" + Math.random().toString(36).substring(7),
       notes: notes || {},
     });
-
-    return NextResponse.json({
-      success: true,
-      orderid: order.id,
-      amount: order.amount,
-      currency: order.currency
-    }, { status: 200 });
-
+    console.log("AORDER API", order);
+    return NextResponse.json(
+      {
+        success: true,
+        orderid: order.id,
+        amount: order.amount,
+        currency: order.currency,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error creating Razorpay order:", error);
     return NextResponse.json(

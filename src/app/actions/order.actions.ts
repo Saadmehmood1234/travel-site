@@ -9,8 +9,9 @@ import User from "@/model/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { sendBookingConfirmation } from "@/lib/sendOrder";
+
 export interface OrderCreateInput {
-  userId: mongoose.Types.ObjectId | string;
+  userId: mongoose.Types.ObjectId | string | null; // Allow null for guest users
   trips: {
     product: mongoose.Types.ObjectId | string;
     name: string;
@@ -51,43 +52,40 @@ const toObjectId = (
 
 export async function createOrder(formData: BookingData) {
   await dbConnect();
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    return { success: false, error: "Please Login" };
-  }
-
   try {
     if (
-      !formData.userId ||
       !formData.trips ||
       !formData.totalAmount ||
       !formData.paymentMethod
     ) {
       return { error: "Missing required fields" };
     }
-    const tripsData = JSON.parse(formData.trips);
 
+    const tripsData = JSON.parse(formData.trips);
     const processedTrips = tripsData.map((trip: any) => ({
       ...trip,
       product: toObjectId(trip.product),
       selectedDate: new Date(trip.selectedDate),
-      price: trip.price,
+      price: parseFloat(trip.price) || 0,
       quantity: parseInt(trip.quantity) || 1,
     }));
 
-    const calculatedTotalAmount = parseInt(formData.totalAmount);
-    const users = await User.find({ email: session?.user?.email });
+    const calculatedTotalAmount = parseFloat(formData.totalAmount) || 0;
 
-    if (!users || users.length === 0) {
-      return {
-        success: false,
-        message: "User not found",
-      };
+    // Handle guest users (no userId)
+    let userId: mongoose.Types.ObjectId | string | null = null;
+    
+    if (formData.userId) {
+      // If user is logged in, use their ID
+      userId = toObjectId(formData.userId);
+      
+      // Verify user exists
+      const user = await User.findById(userId);
+      if (!user) {
+        userId = null; // Fallback to guest if user not found
+      }
     }
 
-    const user = users[0];
-    const userId = user._id;
     const orderData: OrderCreateInput = {
       userId: userId,
       trips: processedTrips,
@@ -99,9 +97,16 @@ export async function createOrder(formData: BookingData) {
         phone: formData.phone,
       },
       specialRequests: formData.specialRequests || undefined,
+      paymentStatus: "paid", // Set payment status to paid since payment was successful
+      status: "confirmed", // Set status to confirmed for paid orders
     };
+
+    console.log("Creating order with data:", orderData);
+    
     const order = new Order(orderData);
     await order.save();
+
+    // Send confirmation email
     await sendBookingConfirmation(
       formData.email,
       {
@@ -110,6 +115,7 @@ export async function createOrder(formData: BookingData) {
       },
       `${formData.firstName} ${formData.lastName}`
     );
+
     revalidatePath("/orders");
     return { success: true, orderId: order._id.toString() };
   } catch (error) {
@@ -118,13 +124,9 @@ export async function createOrder(formData: BookingData) {
   }
 }
 
+// Update your other functions to handle guest orders as well
 export async function getOrder(orderId: string) {
   await dbConnect();
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    return { success: false, error: "Please Login" };
-  }
   try {
     const order = await Order.findById(orderId)
       .populate("userId", "name email")
@@ -211,73 +213,6 @@ export async function getAllOrders(page = 1, limit = 10, status?: string) {
   }
 }
 
-export async function updateOrderStatus(orderId: string, status: string) {
-  await dbConnect();
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    return { success: false, error: "Please Login" };
-  }
-  try {
-    const validStatuses = ["pending", "confirmed", "cancelled", "completed"];
-    if (!validStatuses.includes(status)) {
-      return { error: "Invalid status" };
-    }
-
-    const order = await Order.findByIdAndUpdate(
-      orderId,
-      { status },
-      { new: true }
-    );
-
-    if (!order) {
-      return { error: "Order not found" };
-    }
-
-    revalidatePath("/orders");
-    revalidatePath(`/orders/${orderId}`);
-    return { success: true, order: JSON.parse(JSON.stringify(order)) };
-  } catch (error) {
-    console.error("Update order status error:", error);
-    return { error: "Failed to update order status" };
-  }
-}
-
-export async function updatePaymentStatus(
-  orderId: string,
-  paymentStatus: string
-) {
-  await dbConnect();
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    return { success: false, error: "Please Login" };
-  }
-  try {
-    const validStatuses = ["unpaid", "paid", "refunded"];
-    if (!validStatuses.includes(paymentStatus)) {
-      return { error: "Invalid payment status" };
-    }
-
-    const order = await Order.findByIdAndUpdate(
-      orderId,
-      { paymentStatus },
-      { new: true }
-    );
-
-    if (!order) {
-      return { error: "Order not found" };
-    }
-
-    revalidatePath("/orders");
-    revalidatePath(`/orders/${orderId}`);
-    return { success: true, order: JSON.parse(JSON.stringify(order)) };
-  } catch (error) {
-    console.error("Update payment status error:", error);
-    return { error: "Failed to update payment status" };
-  }
-}
-
 
 export async function getOrderStats() {
   await dbConnect();
@@ -306,33 +241,5 @@ export async function getOrderStats() {
   } catch (error) {
     console.error("Get order stats error:", error);
     return { error: "Failed to fetch order statistics" };
-  }
-}
-
-export async function updateOrderPaymentStatus(
-  orderId: string,
-  paymentStatus: "paid" | "refunded",
-  paymentId?: string
-) {
-  await dbConnect();
-
-  try {
-    const order = await Order.findByIdAndUpdate(
-      orderId,
-      {
-        paymentStatus,
-        ...(paymentId && { paymentId }), 
-      },
-      { new: true }
-    );
-
-    if (!order) {
-      return { success: false, error: "Order not found" };
-    }
-
-    return { success: true, order };
-  } catch (error) {
-    console.error("Error updating payment status:", error);
-    return { success: false, error: "Failed to update payment status" };
   }
 }

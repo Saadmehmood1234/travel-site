@@ -74,8 +74,8 @@ type FormDataState = {
   destination: string;
   travelDate: string;
   flightRequired: "Yes" | "No" | undefined;
-  adults: number; 
-  children: number; 
+  adults: number;
+  children: number;
   tripPlanningStatus: string;
   timeToBook: string;
   additionalDetails: string;
@@ -88,8 +88,8 @@ export default function ContactSection() {
     destination: "",
     travelDate: "",
     flightRequired: undefined,
-    adults: 1, 
-    children: 0, 
+    adults: 1,
+    children: 0,
     tripPlanningStatus: "",
     timeToBook: "",
     additionalDetails: "",
@@ -233,7 +233,7 @@ export default function ContactSection() {
               </div>
             </div>
 
-            <div className=" bg-gradient-to-r from-primary-600 to-secondary-600  rounded-2xl p-8 text-white">
+            <div className="bg-gradient-to-r from-primary-600 to-secondary-600 rounded-2xl p-8 text-white">
               <h3 className="text-xl font-bold mb-4">Why Contact Us?</h3>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
@@ -255,6 +255,7 @@ export default function ContactSection() {
               </ul>
             </div>
           </div>
+
           <div className="lg:col-span-7">
             <Card className="shadow-2xl border-0 overflow-hidden">
               <CardHeader className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-8">
@@ -268,136 +269,27 @@ export default function ContactSection() {
               </CardHeader>
               <CardContent className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label
-                        htmlFor="name"
-                        className="mb-2 block font-medium text-gray-700"
-                      >
-                        Full Name *
-                      </Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={(e) =>
-                          handleInputChange("name", e.target.value)
-                        }
-                        required
-                        className="h-12 px-4 border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                        placeholder="Your name"
-                      />
-                    </div>
-                    <div>
-                      <Label
-                        htmlFor="email"
-                        className="mb-2 block font-medium text-gray-700"
-                      >
-                        Email Address *
-                      </Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) =>
-                          handleInputChange("email", e.target.value)
-                        }
-                        required
-                        className="h-12 px-4 border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                        placeholder="your.email@example.com"
-                      />
-                    </div>
+                  {/* Travel Date */}
+                  <div>
+                    <Label
+                      htmlFor="travelDate"
+                      className="mb-2 block font-medium text-gray-700"
+                    >
+                      <Calendar className="inline h-4 w-4 mr-2" />
+                      Date of Travel
+                    </Label>
+                    <Input
+                      id="travelDate"
+                      type="date"
+                      value={formData.travelDate}
+                      onChange={(e) =>
+                        handleInputChange("travelDate", e.target.value)
+                      }
+                      className="h-12 px-4 border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label
-                        htmlFor="phone"
-                        className="mb-2 block font-medium text-gray-700"
-                      >
-                        Phone Number
-                      </Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) =>
-                          handleInputChange("phone", e.target.value)
-                        }
-                        className="h-12 px-4 border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                        placeholder="+91 1234567890"
-                      />
-                    </div>
-                    <div>
-                      <Label
-                        htmlFor="destination"
-                        className="mb-2 block font-medium text-gray-700"
-                      >
-                        Where do you want to go?
-                      </Label>
-                      <Select
-                        value={formData.destination}
-                        onValueChange={(value) =>
-                          handleInputChange("destination", value)
-                        }
-                      >
-                        <SelectTrigger className="h-12 border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                          <SelectValue placeholder="Select destination" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {DESTINATION_OPTIONS.map((destination) => (
-                            <SelectItem key={destination} value={destination}>
-                              {destination}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label
-                        htmlFor="travelDate"
-                        className="mb-2 block font-medium text-gray-700"
-                      >
-                        <Calendar className="inline h-4 w-4 mr-2" />
-                        Date of Travel
-                      </Label>
-                      <Input
-                        id="travelDate"
-                        type="date"
-                        value={formData.travelDate}
-                        onChange={(e) =>
-                          handleInputChange("travelDate", e.target.value)
-                        }
-                        className="h-12 px-4 border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                      />
-                    </div>
-                    <div>
-                      <Label
-                        htmlFor="flightRequired"
-                        className="mb-2 block font-medium text-gray-700"
-                      >
-                        <Plane className="inline h-4 w-4 mr-2" />
-                        Flight Required?
-                      </Label>
-                      <Select
-                        value={formData.flightRequired}
-                        onValueChange={(value) =>
-                          handleInputChange("flightRequired", value)
-                        }
-                      >
-                        <SelectTrigger className="h-12 border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                          <SelectValue placeholder="Select option" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Yes">Yes</SelectItem>
-                          <SelectItem value="No">No</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
+                  {/* Adults and Children */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <Label
@@ -436,6 +328,7 @@ export default function ContactSection() {
                         </SelectContent>
                       </Select>
                     </div>
+
                     <div>
                       <Label
                         htmlFor="children"
@@ -472,6 +365,32 @@ export default function ContactSection() {
                     </div>
                   </div>
 
+                  {/* Flight Required */}
+                  <div>
+                    <Label
+                      htmlFor="flightRequired"
+                      className="mb-2 block font-medium text-gray-700"
+                    >
+                      <Plane className="inline h-4 w-4 mr-2" />
+                      Flight Required?
+                    </Label>
+                    <Select
+                      value={formData.flightRequired}
+                      onValueChange={(value) =>
+                        handleInputChange("flightRequired", value)
+                      }
+                    >
+                      <SelectTrigger className="h-12 border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <SelectValue placeholder="Select option" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Trip Planning Status and Time to Book */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <Label
@@ -498,6 +417,7 @@ export default function ContactSection() {
                         </SelectContent>
                       </Select>
                     </div>
+
                     <div>
                       <Label
                         htmlFor="timeToBook"
@@ -525,6 +445,96 @@ export default function ContactSection() {
                     </div>
                   </div>
 
+                  {/* Name */}
+                  <div>
+                    <Label
+                      htmlFor="name"
+                      className="mb-2 block font-medium text-gray-700"
+                    >
+                      Full Name *
+                    </Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) =>
+                        handleInputChange("name", e.target.value)
+                      }
+                      required
+                      className="h-12 px-4 border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      placeholder="Your name"
+                    />
+                  </div>
+
+                  {/* Phone and Email */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label
+                        htmlFor="phone"
+                        className="mb-2 block font-medium text-gray-700"
+                      >
+                        Phone Number
+                      </Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) =>
+                          handleInputChange("phone", e.target.value)
+                        }
+                        className="h-12 px-4 border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        placeholder="+91 1234567890"
+                      />
+                    </div>
+
+                    <div>
+                      <Label
+                        htmlFor="email"
+                        className="mb-2 block font-medium text-gray-700"
+                      >
+                        Email Address *
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) =>
+                          handleInputChange("email", e.target.value)
+                        }
+                        required
+                        className="h-12 px-4 border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        placeholder="your.email@example.com"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Destination */}
+                  <div>
+                    <Label
+                      htmlFor="destination"
+                      className="mb-2 block font-medium text-gray-700"
+                    >
+                      Where do you want to go?
+                    </Label>
+                    <Select
+                      value={formData.destination}
+                      onValueChange={(value) =>
+                        handleInputChange("destination", value)
+                      }
+                    >
+                      <SelectTrigger className="h-12 border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <SelectValue placeholder="Select destination" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DESTINATION_OPTIONS.map((destination) => (
+                          <SelectItem key={destination} value={destination}>
+                            {destination}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Additional Details */}
                   <div>
                     <Label
                       htmlFor="additionalDetails"
@@ -544,6 +554,7 @@ export default function ContactSection() {
                     />
                   </div>
 
+                  {/* Submit Button */}
                   <Button
                     type="submit"
                     size="lg"

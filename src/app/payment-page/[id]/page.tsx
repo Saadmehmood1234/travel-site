@@ -36,6 +36,7 @@ import { getProductById } from "../../actions/product.actions";
 import { useSession } from "next-auth/react";
 import { createOrder } from "@/app/actions/order.actions";
 import { parseCurrencyValue } from "@/utils/helpers";
+import toast from "react-hot-toast";
 
 interface TripDetails {
   id: string;
@@ -49,7 +50,7 @@ interface TripDetails {
   reviews: number;
   price: string;
   discountPrice?: string;
-  availableDates?: Date[]; // Add available dates to trip details
+  availableDates?: Date[];
 }
 
 export interface BookingData {
@@ -124,10 +125,6 @@ export default function BookingWidget() {
       setCurrentStep(currentStep + 1);
     }
     if (currentStep === 1) {
-      if (!session) {
-        router.push("/auth/signin");
-        return;
-      }
       setBookingData({
         ...bookingData,
         destination: tripDetails?.title,
@@ -193,28 +190,21 @@ export default function BookingWidget() {
   }, [id]);
 
   const handlePaymentSuccess = async () => {
-    if (!session) {
-      router.push("/auth/signin");
-      return;
-    }
-
     try {
       const quantity =
         parseInt(bookingData.adults) + parseInt(bookingData.children);
-      const rawPrice = tripDetails?.price || "0";
-      const numericPrice = parseCurrencyValue(rawPrice.slice(1));
-      const totalAmount = numericPrice;
+      const totalAmount = calculateTotal(); // Use the calculateTotal function
 
       const updatedBookingData: BookingData = {
         ...bookingData,
-        userId: session.user.id,
+        userId: session?.user.id || "", // Empty string for guest users
         trips: JSON.stringify([
           {
-            product: tripDetails?.id,
-            name: tripDetails?.title,
-            location: tripDetails?.subtitle,
+            product: tripDetails?.id || "",
+            name: tripDetails?.title || "",
+            location: tripDetails?.subtitle || "",
             quantity: quantity,
-            price: tripDetails?.discountPrice?.slice(1),
+            price: totalAmount.toString(), // Use the calculated total amount
             selectedDate: bookingData.checkIn || new Date(),
           },
         ]),
@@ -228,17 +218,30 @@ export default function BookingWidget() {
 
       if (result.error) {
         console.error("Order creation failed:", result.error);
+        toast.error("Order creation failed. Please contact support.");
         return;
       }
 
       setBookingComplete(true);
+      toast.success("Booking confirmed! Check your email for details.");
     } catch (error) {
       console.error("Error in payment success handler:", error);
+      toast.error("An error occurred. Please contact support.");
     }
   };
-
   const calculateTotal = () => {
-    return tripDetails?.discountPrice;
+    const adults = Number(bookingData?.adults) || 0;
+    const children = Number(bookingData?.children) || 0;
+    const quantity = adults + children;
+
+    // Get the price string (either discountPrice or regular price)
+    const priceString = tripDetails?.discountPrice || tripDetails?.price || "0";
+
+    // Remove currency symbol and commas, then convert to number
+    const numericPrice = parseCurrencyValue(priceString);
+
+    const totalAmount = numericPrice * quantity;
+    return totalAmount;
   };
 
   const totalAmount = calculateTotal();
@@ -456,7 +459,7 @@ export default function BookingWidget() {
                       </Popover>
                     )}
                   </div>
-                  <div>
+                  {/* <div>
                     <Label>Check-out Date</Label>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -488,7 +491,7 @@ export default function BookingWidget() {
                         />
                       </PopoverContent>
                     </Popover>
-                  </div>
+                  </div> */}
                 </div>
                 {bookingData.checkIn && bookingData.checkOut && (
                   <div className="bg-blue-50 p-4 rounded-lg">
@@ -682,7 +685,7 @@ export default function BookingWidget() {
                       <div className="flex justify-between text-lg font-bold">
                         <span>Total Amount:</span>
                         <span className="text-primary-600">
-                          {totalAmount?.toLocaleString()}
+                          ₹{totalAmount?.toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -695,7 +698,9 @@ export default function BookingWidget() {
                   </p>
                   {tripDetails?.price && (
                     <PaymentButton
-                      amount={Number(tripDetails?.discountPrice?.toString().slice(1))}
+                      amount={Number(
+                        tripDetails?.discountPrice?.toString().slice(1)
+                      )}
                       onSuccess={handlePaymentSuccess}
                       bookingData={bookingData}
                     />
@@ -730,8 +735,7 @@ export default function BookingWidget() {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               ) : (
-                <div className="w-40">
-                </div>
+                <div className="w-40"></div>
               )}
             </div>
           </CardContent>

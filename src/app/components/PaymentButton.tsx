@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Script from "next/script";
 import { FiArrowRight } from "react-icons/fi";
 import toast from "react-hot-toast";
@@ -11,7 +11,7 @@ declare global {
 }
 
 interface PaymentButtonProps {
-  amount:   number;
+  amount: number | undefined;
   onSuccess: () => void;
   bookingData: any;
 }
@@ -22,18 +22,40 @@ const PaymentButton = ({
   bookingData,
 }: PaymentButtonProps) => {
   const [loading, setLoading] = useState(false);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
+
+  // Calculate total amount when component mounts or bookingData changes
+  useEffect(() => {
+    if (amount && bookingData) {
+      const adults = Number(bookingData?.adults) || 0;
+      const children = Number(bookingData?.children) || 0;
+      const quantity = adults + children;
+      setTotalAmount(amount * quantity);
+    }
+  }, [amount, bookingData]);
 
   const initiatePayment = async () => {
     setLoading(true);
     try {
+      const adults = Number(bookingData?.adults) || 0;
+      const children = Number(bookingData?.children) || 0;
+      const quantity = adults + children;
+      
+      if (!amount) {
+        toast.error("Invalid amount");
+        return;
+      }
+
       const amountInPaise = Math.round(amount * 100);
+      const totalAmountInPaise = amountInPaise * quantity;
+
       const response = await fetch("/api/create-order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: amountInPaise,
+          amount: totalAmountInPaise,
           currency: "INR",
           receipt: `booking_${Date.now()}`,
           notes: {
@@ -59,7 +81,7 @@ const PaymentButton = ({
             },
             body: JSON.stringify(response),
           });
-
+         console.log("Payment Verified",verificationResponse)
           const result = await verificationResponse.json();
 
           if (result.success) {
@@ -95,10 +117,12 @@ const PaymentButton = ({
       />
       <button
         onClick={initiatePayment}
-        disabled={loading}
+        disabled={loading || !amount || totalAmount === 0}
         className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white py-3 rounded-lg font-semibold mb-3 flex items-center justify-center disabled:opacity-50"
       >
-        {loading ? "Processing..." : `Pay ₹${amount?.toLocaleString()}`}{" "}
+        {loading
+          ? "Processing..."
+          : `Pay ₹${totalAmount?.toLocaleString('en-IN')}`}{" "}
         <FiArrowRight className="ml-2" />
       </button>
     </>
