@@ -41,10 +41,10 @@ export default function Navbar() {
       label: "Destinations",
       hasMenu: true,
     },
-    {
-      href: "flights",
-      label: "Flight",
-    },
+    // {
+    //   href: "flights",
+    //   label: "Flight",
+    // },
     {
       href: "#about",
       label: "About",
