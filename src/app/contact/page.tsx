@@ -30,41 +30,52 @@ import { useRouter } from "next/navigation";
 import { contactUs } from "../actions/contact.actions";
 
 const DESTINATION_OPTIONS = [
-  "Andaman and Nicobar Islands",
-  "Goa",
+  // Domestic
   "Kerala",
-  "Himachal Pradesh",
-  "Rajasthan",
-  "Uttarakhand",
-  "Kashmir",
-  "Ladakh",
+  "Himachal Pradesh", 
   "Sikkim",
+  "Darjeeling",
+  "Kashmir",
+  "Goa",
+  "Ladakh",
+  "Rajasthan",
+  "Andaman and Nicobar Islands",
+  "Uttarakhand",
+  "North East",
   "Assam",
   "Meghalaya",
-  "Thailand",
+  
+  // International
   "Bali",
-  "Maldives",
-  "Dubai",
   "Singapore",
+  "Thailand",
+  "Dubai",
+  "Malaysia",
+  "Maldives",
+  "Mauritius",
+  "Vietnam",
   "Sri Lanka",
+  "Turkey",
+  "Azerbaijan",
+  "Georgia",
+  "Hong Kong",
+  "Kazakhstan",
+  
   "Other (please specify in details)",
 ];
 
 const TRIP_PLANNING_STATUS = [
-  "Just started thinking about it",
-  "Researching destinations",
-  "Comparing options",
-  "Ready to book soon",
-  "Need immediate assistance",
+  "Travel date, destination and people travelling all finalized. Just looking for a package",
+  "Definitely going on a trip. Planning in progress",
+  "Thinking about going on a trip but nothing has been decided yet",
+  "Looking for information only. Will plan later",
 ];
 
 const TIME_TO_BOOK = [
-  "Within 1 week",
-  "Within 2 weeks",
-  "Within 1 month",
-  "Within 3 months",
-  "More than 3 months",
-  "Not sure yet",
+  "I will book within 2-3 days",
+  "I will book within a week",
+  "I will book within a month",
+  "Nothing decided as of now"
 ];
 type FormDataState = {
   name: string;
