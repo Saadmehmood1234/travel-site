@@ -3,7 +3,15 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Plane, Phone, Mail, ChevronDown, ChevronRight } from "lucide-react";
+import {
+  Menu,
+  X,
+  Plane,
+  Phone,
+  Mail,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import SignOutButton from "./SignOutButton";
 import { Profile } from "./Profile";
@@ -25,7 +33,8 @@ interface DestinationCategory {
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDestinationsOpen, setIsDestinationsOpen] = useState(false);
-  const [isMobileDestinationsOpen, setIsMobileDestinationsOpen] = useState(false);
+  const [isMobileDestinationsOpen, setIsMobileDestinationsOpen] =
+    useState(false);
   const { data: session } = useSession();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,6 +50,10 @@ export default function Navbar() {
       href: "#",
       label: "Destinations",
       hasMenu: true,
+    },
+    {
+      href: "blogs",
+      label: "Blogs",
     },
     {
       href: "#about",
@@ -83,9 +96,9 @@ export default function Navbar() {
 
   const categorizeTrips = (trips: Trip[]): DestinationCategory[] => {
     const categories: { [key: string]: Trip[] } = {};
-    
+
     // Group by tripType (International/Domestic)
-    trips.forEach(trip => {
+    trips.forEach((trip) => {
       const category = trip.tripType || "Domestic";
       if (!categories[category]) {
         categories[category] = [];
@@ -95,16 +108,16 @@ export default function Navbar() {
 
     return Object.entries(categories).map(([category, items]) => ({
       category,
-      items: items.slice(0, 8).map(item => ({
+      items: items.slice(0, 8).map((item) => ({
         name: item.title,
-        href: `/destinations/${item.id}`
-      }))
+        href: `/destinations/${item.id}`,
+      })),
     }));
   };
 
   const getDestinationMenu = (): DestinationCategory[] => {
     const apiCategories = categorizeTrips(trips);
-    
+
     if (apiCategories.length > 0) {
       return apiCategories;
     }
@@ -228,12 +241,18 @@ export default function Navbar() {
                       {loading ? (
                         <div className="text-center py-8">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
-                          <p className="text-gray-600">Loading destinations...</p>
+                          <p className="text-gray-600">
+                            Loading destinations...
+                          </p>
                         </div>
                       ) : error ? (
                         <div className="text-center py-8">
-                          <p className="text-red-500 mb-2">Failed to load destinations</p>
-                          <p className="text-gray-600 text-sm">Showing sample destinations</p>
+                          <p className="text-red-500 mb-2">
+                            Failed to load destinations
+                          </p>
+                          <p className="text-gray-600 text-sm">
+                            Showing sample destinations
+                          </p>
                         </div>
                       ) : (
                         <>
@@ -249,7 +268,9 @@ export default function Navbar() {
                                       <Link
                                         href={item.href}
                                         className="text-gray-600 hover:text-primary-600 transition-colors text-sm block py-1"
-                                        onClick={() => setIsDestinationsOpen(false)}
+                                        onClick={() =>
+                                          setIsDestinationsOpen(false)
+                                        }
                                       >
                                         {item.name}
                                       </Link>
@@ -320,43 +341,64 @@ export default function Navbar() {
                     {n.hasMenu ? (
                       <div className="flex flex-col">
                         <button
-                          onClick={() => setIsMobileDestinationsOpen(!isMobileDestinationsOpen)}
+                          onClick={() =>
+                            setIsMobileDestinationsOpen(
+                              !isMobileDestinationsOpen
+                            )
+                          }
                           className="text-gray-800 hover:font-bold hover:text-gray-600 font-medium flex items-center justify-between w-full py-2"
                         >
                           <span>{n.label}</span>
-                          <ChevronRight className={`h-4 w-4 transition-transform ${isMobileDestinationsOpen ? 'rotate-90' : ''}`} />
+                          <ChevronRight
+                            className={`h-4 w-4 transition-transform ${
+                              isMobileDestinationsOpen ? "rotate-90" : ""
+                            }`}
+                          />
                         </button>
-                        
+
                         {isMobileDestinationsOpen && (
                           <div className="pl-4 mt-2 space-y-4 border-l border-gray-200 ml-2">
                             {loading ? (
-                              <div className="text-gray-600 text-sm">Loading destinations...</div>
+                              <div className="text-gray-600 text-sm">
+                                Loading destinations...
+                              </div>
                             ) : error ? (
-                              <div className="text-gray-600 text-sm">Failed to load destinations</div>
+                              <div className="text-gray-600 text-sm">
+                                Failed to load destinations
+                              </div>
                             ) : (
                               <>
-                                {destinationMenu.map((section, sectionIndex) => (
-                                  <div key={sectionIndex} className="space-y-2">
-                                    <h4 className="text-gray-800 font-medium text-sm border-b border-gray-200 pb-1">
-                                      {section.category}
-                                    </h4>
-                                    <div className="space-y-1 pl-2">
-                                      {section.items.map((item, itemIndex) => (
-                                        <Link
-                                          key={itemIndex}
-                                          href={item.href}
-                                          className="text-gray-600 hover:text-primary-600 text-sm block py-1"
-                                          onClick={() => {
-                                            setIsOpen(false);
-                                            setIsMobileDestinationsOpen(false);
-                                          }}
-                                        >
-                                          {item.name}
-                                        </Link>
-                                      ))}
+                                {destinationMenu.map(
+                                  (section, sectionIndex) => (
+                                    <div
+                                      key={sectionIndex}
+                                      className="space-y-2"
+                                    >
+                                      <h4 className="text-gray-800 font-medium text-sm border-b border-gray-200 pb-1">
+                                        {section.category}
+                                      </h4>
+                                      <div className="space-y-1 pl-2">
+                                        {section.items.map(
+                                          (item, itemIndex) => (
+                                            <Link
+                                              key={itemIndex}
+                                              href={item.href}
+                                              className="text-gray-600 hover:text-primary-600 text-sm block py-1"
+                                              onClick={() => {
+                                                setIsOpen(false);
+                                                setIsMobileDestinationsOpen(
+                                                  false
+                                                );
+                                              }}
+                                            >
+                                              {item.name}
+                                            </Link>
+                                          )
+                                        )}
+                                      </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  )
+                                )}
                                 <Link
                                   href="/destinations"
                                   className="text-primary-600 hover:text-primary-700 font-medium text-sm flex items-center pt-2"
