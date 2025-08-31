@@ -160,7 +160,7 @@ export default function Navbar() {
   const destinationMenu = getDestinationMenu();
 
   return (
-    <div className="fixed w-full z-50 flex flex-col gap-3 bg-white pt-5 top-0">
+    <div className="fixed w-full z-50 flex flex-col gap-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white pt-5 top-0">
       <div className="text-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center px-2 space-x-4">
@@ -178,11 +178,11 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-      <nav className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-2 px-4 text-sm">
+      <nav className="bg-white text-gray-900 py-2 px-4 text-sm border border-gray-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center space-x-3">
-              <div className="w-52 bg-white rounded-full">
+              <div className="w-52">
                 <img src="/logo.png" />
               </div>
             </Link>
@@ -197,7 +197,7 @@ export default function Navbar() {
                     <button
                       onMouseEnter={() => setIsDestinationsOpen(true)}
                       onMouseLeave={() => setIsDestinationsOpen(false)}
-                      className="text-white hover:text-gray-200 border-b-2 border-transparent hover:border-white transition-colors font-medium px-3 py-2 flex items-center gap-1"
+                      className="text-gray-800 hover:text-gray-600 border-b-2 border-transparent hover:border-black transition-colors font-medium px-3 py-2 flex items-center gap-1"
                     >
                       {n.label}
                       <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
@@ -205,7 +205,7 @@ export default function Navbar() {
                   ) : (
                     <Link
                       href={`/${n.href}`}
-                      className="text-white hover:text-gray-200 border-b-2 border-transparent hover:border-white transition-colors font-medium px-3 py-2"
+                      className="text-gray-800 hover:text-gray-600 border-b-2 border-transparent hover:border-black transition-colors font-medium px-3 py-2"
                     >
                       {n.label}
                     </Link>

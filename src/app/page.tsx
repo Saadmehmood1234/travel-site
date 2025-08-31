@@ -17,9 +17,10 @@ export default function Home() {
     <div className="min-h-screen bg-white overflow-hidden">
       <Navbar />
       <HeroSection />
+      <FlightBooking />
       <BookingWidget />
       <DestinationShowcase />
-      <FlightBooking/>
+
       <SpecialOffers />
       <FloatWhatsapp />
       <Testimonials />

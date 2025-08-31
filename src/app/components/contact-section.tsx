@@ -270,6 +270,31 @@ export default function ContactSection() {
               <CardContent className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Travel Date */}
+                    <div>
+                    <Label
+                      htmlFor="destination"
+                      className="mb-2 block font-medium text-gray-700"
+                    >
+                      Where do you want to go?
+                    </Label>
+                    <Select
+                      value={formData.destination}
+                      onValueChange={(value) =>
+                        handleInputChange("destination", value)
+                      }
+                    >
+                      <SelectTrigger className="h-12 border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <SelectValue placeholder="Select destination" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DESTINATION_OPTIONS.map((destination) => (
+                          <SelectItem key={destination} value={destination}>
+                            {destination}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div>
                     <Label
                       htmlFor="travelDate"
@@ -508,31 +533,7 @@ export default function ContactSection() {
                   </div>
 
                   {/* Destination */}
-                  <div>
-                    <Label
-                      htmlFor="destination"
-                      className="mb-2 block font-medium text-gray-700"
-                    >
-                      Where do you want to go?
-                    </Label>
-                    <Select
-                      value={formData.destination}
-                      onValueChange={(value) =>
-                        handleInputChange("destination", value)
-                      }
-                    >
-                      <SelectTrigger className="h-12 border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                        <SelectValue placeholder="Select destination" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {DESTINATION_OPTIONS.map((destination) => (
-                          <SelectItem key={destination} value={destination}>
-                            {destination}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                
 
                   {/* Additional Details */}
                   <div>
