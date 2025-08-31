@@ -60,7 +60,7 @@ export default function Navbar() {
       label: "About",
     },
     {
-      href: "#contact",
+      href: "contact",
       label: "Contact",
     },
   ];

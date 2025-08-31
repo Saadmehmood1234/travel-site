@@ -26,7 +26,6 @@ import {
   Users,
   Plane,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { contactUs } from "../actions/contact.actions";
 
@@ -96,16 +95,11 @@ export default function ContactSection() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  const { data: session, status } = useSession();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    if (!session) {
-      router.push("/auth/signin");
-      return;
-    }
 
     try {
       const res = await contactUs(formData);
@@ -141,7 +135,7 @@ export default function ContactSection() {
   return (
     <section
       id="contact"
-      className="py-10 bg-yellow-100 flex justify-center items-center min-h-screen w-full"
+      className="py-10  flex justify-center items-center min-h-screen w-full"
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full mt-24">
         <div className="flex justify-center items-center w-full">
@@ -415,31 +409,7 @@ export default function ContactSection() {
                         </div>
                       </div>
 
-                      <div>
-                        <Label
-                          htmlFor="destination"
-                          className="mb-2 block font-medium text-gray-700"
-                        >
-                          Where do you want to go?
-                        </Label>
-                        <Select
-                          value={formData.destination}
-                          onValueChange={(value) =>
-                            handleInputChange("destination", value)
-                          }
-                        >
-                          <SelectTrigger className="h-12 border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                            <SelectValue placeholder="Select destination" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {DESTINATION_OPTIONS.map((destination) => (
-                              <SelectItem key={destination} value={destination}>
-                                {destination}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      
                       <div>
                         <Label
                           htmlFor="additionalDetails"

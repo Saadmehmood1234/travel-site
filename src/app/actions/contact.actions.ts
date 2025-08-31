@@ -1,6 +1,4 @@
 "use server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import TravelContactForm from "@/model/Contact";
 import { ContactFormType } from "@/types/contact";
 import dbConnect from "@/lib/dbConnect";
@@ -42,11 +40,6 @@ export const contactUs = async (data: ContactFormType) => {
     };
   }
   
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return { success: false, message: "Signin to continue", status: 401 };
-  }
-
   try {
     await dbConnect();
 

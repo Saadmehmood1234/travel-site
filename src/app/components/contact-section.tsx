@@ -95,17 +95,10 @@ export default function ContactSection() {
     additionalDetails: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
-  const { data: session, status } = useSession();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    if (!session) {
-      router.push("/auth/signin");
-      return;
-    }
 
     try {
       const res = await contactUs(formData);
