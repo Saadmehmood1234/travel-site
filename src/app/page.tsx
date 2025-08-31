@@ -25,7 +25,7 @@ export default function Home() {
       <FloatWhatsapp />
       <Testimonials />
       <AboutUs />
-      {/* <BlogSection /> */}
+      <BlogSection />
       <ContactSection />
       <Footer />
     </div>

@@ -43,7 +43,7 @@ export const toggleWishlist = async (
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.id) {
-      return { status: "error", message: "Unauthorized" };
+      return { status: "error", message: "Please Signin to continue" };
     }
 
     if (!productId) {
