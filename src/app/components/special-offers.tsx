@@ -212,10 +212,9 @@ export default function SpecialOffers() {
                     <Card className="border-0 shadow-2xl overflow-hidden">
                       <div className="grid grid-cols-1 lg:grid-cols-2">
                         <div className="relative h-64 lg:h-auto">
-                          <Image
+                          <img
                             src={offer.image || "/placeholder.svg"}
                             alt={offer.title}
-                            fill
                             className="object-cover"
                           />
                           <div

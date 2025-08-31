@@ -22,7 +22,7 @@ export default function Home() {
       <FlightBooking/>
       <SpecialOffers />
       <FloatWhatsapp />
-      {/* <Testimonials /> */}
+      <Testimonials />
       <AboutUs />
       {/* <BlogSection /> */}
       <ContactSection />

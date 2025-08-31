@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Star, Quote, ChevronLeft, ChevronRight, Play } from "lucide-react"
-import Image from "next/image"
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Star, Quote, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import Image from "next/image";
 
 const testimonials = [
   {
@@ -15,7 +15,8 @@ const testimonials = [
     title: "Absolutely Amazing Experience!",
     comment:
       "WanderLust made our honeymoon in Bali absolutely perfect. Every detail was taken care of, from the airport pickup to the romantic dinner on the beach. The local guides were incredibly knowledgeable and friendly. We couldn't have asked for a better experience!",
-    image: "https://pixabay.com/get/gee42d4b0446afc77e05ac16740bb3b7efb55302f194a6bb03cdad7f0b94d707592fdc3da860d2323a26ad7c12bae8990c3da9826079eceef176189428d421966_640.jpg",
+    image:
+      "https://pixabay.com/get/gee42d4b0446afc77e05ac16740bb3b7efb55302f194a6bb03cdad7f0b94d707592fdc3da860d2323a26ad7c12bae8990c3da9826079eceef176189428d421966_640.jpg",
     destination: "Bali, Indonesia",
     date: "December 2023",
     verified: true,
@@ -29,7 +30,8 @@ const testimonials = [
     title: "Swiss Alps Adventure of a Lifetime",
     comment:
       "The Swiss Alps adventure exceeded all expectations. The accommodations were luxurious, the views were breathtaking, and the skiing was world-class. Our guide Marco was fantastic and showed us hidden gems that most tourists never see. Already planning our next trip with WanderLust!",
-    image: "https://pixabay.com/get/g6a88bd905720342c8209f3cbe569d765b61cd5773abe2cb6ff64b61904628bdf2993ecad0405e1df54bafa093ca84878276de0d11d69de82bf00759a3080574e_640.jpg",
+    image:
+      "https://pixabay.com/get/g6a88bd905720342c8209f3cbe569d765b61cd5773abe2cb6ff64b61904628bdf2993ecad0405e1df54bafa093ca84878276de0d11d69de82bf00759a3080574e_640.jpg",
     destination: "Switzerland",
     date: "January 2024",
     verified: true,
@@ -43,7 +45,8 @@ const testimonials = [
     title: "Perfect Family Vacation",
     comment:
       "Our family trip to Japan was seamlessly organized. The cultural experiences and food tours were highlights of our vacation. The kids loved the theme parks, and we adults enjoyed the traditional temples and gardens. WanderLust thought of everything, even dietary restrictions!",
-    image: "https://pixabay.com/get/g49729e4f40a09d9973984caa763499551ea373587d28c1f27587b52dc9d708d0d6fa4a2406cd6634c126e0ea4ae1802e_640.jpg",
+    image:
+      "https://pixabay.com/get/g49729e4f40a09d9973984caa763499551ea373587d28c1f27587b52dc9d708d0d6fa4a2406cd6634c126e0ea4ae1802e_640.jpg",
     destination: "Tokyo, Japan",
     date: "March 2024",
     verified: true,
@@ -57,7 +60,8 @@ const testimonials = [
     title: "Safari Dreams Come True",
     comment:
       "The African safari was beyond our wildest dreams. Seeing the Big Five in their natural habitat was incredible. Our guide was extremely knowledgeable about wildlife and conservation. The luxury tented camp was comfortable and the food was excellent. Highly recommend!",
-    image: "https://pixabay.com/get/g5026ec25859217f2919f210f8b633808eeddd56dfd73d8e872155451a17fc04482617a62406ff61403780fb6f66137b2_640.jpg",
+    image:
+      "https://pixabay.com/get/g5026ec25859217f2919f210f8b633808eeddd56dfd73d8e872155451a17fc04482617a62406ff61403780fb6f66137b2_640.jpg",
     destination: "Kenya & Tanzania",
     date: "February 2024",
     verified: true,
@@ -71,100 +75,42 @@ const testimonials = [
     title: "Maldives Paradise",
     comment:
       "The overwater villa in Maldives was pure luxury. Crystal clear waters, amazing snorkeling, and the most beautiful sunsets I've ever seen. The spa treatments were divine and the staff went above and beyond to make our stay special. Worth every penny!",
-    image: "https://pixabay.com/get/g224f6445650c8e07f1984e07bd3814aa13de9f294eb7a341bc94a0df074656d0137862c9da985d7186353b58c2d7a4994c877eff0c92590a4db017fe2f5ec708_640.jpg",
+    image:
+      "https://pixabay.com/get/g224f6445650c8e07f1984e07bd3814aa13de9f294eb7a341bc94a0df074656d0137862c9da985d7186353b58c2d7a4994c877eff0c92590a4db017fe2f5ec708_640.jpg",
     destination: "Maldives",
     date: "November 2023",
     verified: true,
     video: null,
   },
-]
+];
 
 export default function Testimonials() {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [showVideo, setShowVideo] = useState(false)
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [showVideo, setShowVideo] = useState(false);
 
   const nextTestimonial = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length)
-  }
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+  };
 
   const prevTestimonial = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + testimonials.length) % testimonials.length)
-  }
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + testimonials.length) % testimonials.length
+    );
+  };
 
-  const currentTestimonial = testimonials[currentIndex]
+  const currentTestimonial = testimonials[currentIndex];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-primary-50 via-white to-secondary-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <Badge className="mb-4 bg-primary-100 text-primary-700 hover:bg-primary-200">⭐ Customer Reviews</Badge>
-          <h2 className="text-4xl  md:text-5xl font-heading font-bold text-gray-900 mb-6">
-            What Our Travelers
-            <span className="block  text-primary-600 ">
-              Are Saying
-            </span>
-          </h2>
-          <p className="text-xl mt-4 text-gray-600 max-w-3xl mx-auto">
-            Don't just take our word for it - hear from our satisfied customers who have experienced unforgettable
-            journeys with us.
-          </p>
-        </div>
-        <div className="relative max-w-4xl mx-auto mb-12">
-          <Card className="border-0 shadow-2xl overflow-hidden">
-            <CardContent className="p-0">
-              <div className="grid grid-cols-1 lg:grid-cols-2">
-                <div className="relative h-64 lg:h-auto">
-                  <Image
-                    src={currentTestimonial.image || "/placeholder.svg"}
-                    alt={currentTestimonial.name}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
-                    <span className="text-sm font-medium text-gray-900">{currentTestimonial.destination}</span>
-                  </div>
-                  {currentTestimonial.verified && (
-                    <div className="absolute top-4 right-4 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center">
-                      ✓ Verified
-                    </div>
-                  )}
-                </div>
-                <div className="p-8 lg:p-12 flex flex-col justify-center">
-                  <Quote className="h-12 w-12 text-primary-200 mb-6" />
-                  <div className="flex items-center mb-4">
-                    {[...Array(currentTestimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                    ))}
-                    <span className="ml-2 text-sm text-gray-600">({currentTestimonial.rating}.0)</span>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">{currentTestimonial.title}</h3>
-                  <p className="text-gray-600 mb-6 leading-relaxed text-lg">"{currentTestimonial.comment}"</p>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-semibold text-gray-900 text-lg">{currentTestimonial.name}</h4>
-                      <p className="text-gray-600">{currentTestimonial.location}</p>
-                      <p className="text-sm text-gray-500">{currentTestimonial.date}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <button
-            onClick={prevTestimonial}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-10"
-          >
-            <ChevronLeft className="h-6 w-6 text-gray-700" />
-          </button>
-          <button
-            onClick={nextTestimonial}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-10"
-          >
-            <ChevronRight className="h-6 w-6 text-gray-700" />
-          </button>
-        </div>
-      </div>
-    </section>
-  )
+     <div className="w-full flex justify-center p-4">
+      <iframe
+         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3505.912462906373!2d77.2325879!3d28.512281299999994!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce1a0ee38a96f%3A0x8ffc64f0186e48b5!2sCloudship%20Holidays!5e0!3m2!1sen!2sin!4v1756641288915!5m2!1sen!2sin"
+        width="100%"
+        height="450"
+        style={{ border: 0 }}
+        allowFullScreen
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+      ></iframe>
+    </div>
+  );
 }
