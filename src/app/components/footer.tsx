@@ -169,6 +169,12 @@ export default function Footer() {
               >
                 Terms of Service
               </Link>
+              <Link
+                href="/cancellation-policy"
+                className="text-gray-100 hover:text-white transition-colors"
+              >
+                Cancellation Policy
+              </Link>
             </div>
           </div>
         </div>

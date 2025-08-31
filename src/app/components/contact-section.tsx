@@ -601,8 +601,66 @@ export default function ContactSection() {
                 </form>
               </CardContent>
             </Card>
+            
           </div>
         </div>
+         <section id="faq">
+          <div className="mt-20">
+            <div className="text-center mb-12">
+              <h3 className="text-3xl font-heading font-bold text-gray-900 mb-4">
+                Frequently Asked Questions
+              </h3>
+              <p className="text-xl text-gray-600">
+                Quick answers to common questions about our services.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <Card className="p-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                  How far in advance should I book?
+                </h4>
+                <p className="text-gray-600">
+                  We recommend booking 2-3 months in advance for the best prices
+                  and availability. However, we can also help with last-minute
+                  bookings.
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                  Do you offer travel insurance?
+                </h4>
+                <p className="text-gray-600">
+                  Yes, we offer comprehensive travel insurance options to
+                  protect your investment and provide peace of mind during your
+                  travels.
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                  Can you help with visa requirements?
+                </h4>
+                <p className="text-gray-600">
+                  Our team can assist with visa applications and provide
+                  guidance on entry requirements for your destination.
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                  What if I need to cancel my trip?
+                </h4>
+                <p className="text-gray-600">
+                  We understand plans can change. We'll work with you and our
+                  partners to minimize cancellation fees and explore rebooking
+                  options.
+                </p>
+              </Card>
+            </div>
+          </div>
+        </section>
       </div>
     </section>
   );

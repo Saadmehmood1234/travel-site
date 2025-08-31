@@ -4,7 +4,7 @@ import Link from "next/link"
 
 export default function CancellationPolicy() {
   return (
-    <div className="bg-white">
+    <div className="bg-white mt-12">
       <div className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex justify-center mb-4">
@@ -92,7 +92,7 @@ export default function CancellationPolicy() {
             </h2>
             <p>If you have any questions about our cancellation policy or need to discuss a specific situation, please contact our customer support team.</p>
             <div className="mt-6 flex flex-wrap gap-4">
-              <Link href="/#contact">
+              <Link href="/contact">
                 <Button variant="outline" className="border-primary-500 text-primary-600 hover:bg-primary-50">
                   Contact Support
                 </Button>

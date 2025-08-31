@@ -25,6 +25,7 @@ interface Trip {
   category: string;
   featured: boolean;
   discount: number;
+  tripType: "International" | "Domestic"; // Add this line
 }
 
 export default function DestinationShowcase() {
@@ -40,8 +41,7 @@ export default function DestinationShowcase() {
         year: "numeric",
       });
     } catch (error) {
-
-      return dateString;  
+      return dateString;
     }
   };
 
@@ -79,13 +79,13 @@ export default function DestinationShowcase() {
             category: product.category,
             featured: product.featured,
             discount: product.discount,
+            tripType: product.tripType || "Domestic", // Add this line
           }));
           setUpcomingTrips(tripsData);
         } else {
           setError("Failed to load products");
         }
       } catch (err) {
-
         setError("An error occurred while fetching data");
       } finally {
         setLoading(false);

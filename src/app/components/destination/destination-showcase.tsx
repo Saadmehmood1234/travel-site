@@ -26,6 +26,7 @@ interface Trip {
   category: string;
   featured: boolean;
   discount: number;
+  tripType: "International" | "Domestic";
 }
 
 const categories = ["All", "Beach", "Adventure", "Luxury", "Family-Friendly"];
@@ -41,10 +42,10 @@ export default function DestinationShowcase() {
   const formatDateForDisplay = (dateString: string): string => {
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
       });
     } catch (error) {
       return dateString;
@@ -67,7 +68,8 @@ export default function DestinationShowcase() {
             duration: product.duration,
             dates: product.availableDates
               ? product.availableDates.map((date) => {
-                  const dateObj = typeof date === "string" ? new Date(date) : date;
+                  const dateObj =
+                    typeof date === "string" ? new Date(date) : date;
                   return formatDateForDisplay(dateObj.toISOString());
                 })
               : [],
@@ -84,6 +86,7 @@ export default function DestinationShowcase() {
             category: product.category,
             featured: product.featured,
             discount: product.discount,
+            tripType: product.tripType || "Domestic", // Add this line
           }));
           setUpcomingTrips(tripsData);
           setFilteredTrips(tripsData);
@@ -123,8 +126,8 @@ export default function DestinationShowcase() {
               Discover Amazing Trips
             </h2>
             <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
-              Explore our handpicked selection of community trips to breathtaking
-              destinations around the world.
+              Explore our handpicked selection of community trips to
+              breathtaking destinations around the world.
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-8 md:mb-12">
@@ -202,12 +205,18 @@ export default function DestinationShowcase() {
               <Filter className="h-4 w-4 mr-2" />
               Filter by Category
             </span>
-            <ChevronDown 
-              className={`h-4 w-4 transition-transform ${showMobileFilters ? 'rotate-180' : ''}`} 
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${
+                showMobileFilters ? "rotate-180" : ""
+              }`}
             />
           </Button>
         </div>
-        <div className={`${showMobileFilters ? 'block' : 'hidden'} md:flex flex-wrap justify-center gap-2 md:gap-4 mb-8 md:mb-12`}>
+        <div
+          className={`${
+            showMobileFilters ? "block" : "hidden"
+          } md:flex flex-wrap justify-center gap-2 md:gap-4 mb-8 md:mb-12`}
+        >
           <div className="flex flex-col md:flex-row md:items-center bg-white rounded-lg md:rounded-full p-2 md:p-1 shadow-lg w-full md:w-auto">
             <div className="hidden md:flex items-center">
               <Filter className="h-5 w-5 text-gray-400 ml-3 mr-2" />
@@ -241,7 +250,6 @@ export default function DestinationShowcase() {
                 <TripCard key={trip.id} trip={trip} />
               ))}
             </div>
-            
             {selectedCategory !== "All" && filteredTrips.length === 0 && (
               <div className="text-center py-8 md:py-12">
                 <div className="max-w-md mx-auto">
@@ -265,8 +273,9 @@ export default function DestinationShowcase() {
                     No {selectedCategory} Trips Found
                   </h3>
                   <p className="text-sm md:text-base text-gray-500 mb-4 md:mb-6">
-                    We don't have any {selectedCategory.toLowerCase()} trips available at the moment.
-                    Try selecting a different category or check back later.
+                    We don't have any {selectedCategory.toLowerCase()} trips
+                    available at the moment. Try selecting a different category
+                    or check back later.
                   </p>
                   <Button
                     onClick={() => setSelectedCategory("All")}
@@ -301,7 +310,8 @@ export default function DestinationShowcase() {
                 No Trips Available
               </h3>
               <p className="text-sm md:text-base text-gray-500 mb-4 md:mb-6">
-                We're currently preparing new adventures for you. Check back soon for exciting trips!
+                We're currently preparing new adventures for you. Check back
+                soon for exciting trips!
               </p>
               <div className="space-y-2 mb-4 md:mb-6">
                 <p className="text-xs md:text-sm text-gray-400">
@@ -315,9 +325,7 @@ export default function DestinationShowcase() {
               </div>
               <div className="mt-6 space-x-3">
                 <Button asChild size="sm" className="text-xs md:text-sm">
-                  <Link href="/#contact">
-                    Contact Us
-                  </Link>
+                  <Link href="/#contact">Contact Us</Link>
                 </Button>
               </div>
             </div>

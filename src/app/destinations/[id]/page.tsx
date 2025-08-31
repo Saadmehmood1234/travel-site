@@ -46,8 +46,8 @@ interface TripDetails {
   availableDates: Date[];
   isCommunityTrip: boolean;
   faqs: { question: string; answer: string }[];
+  tripType: "International" | "Domestic"; // Change to match your data
 }
-
 export default function TripDetailPage() {
   const params = useParams();
   const id = params.id as string;
@@ -136,6 +136,7 @@ export default function TripDetailPage() {
                   "Full refund up to 30 days before departure. Please see our terms for details.",
               },
             ],
+            tripType: product.tripType || "domestic",
           };
 
           setTripDetails(transformedData);
@@ -212,70 +213,71 @@ export default function TripDetailPage() {
       </div>
     );
   }
-if (error || !tripDetails) {
-  return (
-    <div className=" min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-md w-full text-center p-8 transform hover:scale-105 transition-transform duration-200">
-        <div className="mb-6">
-          <div className="w-20 h-20 mx-auto bg-gradient-to-r from-red-100 to-pink-100 rounded-full flex items-center justify-center">
-            <svg 
-              className="w-10 h-10 text-red-500" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.966-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" 
-              />
-            </svg>
+  if (error || !tripDetails) {
+    return (
+      <div className=" min-h-screen flex items-center justify-center px-4">
+        <div className="max-w-md w-full text-center p-8 transform hover:scale-105 transition-transform duration-200">
+          <div className="mb-6">
+            <div className="w-20 h-20 mx-auto bg-gradient-to-r from-red-100 to-pink-100 rounded-full flex items-center justify-center">
+              <svg
+                className="w-10 h-10 text-red-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.966-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                />
+              </svg>
+            </div>
           </div>
-        </div>
 
-        <h2 className="text-2xl font-bold text-gray-800 mb-3">
-          Oops! Something went wrong
-        </h2>
-        
-        <p className="text-gray-600 mb-6 leading-relaxed">
-          {error || "We couldn't find the trip you're looking for. It might have been moved or no longer available."}
-        </p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-3">
+            Oops! Something went wrong
+          </h2>
 
-        <div className="space-y-3">
-          <Link href="/destinations">
-            <button className="w-full mb-2 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-              🌟 Explore Other Destinations
-            </button>
-          </Link>
-          
-          <Link href="/">
-            <button className="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition-all duration-200">
-              🏠 Back to Home
-            </button>
-          </Link>
-        </div>
-        <div className="mt-6 pt-6 border-t border-gray-100">
-          <p className="text-sm text-gray-500 mb-2">Need help?</p>
-          <div className="flex justify-center space-x-4">
-            <a 
-              href="tel:+919310682414" 
-              className="text-primary-600 hover:text-primary-700 text-sm flex items-center"
-            >
-              📞 +91-9310682414
-            </a>
-           <Link href="/#contact"
-              className="text-primary-600 hover:text-primary-700 text-sm flex items-center"
-            >
-              ✉️ Contact Support
-  
+          <p className="text-gray-600 mb-6 leading-relaxed">
+            {error ||
+              "We couldn't find the trip you're looking for. It might have been moved or no longer available."}
+          </p>
+
+          <div className="space-y-3">
+            <Link href="/destinations">
+              <button className="w-full mb-2 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                🌟 Explore Other Destinations
+              </button>
             </Link>
+
+            <Link href="/">
+              <button className="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition-all duration-200">
+                🏠 Back to Home
+              </button>
+            </Link>
+          </div>
+          <div className="mt-6 pt-6 border-t border-gray-100">
+            <p className="text-sm text-gray-500 mb-2">Need help?</p>
+            <div className="flex justify-center space-x-4">
+              <a
+                href="tel:+919310682414"
+                className="text-primary-600 hover:text-primary-700 text-sm flex items-center"
+              >
+                📞 +91-9310682414
+              </a>
+              <Link
+                href="/#contact"
+                className="text-primary-600 hover:text-primary-700 text-sm flex items-center"
+              >
+                ✉️ Contact Support
+              </Link>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <div className="bg-gray-50">
@@ -294,6 +296,15 @@ if (error || !tripDetails) {
               <span className="flex items-center bg-blue-50 text-blue-800 px-2 py-1 rounded text-sm">
                 <FiStar className="text-yellow-500 mr-1" />
                 {tripDetails.rating} ({tripDetails.reviews} reviews)
+              </span>
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  tripDetails.tripType === "International"
+                    ? "bg-purple-100 text-purple-800"
+                    : "bg-green-100 text-green-800"
+                }`}
+              >
+                {tripDetails.tripType}
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-2">
