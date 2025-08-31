@@ -1,4 +1,3 @@
-
 import { getBlogBySlug, getBlogs } from '@/app/actions/blog.actions';
 import { Calendar, User, Clock, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
@@ -8,13 +7,18 @@ import { notFound } from 'next/navigation';
 export async function generateStaticParams() {
   const blogs = await getBlogs();
   
-  return blogs.map((blog:any) => ({
+  return blogs.map((blog) => ({
     slug: blog.slug,
   }));
 }
 
-export default async function BlogDetail({ params }: { params: { slug: string } }) {
-  const blog = await getBlogBySlug(params.slug);
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default async function BlogDetail({ params }: PageProps) {
+  const { slug } = await params;
+  const blog = await getBlogBySlug(slug);
   
   if (!blog) {
     notFound();
