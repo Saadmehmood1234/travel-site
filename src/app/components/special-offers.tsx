@@ -217,9 +217,7 @@ export default function SpecialOffers() {
                             alt={offer.title}
                             className="object-cover"
                           />
-                          <div
-                            className={`absolute inset-0 bg-gradient-to-r ${offer.color} opacity-80`}
-                          />
+                          
                           <div className="absolute top-6 left-6">
                             <div className="bg-white rounded-full p-4 shadow-lg">
                               <div className="text-center">
