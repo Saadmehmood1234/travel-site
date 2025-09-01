@@ -339,9 +339,9 @@ export function Profile() {
                               };
 
                               const product = isProductPopulated(trip.product)
-                                ? trip.product
+                                ? trip?.product
                                 : {
-                                    _id: trip.product.toString(),
+                                    _id: trip?.product?.toString(),
                                     name: "Unknown Product",
                                     images: [],
                                   };
