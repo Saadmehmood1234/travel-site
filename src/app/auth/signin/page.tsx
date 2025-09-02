@@ -52,7 +52,7 @@ export default function SignInPage() {
   }
 
   return (
-    <section className="flex w-full mt-12 max-md:mt-20 justify-center items-center min-h-screen bg-primary-600 px-4 py-8 md:py-16 relative overflow-hidden">
+    <section className="flex w-full mt-12 max-md:mt-20 justify-center items-center min-h-screen  px-4 py-8 md:py-16 relative overflow-hidden">
       <div className="flex flex-col items-center gap-4 relative bg-white text-black px-6 py-8 md:px-9 md:py-10 rounded-xl w-full max-w-md">
         <h2 className="text-3xl md:text-4xl font-bold text-primary-600 drop-shadow-lg">
           Sign In

@@ -89,11 +89,11 @@ export default function DestinationShowcase() {
             category: product.category,
             featured: product.featured,
             discount: product.discount,
-            tripType: product.tripType || "Domestic", // Add this line
+            tripType: product.tripType || "Domestic",
           }));
           setUpcomingTrips(tripsData);
           setFilteredTrips(tripsData);
-          setDisplayedTrips(tripsData.slice(0, 6)); // Show only first 6 trips initially
+          setDisplayedTrips(tripsData.slice(0, 6));
         } else {
           setError(result.error || "Failed to load products");
         }
@@ -111,13 +111,13 @@ export default function DestinationShowcase() {
     if (selectedCategory === "All") {
       const filtered = upcomingTrips;
       setFilteredTrips(filtered);
-      setDisplayedTrips(filtered.slice(0, 6)); // Show only first 6 trips
+      setDisplayedTrips(filtered.slice(0, 6)); 
     } else {
       const filtered = upcomingTrips.filter(
         (trip) => trip.category === selectedCategory
       );
       setFilteredTrips(filtered);
-      setDisplayedTrips(filtered.slice(0, 6)); // Show only first 6 trips
+      setDisplayedTrips(filtered.slice(0, 6));
     }
   }, [selectedCategory, upcomingTrips]);
 

@@ -196,7 +196,6 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Navigation Arrows */}
       <div className="absolute inset-y-0 left-0 flex items-center pl-6 z-10">
         <button
           onClick={goToPrev}
@@ -216,7 +215,6 @@ export default function HeroSection() {
         </button>
       </div>
 
-      {/* Navigation Dots */}
       <div className="absolute bottom-28 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
         {destinations.map((_, index) => (
           <button

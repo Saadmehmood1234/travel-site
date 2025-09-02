@@ -31,7 +31,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gradient-to-br from-primary-800 via-primary-700 to-secondary-800 text-white">
+    <footer className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white">
       <div className="max-w-7xl mx-auto container-padding">
         <div className="py-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           <div className="lg:col-span-1">
@@ -141,7 +141,7 @@ export default function Footer() {
                 <span className="text-gray-100 text-sm">+91-9310682414</span>
               </div>
               <div className="flex items-center space-x-3">
-                <Mail className="h-5 w-5 text-primary-400" />
+                <Mail className="h-5 w-5 text-primary-100" />
                 <span className="text-gray-100 text-sm">
                   info@cloudshipholidays.com
                 </span>

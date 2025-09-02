@@ -113,7 +113,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <div className="fixed w-full z-50 flex flex-col gap-0 bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-600 text-white pt-4 top-0 shadow-lg">
+    <div className="fixed w-full z-50 flex flex-col gap-0 bg-gradient-to-r from-primary-500 to-secondary-500 text-white pt-4 top-0 shadow-lg">
       <div className="text-sm bg-black/10 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center container-padding py-2">
           <div className="flex items-center space-x-6">
@@ -260,7 +260,6 @@ export default function Navbar() {
 
                         {isMobileDestinationsOpen && (
                           <div className="pl-4 mt-2 space-y-4 border-l border-gray-200 ml-2">
-                            {/* Scrollable container for destination menu */}
                             <div className="max-h-64 overflow-y-auto pr-2">
                               {staticDestinationMenu.map(
                                 (section, sectionIndex) => (

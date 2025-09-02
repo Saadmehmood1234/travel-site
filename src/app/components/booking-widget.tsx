@@ -196,8 +196,7 @@ export default function BookingWidget() {
     const adults = parseInt(bookingData.adults) || 0;
     const children = parseInt(bookingData.children) || 0;
     const quantity = adults + children;
-    
-    // Calculate total amount based on quantity
+
     const basePrice = selectedTrip.originalPrice || selectedTrip.price;
     const totalAmount = basePrice * quantity;
     
@@ -205,14 +204,14 @@ export default function BookingWidget() {
 
     const updatedBookingData: BookingData = {
       ...bookingData,
-      userId: session?.user.id || "", // Handle guest users
+      userId: session?.user.id || "",
       trips: JSON.stringify([
         {
           product: selectedTrip.id,
           name: selectedTrip.title,
           location: selectedTrip.subtitle,
           quantity: quantity,
-          price: totalAmount, // Use the calculated total amount
+          price: totalAmount,
           selectedDate: bookingData.checkIn || new Date(),
         },
       ]),

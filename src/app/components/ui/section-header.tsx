@@ -26,7 +26,7 @@ export function SectionHeader({
       className
     )}>
       {badge && (
-        <Badge className="badge-primary mb-6">
+        <Badge className="bg-gradient-to-r from-primary-500 to-secondary-500 mb-6">
           {badge}
         </Badge>
       )}

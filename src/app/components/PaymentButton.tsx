@@ -24,7 +24,6 @@ const PaymentButton = ({
   const [loading, setLoading] = useState(false);
   const [totalAmount, setTotalAmount] = useState<number>(0);
 
-  // Calculate total amount when component mounts or bookingData changes
   useEffect(() => {
     if (amount && bookingData) {
       const adults = Number(bookingData?.adults) || 0;

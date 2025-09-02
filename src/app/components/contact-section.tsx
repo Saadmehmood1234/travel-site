@@ -238,7 +238,7 @@ export default function ContactSection() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-primary-600 to-secondary-600 rounded-2xl p-8 text-white">
+            <div className="bg-gradient-to-r from-primary-500 to-secondary-500 rounded-2xl p-8 text-white">
               <h3 className="text-xl font-bold mb-4">Why Contact Us?</h3>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
@@ -263,7 +263,7 @@ export default function ContactSection() {
 
           <div className="lg:col-span-7">
             <Card className="shadow-2xl border-0 overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-8">
+              <CardHeader className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-8">
                 <CardTitle className="text-3xl font-bold">
                   Personalized Travel Consultation
                 </CardTitle>
@@ -549,7 +549,7 @@ export default function ContactSection() {
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full h-14 text-lg bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 shadow-lg transition-all"
+                    className="w-full h-14 text-lg bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-700 shadow-lg transition-all"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

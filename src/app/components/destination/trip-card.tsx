@@ -15,7 +15,7 @@ export default function TripCard({ trip }: { trip: any }) {
           className="w-full h-48 md:h-56 object-cover"
         />
         {trip.isCommunityTrip && (
-          <div className="absolute top-4 left-4 bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg backdrop-blur-sm">
+          <div className="absolute top-4 left-4 bg-gradient-to-r from-primary-500 to-secondary-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg backdrop-blur-sm">
             Community Trip
           </div>
         )}
