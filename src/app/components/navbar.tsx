@@ -271,13 +271,11 @@ export default function Navbar() {
                                     key={sectionIndex}
                                     className="space-y-2 mb-4"
                                   >
-                                    {/* Make Domestic and International dropdowns */}
                                     {section.category === "Domestic" ||
                                     section.category === "International" ? (
                                       <div className="flex flex-col">
                                         <button
                                           onClick={() => {
-                                            // Type-safe toggle for dropdowns
                                             if (
                                               section.category === "Domestic" ||
                                               section.category ===
@@ -333,7 +331,6 @@ export default function Navbar() {
                                         )}
                                       </div>
                                     ) : (
-                                      // Regular non-dropdown sections
                                       <>
                                         <h4 className="text-gray-800 font-medium text-sm border-b border-gray-200 pb-1 sticky top-0 bg-white z-10">
                                           {section.category}
