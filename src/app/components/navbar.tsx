@@ -32,6 +32,10 @@ interface DestinationCategory {
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDestinationsOpen, setIsDestinationsOpen] = useState(false);
+  const [mobileDropdownsOpen, setMobileDropdownsOpen] = useState({
+    Domestic: false,
+    International: false,
+  } as const);
   const [isMobileDestinationsOpen, setIsMobileDestinationsOpen] =
     useState(false);
   const { data: session } = useSession();
@@ -267,24 +271,94 @@ export default function Navbar() {
                                     key={sectionIndex}
                                     className="space-y-2 mb-4"
                                   >
-                                    <h4 className="text-gray-800 font-medium text-sm border-b border-gray-200 pb-1 sticky top-0 bg-white z-10">
-                                      {section.category}
-                                    </h4>
-                                    <div className="space-y-1 pl-2">
-                                      {section.items.map((item, itemIndex) => (
-                                        <Link
-                                          key={itemIndex}
-                                          href={item.href}
-                                          className="text-gray-600 hover:text-primary-600 text-sm block py-1"
+                                    {/* Make Domestic and International dropdowns */}
+                                    {section.category === "Domestic" ||
+                                    section.category === "International" ? (
+                                      <div className="flex flex-col">
+                                        <button
                                           onClick={() => {
-                                            setIsOpen(false);
-                                            setIsMobileDestinationsOpen(false);
+                                            // Type-safe toggle for dropdowns
+                                            if (
+                                              section.category === "Domestic" ||
+                                              section.category ===
+                                                "International"
+                                            ) {
+                                              setMobileDropdownsOpen(
+                                                (prev) => ({
+                                                  ...prev,
+                                                  [section.category]:
+                                                    !prev[
+                                                      section.category as keyof typeof prev
+                                                    ],
+                                                })
+                                              );
+                                            }
                                           }}
+                                          className="text-gray-800 font-medium text-sm border-b border-gray-200 pb-1 flex items-center justify-between sticky top-0 bg-white z-10"
                                         >
-                                          {item.name}
-                                        </Link>
-                                      ))}
-                                    </div>
+                                          <span>{section.category}</span>
+                                          <ChevronRight
+                                            className={`h-4 w-4 transition-transform ${
+                                              mobileDropdownsOpen[
+                                                section.category as keyof typeof mobileDropdownsOpen
+                                              ]
+                                                ? "rotate-90"
+                                                : ""
+                                            }`}
+                                          />
+                                        </button>
+
+                                        {mobileDropdownsOpen[
+                                          section.category as keyof typeof mobileDropdownsOpen
+                                        ] && (
+                                          <div className="space-y-1 pl-2 mt-2">
+                                            {section.items.map(
+                                              (item, itemIndex) => (
+                                                <Link
+                                                  key={itemIndex}
+                                                  href={item.href}
+                                                  className="text-gray-600 hover:text-primary-600 text-sm block py-1"
+                                                  onClick={() => {
+                                                    setIsOpen(false);
+                                                    setIsMobileDestinationsOpen(
+                                                      false
+                                                    );
+                                                  }}
+                                                >
+                                                  {item.name}
+                                                </Link>
+                                              )
+                                            )}
+                                          </div>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      // Regular non-dropdown sections
+                                      <>
+                                        <h4 className="text-gray-800 font-medium text-sm border-b border-gray-200 pb-1 sticky top-0 bg-white z-10">
+                                          {section.category}
+                                        </h4>
+                                        <div className="space-y-1 pl-2">
+                                          {section.items.map(
+                                            (item, itemIndex) => (
+                                              <Link
+                                                key={itemIndex}
+                                                href={item.href}
+                                                className="text-gray-600 hover:text-primary-600 text-sm block py-1"
+                                                onClick={() => {
+                                                  setIsOpen(false);
+                                                  setIsMobileDestinationsOpen(
+                                                    false
+                                                  );
+                                                }}
+                                              >
+                                                {item.name}
+                                              </Link>
+                                            )
+                                          )}
+                                        </div>
+                                      </>
+                                    )}
                                   </div>
                                 )
                               )}
