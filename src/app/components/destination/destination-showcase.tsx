@@ -36,6 +36,7 @@ const categories = ["All", "Beach", "Adventure", "Luxury", "Family-Friendly"];
 export default function DestinationShowcase() {
   const [upcomingTrips, setUpcomingTrips] = useState<Trip[]>([]);
   const [filteredTrips, setFilteredTrips] = useState<Trip[]>([]);
+  const [displayedTrips, setDisplayedTrips] = useState<Trip[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,6 +93,7 @@ export default function DestinationShowcase() {
           }));
           setUpcomingTrips(tripsData);
           setFilteredTrips(tripsData);
+          setDisplayedTrips(tripsData.slice(0, 6)); // Show only first 6 trips initially
         } else {
           setError(result.error || "Failed to load products");
         }
@@ -107,12 +109,15 @@ export default function DestinationShowcase() {
 
   useEffect(() => {
     if (selectedCategory === "All") {
-      setFilteredTrips(upcomingTrips);
+      const filtered = upcomingTrips;
+      setFilteredTrips(filtered);
+      setDisplayedTrips(filtered.slice(0, 6)); // Show only first 6 trips
     } else {
       const filtered = upcomingTrips.filter(
         (trip) => trip.category === selectedCategory
       );
       setFilteredTrips(filtered);
+      setDisplayedTrips(filtered.slice(0, 6)); // Show only first 6 trips
     }
   }, [selectedCategory, upcomingTrips]);
 
@@ -225,13 +230,25 @@ export default function DestinationShowcase() {
           </div>
         </div>
 
-        {filteredTrips.length > 0 ? (
+        {displayedTrips.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {filteredTrips.map((trip) => (
+              {displayedTrips.map((trip) => (
                 <TripCard key={trip.id} trip={trip} />
               ))}
             </div>
+            
+            {/* Show View All button if there are more than 6 trips */}
+            {filteredTrips.length > 6 && (
+              <div className="text-center mt-8 md:mt-12">
+                <Button asChild size="lg" className="bg-gradient-to-r from-primary-500 to-secondary-500">
+                  <Link href="/destinations">
+                    View All 
+                  </Link>
+                </Button>
+              </div>
+            )}
+            
             {selectedCategory !== "All" && filteredTrips.length === 0 && (
               <div className="text-center py-8 md:py-12">
                 <div className="max-w-md mx-auto">
@@ -263,7 +280,7 @@ export default function DestinationShowcase() {
                     onClick={() => setSelectedCategory("All")}
                     className="bg-gradient-to-r from-primary-500 to-secondary-500 text-sm md:text-base"
                   >
-                    View All Trips
+                    View All 
                   </Button>
                 </div>
               </div>
@@ -315,4 +332,4 @@ export default function DestinationShowcase() {
         )}
       </SectionWrapper>
     );
-  }
+}
