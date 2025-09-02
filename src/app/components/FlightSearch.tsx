@@ -11,12 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  CalendarIcon,
-  Plane,
-  Users,
-  AlertCircle,
-} from "lucide-react";
+import { CalendarIcon, Plane, Users, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -35,6 +30,9 @@ export default function FlightSearch({
   const [departureDate, setDepartureDate] = useState<Date>();
   const [passengers, setPassengers] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [tripType, setTripType] = useState<"oneWay" | "roundTrip">("oneWay");
+  const [returnDate, setReturnDate] = useState<Date>();
+
   const [suggestions, setSuggestions] = useState({ from: [], to: [] });
   const [showSuggestions, setShowSuggestions] = useState({
     from: false,
@@ -59,7 +57,15 @@ export default function FlightSearch({
     if (passengers < 1 || passengers > 9) {
       newErrors.passengers = "Number of passengers must be between 1 and 9";
     }
-
+    if (tripType === "roundTrip" && !returnDate) {
+      newErrors.returnDate = "Please select return date";
+    } else if (
+      tripType === "roundTrip" &&
+      returnDate &&
+      returnDate < departureDate!
+    ) {
+      newErrors.returnDate = "Return date cannot be before departure date";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -114,8 +120,7 @@ export default function FlightSearch({
       const data = await response.json();
       setSuggestions((prev) => ({ ...prev, [field]: data.suggestions || [] }));
       setShowSuggestions((prev) => ({ ...prev, [field]: true }));
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   return (
@@ -125,6 +130,29 @@ export default function FlightSearch({
           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
             Find Your Perfect Flight
           </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="space-y-2">
+              <Label className="text-gray-800">Trip Type</Label>
+              <div className="flex space-x-4">
+                <Button
+                  type="button"
+                  variant={tripType === "oneWay" ? "default" : "outline"}
+                  onClick={() => setTripType("oneWay")}
+                  className="flex-1"
+                >
+                  One Way
+                </Button>
+                <Button
+                  type="button"
+                  variant={tripType === "roundTrip" ? "default" : "outline"}
+                  onClick={() => setTripType("roundTrip")}
+                  className="flex-1"
+                >
+                  Round Trip
+                </Button>
+              </div>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="space-y-2">
@@ -296,7 +324,73 @@ export default function FlightSearch({
                 </PopoverContent>
               </Popover>
             </div>
-
+            {tripType === "roundTrip" && (
+              <div className="space-y-2">
+                <Label className="text-gray-800">Return Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-start text-left font-normal h-12 bg-white/80 border-gray-300 hover:bg-white text-gray-800",
+                        !returnDate && "text-gray-500"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-5 w-5 text-primary-600" />
+                      {returnDate ? (
+                        format(returnDate, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-auto p-0 border-gray-300 bg-white shadow-xl"
+                    align="start"
+                  >
+                    <Calendar
+                      mode="single"
+                      selected={returnDate}
+                      onSelect={setReturnDate}
+                      initialFocus
+                      disabled={(date) => date < departureDate!}
+                      className="rounded-md border border-gray-300"
+                      classNames={{
+                        months:
+                          "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 bg-white p-3",
+                        month: "space-y-4 bg-white",
+                        caption:
+                          "flex justify-center pt-1 relative items-center",
+                        caption_label: "text-sm font-medium text-gray-800",
+                        nav: "space-x-1 flex items-center",
+                        nav_button:
+                          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 border border-gray-300 rounded text-gray-800",
+                        nav_button_previous: "absolute left-1",
+                        nav_button_next: "absolute right-1",
+                        table: "w-full border-collapse space-y-1",
+                        head_row: "flex",
+                        head_cell:
+                          "text-gray-600 rounded-md w-9 font-normal text-[0.8rem]",
+                        row: "flex w-full mt-2",
+                        cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-gray-100 [&:has([aria-selected])]:bg-gray-100 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                        day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 text-gray-800 hover:bg-gray-100 rounded-md",
+                        day_range_end: "day-range-end",
+                        day_selected:
+                          "bg-gradient-to-r from-primary-600 to-secondary-600 text-white hover:from-primary-600 hover:to-secondary-600 focus:bg-primary-600 focus:text-white",
+                        day_today:
+                          "bg-gray-100 text-gray-800 border border-primary-500",
+                        day_outside:
+                          "day-outside text-gray-400 opacity-50 aria-selected:bg-gray-100 aria-selected:text-gray-800 aria-selected:opacity-30",
+                        day_disabled: "text-gray-400 opacity-50",
+                        day_range_middle:
+                          "aria-selected:bg-gray-100 aria-selected:text-gray-800",
+                        day_hidden: "invisible",
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="passengers" className="text-gray-800">
                 Passengers
@@ -331,7 +425,7 @@ export default function FlightSearch({
               </ul>
             </div>
           )}
-          
+
           <Button
             onClick={handleSearch}
             disabled={isLoading}

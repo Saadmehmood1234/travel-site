@@ -49,6 +49,8 @@ interface Flight {
   seatsAvailable: number;
   stops: number;
   segments: FlightSegment[];
+  isRoundTrip?: boolean; // Add this
+  returnFlight?: any; // Add this
 }
 
 interface FlightCardProps {
@@ -207,6 +209,46 @@ export default function FlightCard({
           onBook={onBook}
           passengers={passengers}
         />
+      )}
+      {flight.isRoundTrip && flight.returnFlight && (
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          <h4 className="text-sm font-semibold text-gray-700 mb-3">
+            Return Flight
+          </h4>
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-center flex-1">
+              <p className="text-sm font-bold text-gray-900">
+                {flight.returnFlight.departure.time}
+              </p>
+              <p className="text-xs text-gray-700">
+                {flight.returnFlight.departure.city}
+              </p>
+              <p className="text-xs text-gray-500">
+                {flight.returnFlight.departure.airport}
+              </p>
+            </div>
+            <div className="flex flex-col items-center mx-3 w-16">
+              <div className="flex items-center text-gray-600 text-xs">
+                <Clock className="h-3 w-3 mr-1 text-primary-500" />
+                {flight.returnFlight.duration}
+              </div>
+              <div className="relative w-full h-px bg-gray-300 my-1">
+                <Plane className="h-3 w-3 absolute -top-1.5 left-1/2 -translate-x-1/2 text-primary-600" />
+              </div>
+            </div>
+            <div className="text-center flex-1">
+              <p className="text-sm font-bold text-gray-900">
+                {flight.returnFlight.arrival.time}
+              </p>
+              <p className="text-xs text-gray-700">
+                {flight.returnFlight.arrival.city}
+              </p>
+              <p className="text-xs text-gray-500">
+                {flight.returnFlight.arrival.airport}
+              </p>
+            </div>
+          </div>
+        </div>
       )}
     </Card>
   );
