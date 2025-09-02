@@ -119,15 +119,21 @@ export default function Navbar() {
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2">
               <Phone className="h-4 w-4 text-primary-200" />
-              <span className="text-primary-100 hover:text-white transition-colors">+91-9310682414</span>
+              <span className="text-primary-100 hover:text-white transition-colors">
+                +91-9310682414
+              </span>
             </div>
             <div className="flex items-center space-x-2">
               <Mail className="h-4 w-4 text-primary-200" />
-              <span className="text-primary-100 hover:text-white transition-colors">info@cloudshipholidays.com</span>
+              <span className="text-primary-100 hover:text-white transition-colors">
+                info@cloudshipholidays.com
+              </span>
             </div>
           </div>
           <div className="hidden md:block">
-            <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🌟 Special Offer: 20% off all bookings this month!</span>
+            <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">
+              🌟 Special Offer: 20% off all bookings this month!
+            </span>
           </div>
         </div>
       </div>
@@ -182,9 +188,7 @@ export default function Navbar() {
                                   <Link
                                     href={item.href}
                                     className="text-gray-600 hover:text-primary-600 transition-colors text-sm block py-1"
-                                    onClick={() =>
-                                      setIsDestinationsOpen(false)
-                                    }
+                                    onClick={() => setIsDestinationsOpen(false)}
                                   >
                                     {item.name}
                                   </Link>
@@ -201,9 +205,7 @@ export default function Navbar() {
 
               {!session ? (
                 <Link href="/auth/signin">
-                  <Button
-                    className="btn-primary flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold"
-                  >
+                  <Button className="btn-primary flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold">
                     Login
                   </Button>
                 </Link>
@@ -258,37 +260,36 @@ export default function Navbar() {
 
                         {isMobileDestinationsOpen && (
                           <div className="pl-4 mt-2 space-y-4 border-l border-gray-200 ml-2">
-                            {staticDestinationMenu.map(
-                              (section, sectionIndex) => (
-                                <div
-                                  key={sectionIndex}
-                                  className="space-y-2"
-                                >
-                                  <h4 className="text-gray-800 font-medium text-sm border-b border-gray-200 pb-1">
-                                    {section.category}
-                                  </h4>
-                                  <div className="space-y-1 pl-2">
-                                    {section.items.map(
-                                      (item, itemIndex) => (
+                            {/* Scrollable container for destination menu */}
+                            <div className="max-h-64 overflow-y-auto pr-2">
+                              {staticDestinationMenu.map(
+                                (section, sectionIndex) => (
+                                  <div
+                                    key={sectionIndex}
+                                    className="space-y-2 mb-4"
+                                  >
+                                    <h4 className="text-gray-800 font-medium text-sm border-b border-gray-200 pb-1 sticky top-0 bg-white z-10">
+                                      {section.category}
+                                    </h4>
+                                    <div className="space-y-1 pl-2">
+                                      {section.items.map((item, itemIndex) => (
                                         <Link
                                           key={itemIndex}
                                           href={item.href}
                                           className="text-gray-600 hover:text-primary-600 text-sm block py-1"
                                           onClick={() => {
                                             setIsOpen(false);
-                                            setIsMobileDestinationsOpen(
-                                              false
-                                            );
+                                            setIsMobileDestinationsOpen(false);
                                           }}
                                         >
                                           {item.name}
                                         </Link>
-                                      )
-                                    )}
+                                      ))}
+                                    </div>
                                   </div>
-                                </div>
-                              )
-                            )}
+                                )
+                              )}
+                            </div>
                           </div>
                         )}
                       </div>
