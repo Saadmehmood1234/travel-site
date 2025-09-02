@@ -5,8 +5,8 @@ import Link from 'next/link';
 export default function TripCard({ trip }: { trip: any }) {
   return (
     <motion.div 
-      whileHover={{ y: -5 }}
-      className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+      whileHover={{ y: -8, scale: 1.02 }}
+      className="card overflow-hidden"
     >
       <div className="relative">
         <img 
@@ -15,7 +15,7 @@ export default function TripCard({ trip }: { trip: any }) {
           className="w-full h-48 md:h-56 object-cover"
         />
         {trip.isCommunityTrip && (
-          <div className="absolute top-4 left-4 bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+          <div className="absolute top-4 left-4 bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg backdrop-blur-sm">
             Community Trip
           </div>
         )}
@@ -24,10 +24,10 @@ export default function TripCard({ trip }: { trip: any }) {
       <div className="p-6">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-xl font-bold">{trip.title}</h3>
-          <div className="flex items-center bg-blue-50 px-2 py-1 rounded">
-            <FiStar className="text-yellow-500 mr-1" />
-            <span className="font-medium">{trip.rating}</span>
-            <span className="text-gray-500 text-sm ml-1">({trip.reviews})</span>
+          <div className="flex items-center bg-primary-50 px-3 py-2 rounded-xl border border-primary-100">
+            <FiStar className="text-yellow-500 mr-2 text-lg" />
+            <span className="font-semibold text-primary-700">{trip.rating}</span>
+            <span className="text-primary-500 text-sm ml-1">({trip.reviews})</span>
           </div>
         </div>
         
@@ -59,9 +59,9 @@ export default function TripCard({ trip }: { trip: any }) {
           <div className="text-sm font-medium text-gray-500 mb-1">Highlights:</div>
           <div className="flex flex-wrap gap-2">
             {trip.highlights.map((highlight: string, index: number) => (
-              <span key={index} className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm">
-                {highlight}
-              </span>
+                          <span key={index} className="bg-secondary-50 text-secondary-700 px-3 py-2 rounded-full text-sm font-medium border border-secondary-100">
+              {highlight}
+            </span>
             ))}
           </div>
         </div>
@@ -72,7 +72,7 @@ export default function TripCard({ trip }: { trip: any }) {
             <div className="text-2xl font-bold">{trip.price}</div>
           </div>
           <Link href={`/destinations/${trip.id}`}>
-          <button className="bg-gradient-to-r from-primary-600 to-secondary-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
+          <button className="btn-primary px-6 py-2.5 text-sm">
             View Details
           </button>
           </Link>

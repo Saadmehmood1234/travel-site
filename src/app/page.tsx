@@ -14,13 +14,11 @@ import FlightBooking from "./components/Flight";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white overflow-hidden">
-      <Navbar />
+    <div className="min-h-screen overflow-hidden">
       <HeroSection />
       <FlightBooking />
       <BookingWidget />
       <DestinationShowcase />
-
       <SpecialOffers />
       <FloatWhatsapp />
       <Testimonials />

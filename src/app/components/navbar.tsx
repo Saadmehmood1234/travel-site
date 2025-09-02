@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import SignOutButton from "./SignOutButton";
-import { Profile } from "./Profile";
 import { getProducts } from "../actions/product.actions";
 
 interface Trip {
@@ -36,9 +35,6 @@ export default function Navbar() {
   const [isMobileDestinationsOpen, setIsMobileDestinationsOpen] =
     useState(false);
   const { data: session } = useSession();
-  const [trips, setTrips] = useState<Trip[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const destinationsRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
@@ -65,104 +61,42 @@ export default function Navbar() {
     },
   ];
 
-  useEffect(() => {
-    async function fetchTrips() {
-      try {
-        setLoading(true);
-        setError(null);
-        const result = await getProducts();
-
-        if (result.success && result.data) {
-          const tripsData = result.data.map((product) => ({
-            id: product._id,
-            title: product.name,
-            subtitle: product.location,
-            tripType: product.tripType || "Domestic", // Use tripType instead of category
-            category: product.category,
-          }));
-          setTrips(tripsData);
-        } else {
-          setError("Failed to load products");
-        }
-      } catch (err) {
-        setError("An error occurred while fetching data");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchTrips();
-  }, []);
-
-  const categorizeTrips = (trips: Trip[]): DestinationCategory[] => {
-    const categories: { [key: string]: Trip[] } = {};
-
-    // Group by tripType (International/Domestic)
-    trips.forEach((trip) => {
-      const category = trip.tripType || "Domestic";
-      if (!categories[category]) {
-        categories[category] = [];
-      }
-      categories[category].push(trip);
-    });
-
-    return Object.entries(categories).map(([category, items]) => ({
-      category,
-      items: items.slice(0, 8).map((item) => ({
-        name: item.title,
-        href: `/destinations/${item.id}`,
-      })),
-    }));
-  };
-
-  const getDestinationMenu = (): DestinationCategory[] => {
-    const apiCategories = categorizeTrips(trips);
-
-    if (apiCategories.length > 0) {
-      return apiCategories;
-    }
-
-    // Fallback data if API fails
-    return [
-      {
-        category: "International",
-        items: [
-          { name: "Thailand", href: "/destinations/thailand" },
-          { name: "Bali, Indonesia", href: "/destinations/bali" },
-          { name: "Dubai, UAE", href: "/destinations/dubai" },
-          { name: "Singapore", href: "/destinations/singapore" },
-          { name: "Maldives", href: "/destinations/maldives" },
-          { name: "Europe Tour", href: "/destinations/europe" },
-          { name: "Sri Lanka", href: "/destinations/sri-lanka" },
-          { name: "Vietnam", href: "/destinations/vietnam" },
-        ],
-      },
-      {
-        category: "Domestic",
-        items: [
-          { name: "Manali", href: "/destinations/manali" },
-          { name: "Goa", href: "/destinations/goa" },
-          { name: "Kerala", href: "/destinations/kerala" },
-          { name: "Rajasthan", href: "/destinations/rajasthan" },
-          { name: "Shimla", href: "/destinations/shimla" },
-          { name: "Darjeeling", href: "/destinations/darjeeling" },
-          { name: "Andaman Islands", href: "/destinations/andaman" },
-          { name: "Kashmir", href: "/destinations/kashmir" },
-        ],
-      },
-      {
-        category: "Popular Categories",
-        items: [
-          { name: "Beach Holidays", href: "/category/beach" },
-          { name: "Adventure Tours", href: "/category/adventure" },
-          { name: "Luxury Getaways", href: "/category/luxury" },
-          { name: "Family Packages", href: "/category/family" },
-          { name: "Honeymoon Packages", href: "/category/honeymoon" },
-          { name: "Weekend Getaways", href: "/category/weekend" },
-        ],
-      },
-    ];
-  };
+  const staticDestinationMenu: DestinationCategory[] = [
+    {
+      category: "Domestic",
+      items: [
+        { name: "Kerala", href: "/packages/kerala" },
+        { name: "Himachal", href: "/packages/himachal" },
+        { name: "Sikkim-Darjeeling", href: "/packages/sikkim-darjeeling" },
+        { name: "Kashmir", href: "/packages/kashmir" },
+        { name: "Goa", href: "/packages/goa" },
+        { name: "Ladakh", href: "/packages/ladakh" },
+        { name: "Rajasthan", href: "/packages/rajasthan" },
+        { name: "Andaman", href: "/packages/andaman" },
+        { name: "Uttarakhand", href: "/packages/uttarakhand" },
+        { name: "North East", href: "/packages/north-east" },
+      ],
+    },
+    {
+      category: "International",
+      items: [
+        { name: "Bali", href: "/packages/bali" },
+        { name: "Singapore", href: "/packages/singapore" },
+        { name: "Thailand", href: "/packages/thailand" },
+        { name: "Dubai", href: "/packages/dubai" },
+        { name: "Malaysia", href: "/packages/malaysia" },
+        { name: "Maldives", href: "/packages/maldives" },
+        { name: "Mauritius", href: "/packages/mauritius" },
+        { name: "Vietnam", href: "/packages/vietnam" },
+        { name: "Sri Lanka", href: "/packages/sri-lanka" },
+        { name: "Turkey", href: "/packages/turkey" },
+        { name: "Azerbaijan", href: "/packages/azerbaijan" },
+        { name: "Georgia", href: "/packages/georgia" },
+        { name: "Hong Kong", href: "/packages/hong-kong" },
+        { name: "Kazakhstan", href: "/packages/kazakhstan" },
+      ],
+    },
+  ];
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -178,28 +112,26 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const destinationMenu = getDestinationMenu();
-
   return (
-    <div className="fixed w-full z-50 flex flex-col gap-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white pt-5 top-0">
-      <div className="text-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center px-2 space-x-4">
-            <div className="flex items-center">
-              <Phone className="h-4 w-4 mr-1" />
-              <span>+91-9310682414</span>
+    <div className="fixed w-full z-50 flex flex-col gap-0 bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-600 text-white pt-4 top-0 shadow-lg">
+      <div className="text-sm bg-black/10 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto flex justify-between items-center container-padding py-2">
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-2">
+              <Phone className="h-4 w-4 text-primary-200" />
+              <span className="text-primary-100 hover:text-white transition-colors">+91-9310682414</span>
             </div>
-            <div className="flex items-center">
-              <Mail className="h-4 w-4 mr-1" />
-              <span>info@cloudshipholidays.com</span>
+            <div className="flex items-center space-x-2">
+              <Mail className="h-4 w-4 text-primary-200" />
+              <span className="text-primary-100 hover:text-white transition-colors">info@cloudshipholidays.com</span>
             </div>
           </div>
           <div className="hidden md:block">
-            <span>🌟 Special Offer: 20% off all bookings this month!</span>
+            <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🌟 Special Offer: 20% off all bookings this month!</span>
           </div>
         </div>
       </div>
-      <nav className="bg-white text-gray-900 py-2 px-4 text-sm border border-gray-600">
+      <nav className="bg-white/95 backdrop-blur-md text-gray-900 py-4 border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center space-x-3">
@@ -218,7 +150,7 @@ export default function Navbar() {
                     <button
                       onMouseEnter={() => setIsDestinationsOpen(true)}
                       onMouseLeave={() => setIsDestinationsOpen(false)}
-                      className="text-gray-800 hover:text-gray-600 border-b-2 border-transparent hover:border-black transition-colors font-medium px-3 py-2 flex items-center gap-1"
+                      className="text-gray-800 hover:text-primary-600 border-b-2 border-transparent hover:border-primary-500 transition-all duration-300 font-medium px-4 py-2 rounded-lg hover:bg-primary-50 flex items-center gap-2"
                     >
                       {n.label}
                       <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
@@ -226,7 +158,7 @@ export default function Navbar() {
                   ) : (
                     <Link
                       href={`/${n.href}`}
-                      className="text-gray-800 hover:text-gray-600 border-b-2 border-transparent hover:border-black transition-colors font-medium px-3 py-2"
+                      className="text-gray-800 hover:text-primary-600 border-b-2 border-transparent hover:border-primary-500 transition-all duration-300 font-medium px-4 py-2 rounded-lg hover:bg-primary-50"
                     >
                       {n.label}
                     </Link>
@@ -234,63 +166,34 @@ export default function Navbar() {
 
                   {n.hasMenu && isDestinationsOpen && (
                     <div
-                      className="absolute top-full left-0 mt-2 w-[700px] bg-white rounded-lg shadow-2xl border border-gray-200 p-6"
+                      className="absolute top-full left-0 mt-2 w-[700px] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-100 p-8"
                       onMouseEnter={() => setIsDestinationsOpen(true)}
                       onMouseLeave={() => setIsDestinationsOpen(false)}
                     >
-                      {loading ? (
-                        <div className="text-center py-8">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
-                          <p className="text-gray-600">
-                            Loading destinations...
-                          </p>
-                        </div>
-                      ) : error ? (
-                        <div className="text-center py-8">
-                          <p className="text-red-500 mb-2">
-                            Failed to load destinations
-                          </p>
-                          <p className="text-gray-600 text-sm">
-                            Showing sample destinations
-                          </p>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="grid grid-cols-3 gap-8">
-                            {destinationMenu.map((section, index) => (
-                              <div key={index}>
-                                <h3 className="font-semibold text-gray-900 mb-3 text-sm uppercase tracking-wide border-b border-gray-200 pb-2">
-                                  {section.category}
-                                </h3>
-                                <ul className="space-y-2">
-                                  {section.items.map((item, itemIndex) => (
-                                    <li key={itemIndex}>
-                                      <Link
-                                        href={item.href}
-                                        className="text-gray-600 hover:text-primary-600 transition-colors text-sm block py-1"
-                                        onClick={() =>
-                                          setIsDestinationsOpen(false)
-                                        }
-                                      >
-                                        {item.name}
-                                      </Link>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            ))}
+                      <div className="grid grid-cols-2 gap-8">
+                        {staticDestinationMenu.map((section, index) => (
+                          <div key={index}>
+                            <h3 className="font-semibold text-gray-900 mb-3 text-sm uppercase tracking-wide border-b border-gray-200 pb-2">
+                              {section.category}
+                            </h3>
+                            <ul className="space-y-2">
+                              {section.items.map((item, itemIndex) => (
+                                <li key={itemIndex}>
+                                  <Link
+                                    href={item.href}
+                                    className="text-gray-600 hover:text-primary-600 transition-colors text-sm block py-1"
+                                    onClick={() =>
+                                      setIsDestinationsOpen(false)
+                                    }
+                                  >
+                                    {item.name}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
                           </div>
-                          <div className="mt-6 pt-4 border-t border-gray-200 text-center">
-                            <Link
-                              href="/destinations"
-                              className="text-primary-600 hover:text-primary-700 font-medium text-sm inline-flex items-center"
-                              onClick={() => setIsDestinationsOpen(false)}
-                            >
-                              Explore All Destinations & Packages →
-                            </Link>
-                          </div>
-                        </>
-                      )}
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -299,10 +202,7 @@ export default function Navbar() {
               {!session ? (
                 <Link href="/auth/signin">
                   <Button
-                    className="flex items-center gap-2 px-2 py-2 rounded-sm font-semibold text-white
-                 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 
-                 hover:opacity-90 transition-all
-                 backdrop-blur-md border border-white/20"
+                    className="btn-primary flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold"
                   >
                     Login
                   </Button>
@@ -358,58 +258,36 @@ export default function Navbar() {
 
                         {isMobileDestinationsOpen && (
                           <div className="pl-4 mt-2 space-y-4 border-l border-gray-200 ml-2">
-                            {loading ? (
-                              <div className="text-gray-600 text-sm">
-                                Loading destinations...
-                              </div>
-                            ) : error ? (
-                              <div className="text-gray-600 text-sm">
-                                Failed to load destinations
-                              </div>
-                            ) : (
-                              <>
-                                {destinationMenu.map(
-                                  (section, sectionIndex) => (
-                                    <div
-                                      key={sectionIndex}
-                                      className="space-y-2"
-                                    >
-                                      <h4 className="text-gray-800 font-medium text-sm border-b border-gray-200 pb-1">
-                                        {section.category}
-                                      </h4>
-                                      <div className="space-y-1 pl-2">
-                                        {section.items.map(
-                                          (item, itemIndex) => (
-                                            <Link
-                                              key={itemIndex}
-                                              href={item.href}
-                                              className="text-gray-600 hover:text-primary-600 text-sm block py-1"
-                                              onClick={() => {
-                                                setIsOpen(false);
-                                                setIsMobileDestinationsOpen(
-                                                  false
-                                                );
-                                              }}
-                                            >
-                                              {item.name}
-                                            </Link>
-                                          )
-                                        )}
-                                      </div>
-                                    </div>
-                                  )
-                                )}
-                                <Link
-                                  href="/destinations"
-                                  className="text-primary-600 hover:text-primary-700 font-medium text-sm flex items-center pt-2"
-                                  onClick={() => {
-                                    setIsOpen(false);
-                                    setIsMobileDestinationsOpen(false);
-                                  }}
+                            {staticDestinationMenu.map(
+                              (section, sectionIndex) => (
+                                <div
+                                  key={sectionIndex}
+                                  className="space-y-2"
                                 >
-                                  View All Destinations →
-                                </Link>
-                              </>
+                                  <h4 className="text-gray-800 font-medium text-sm border-b border-gray-200 pb-1">
+                                    {section.category}
+                                  </h4>
+                                  <div className="space-y-1 pl-2">
+                                    {section.items.map(
+                                      (item, itemIndex) => (
+                                        <Link
+                                          key={itemIndex}
+                                          href={item.href}
+                                          className="text-gray-600 hover:text-primary-600 text-sm block py-1"
+                                          onClick={() => {
+                                            setIsOpen(false);
+                                            setIsMobileDestinationsOpen(
+                                              false
+                                            );
+                                          }}
+                                        >
+                                          {item.name}
+                                        </Link>
+                                      )
+                                    )}
+                                  </div>
+                                </div>
+                              )
                             )}
                           </div>
                         )}

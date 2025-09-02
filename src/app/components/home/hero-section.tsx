@@ -102,7 +102,7 @@ export default function HeroSection() {
   return (
     <section
       ref={ref}
-      className="relative h-screen max-h-[700px] w-full overflow-hidden mt-[70px]"
+      className="relative h-screen max-h-[700px] w-full overflow-hidden"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
@@ -135,7 +135,7 @@ export default function HeroSection() {
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
                 <motion.h1
-                  className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 leading-tight"
+                  className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-2xl"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.6 }}
@@ -144,7 +144,7 @@ export default function HeroSection() {
                 </motion.h1>
 
                 <motion.p
-                  className="text-xl md:text-2xl text-white/90 mb-4"
+                  className="text-xl md:text-2xl lg:text-3xl text-white/95 mb-6 leading-relaxed drop-shadow-lg"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.8 }}
@@ -153,28 +153,30 @@ export default function HeroSection() {
                 </motion.p>
 
                 <motion.div
-                  className="bg-white/10 backdrop-blur-md inline-block px-4 py-2 rounded-full mb-6"
+                  className="glass-effect inline-block px-6 py-3 rounded-full mb-8 shadow-lg"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 1 }}
                 >
-                  <span className="text-white font-medium">
+                  <span className="text-white font-semibold text-lg">
                     {currentDestination.highlight}
                   </span>
                 </motion.div>
 
-                <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                <div className="flex  gap-4 mt-8">
                   <Link href="/destinations">
                     <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      className="bg-gradient-to-r from-primary-600 to-secondary-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-semibold flex items-center gap-2 text-lg shadow-lg"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="btn-primary text-lg flex justify-center items-center px-10 py-4 rounded-2xl shadow-2xl hover:shadow-primary-500/25"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 1.2 }}
-                    >{currentDestination.cta}
-                      <FiArrowRight className="text-xl" />
+                    >
+                      {currentDestination.cta} <FiArrowRight className="text-xl ml-2" />
+                      
                     </motion.button>
+                    
                   </Link>
 
                   {/* <motion.button
@@ -195,19 +197,19 @@ export default function HeroSection() {
       </div>
 
       {/* Navigation Arrows */}
-      <div className="absolute inset-y-0 left-0 flex items-center pl-4 z-10">
+      <div className="absolute inset-y-0 left-0 flex items-center pl-6 z-10">
         <button
           onClick={goToPrev}
-          className="p-3 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm transition-all"
+          className="p-4 rounded-2xl bg-black/20 hover:bg-black/40 text-white backdrop-blur-md transition-all duration-300 hover:scale-110 shadow-lg"
           aria-label="Previous slide"
         >
           <FiChevronLeft className="text-2xl" />
         </button>
       </div>
-      <div className="absolute inset-y-0 right-0 flex items-center pr-4 z-10">
+      <div className="absolute inset-y-0 right-0 flex items-center pr-6 z-10">
         <button
           onClick={goToNext}
-          className="p-3 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm transition-all"
+          className="p-4 rounded-2xl bg-black/20 hover:bg-black/40 text-white backdrop-blur-md transition-all duration-300 hover:scale-110 shadow-lg"
           aria-label="Next slide"
         >
           <FiChevronRight className="text-2xl" />

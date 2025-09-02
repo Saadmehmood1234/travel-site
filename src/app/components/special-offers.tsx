@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { SectionWrapper } from "@/app/components/ui/section-wrapper";
+import { SectionHeader } from "@/app/components/ui/section-header";
 import {
   ChevronLeft,
   ChevronRight,
@@ -104,45 +106,41 @@ export default function SpecialOffers() {
 
   if (loading) {
     return (
-      <section className="py-20 bg-gradient-to-br from-gray-50 via-white to-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-red-100 text-red-700 hover:bg-red-200">
-              🔥 Hot Deals
-            </Badge>
-            <h2 className="text-4xl md:text-5xl font-heading font-bold text-gray-900 mb-6">
+      <SectionWrapper background="gradient">
+        <SectionHeader
+          badge="🔥 Hot Deals"
+          title={
+            <>
               Special Offers &
               <span className="block bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
                 Limited Deals
               </span>
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Loading amazing deals...
-            </p>
-          </div>
-          <div className="flex justify-center">
-            <div className="animate-pulse bg-gray-200 rounded-2xl w-full h-96"></div>
-          </div>
+            </>
+          }
+          subtitle="Loading amazing deals..."
+        />
+        <div className="flex justify-center">
+          <div className="animate-pulse bg-gray-200 rounded-2xl w-full h-96"></div>
         </div>
-      </section>
+      </SectionWrapper>
     );
   }
 
   if (error) {
     return (
-      <section className="py-20 bg-gradient-to-br from-gray-50 via-white to-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <SectionWrapper background="gradient">
+        <div className="text-center">
           <div className="text-red-500 mb-4">Error: {error}</div>
           <Button onClick={() => window.location.reload()}>Try Again</Button>
         </div>
-      </section>
+      </SectionWrapper>
     );
   }
 
   if (offers.length === 0) {
     return (
-      <section className="py-20 bg-gradient-to-br from-gray-50 via-white to-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <SectionWrapper background="gradient">
+        <div className="text-center">
           <div className="mb-6">
             <div className="w-24 h-24 mx-auto rounded-full flex items-center justify-center bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg">
               <svg
@@ -170,32 +168,28 @@ export default function SpecialOffers() {
             Check back later for amazing deals and special offers!
           </p>
 
-          <Button asChild className="bg-gradient-to-r from-primary-500 to-secondary-500">
+          <Button asChild className="btn-primary">
             <a href="/">Back to Home</a>
           </Button>
         </div>
-      </section>
+      </SectionWrapper>
     );
   }
 
   return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <Badge className="mb-4 bg-red-100 text-red-700 hover:bg-red-200">
-            🔥 Hot Deals
-          </Badge>
-          <h2 className="text-4xl md:text-5xl font-heading font-bold text-gray-900 mb-6">
+    <SectionWrapper background="gradient">
+      <SectionHeader
+        badge="🔥 Hot Deals"
+        title={
+          <>
             Special Offers &
             <span className="block bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
               Limited Deals
             </span>
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Don't miss out on these incredible deals! Limited time offers with
-            amazing savings on your dream destinations.
-          </p>
-        </div>
+          </>
+        }
+        subtitle="Don't miss out on these incredible deals! Limited time offers with amazing savings on your dream destinations."
+      />
         <div className="relative">
           <div className="overflow-hidden rounded-2xl">
             <div
@@ -347,7 +341,6 @@ export default function SpecialOffers() {
             </div>
           )}
         </div>
-      </div>
-    </section>
-  );
-}
+      </SectionWrapper>
+    );
+  }

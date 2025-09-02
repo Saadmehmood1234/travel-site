@@ -31,14 +31,14 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <footer className="bg-gradient-to-br from-primary-800 via-primary-700 to-secondary-800 text-white">
+      <div className="max-w-7xl mx-auto container-padding">
+        <div className="py-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           <div className="lg:col-span-1">
-            <div className="flex items-center space-x-3 mb-6">
+            <div className="flex items-center space-x-3 mb-8">
               <Link href="/">
-                <div className="w-52 bg-white rounded-full">
-                  <img src="/logo.png" />
+                <div className="w-52 bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
+                  <img src="/logo.png" className="w-full h-auto" />
                 </div>
               </Link>
             </div>
@@ -50,25 +50,25 @@ export default function Footer() {
             <div className="flex space-x-4">
               <a
                 href="#"
-                className="bg-gray-800 p-2 rounded-full hover:bg-primary-600 transition-colors"
+                className="bg-white/10 backdrop-blur-md p-3 rounded-xl hover:bg-white/20 hover:scale-110 transition-all duration-300 border border-white/20"
               >
                 <Facebook className="h-5 w-5" />
               </a>
               <a
                 href="#"
-                className="bg-gray-800 p-2 rounded-full hover:bg-primary-600 transition-colors"
+                className="bg-white/10 backdrop-blur-md p-3 rounded-xl hover:bg-white/20 hover:scale-110 transition-all duration-300 border border-white/20"
               >
                 <Twitter className="h-5 w-5" />
               </a>
               <a
                 href="#"
-                className="bg-gray-800 p-2 rounded-full hover:bg-primary-600 transition-colors"
+                className="bg-white/10 backdrop-blur-md p-3 rounded-xl hover:bg-white/20 hover:scale-110 transition-all duration-300 border border-white/20"
               >
                 <Instagram className="h-5 w-5" />
               </a>
               <a
                 href="#"
-                className="bg-gray-800 p-2 rounded-full hover:bg-primary-600 transition-colors"
+                className="bg-white/10 backdrop-blur-md p-3 rounded-xl hover:bg-white/20 hover:scale-110 transition-all duration-300 border border-white/20"
               >
                 <Youtube className="h-5 w-5" />
               </a>

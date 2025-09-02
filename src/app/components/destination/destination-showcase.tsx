@@ -7,6 +7,8 @@ import Link from "next/link";
 import TripCard from "./trip-card";
 import { getProducts } from "@/app/actions/product.actions";
 import { Filter, ChevronDown } from "lucide-react";
+import { SectionWrapper } from "@/app/components/ui/section-wrapper";
+import { SectionHeader } from "@/app/components/ui/section-header";
 
 interface Trip {
   id: string;
@@ -116,20 +118,12 @@ export default function DestinationShowcase() {
 
   if (loading) {
     return (
-      <section className="py-12 md:py-20 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10 md:mb-16">
-            <Badge className="mb-3 md:mb-4 bg-primary-100 text-primary-700 hover:bg-primary-200">
-              Popular Destinations
-            </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Discover Amazing Trips
-            </h2>
-            <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
-              Explore our handpicked selection of community trips to
-              breathtaking destinations around the world.
-            </p>
-          </div>
+      <SectionWrapper background="gradient">
+        <SectionHeader
+          badge="Popular Destinations"
+          title="Discover Amazing Trips"
+          subtitle="Explore our handpicked selection of community trips to breathtaking destinations around the world."
+        />
           <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-8 md:mb-12">
             <div className="flex items-center bg-white rounded-full p-1 shadow-lg animate-pulse w-full md:w-auto">
               <div className="h-5 w-5 bg-gray-300 rounded ml-3 mr-2"></div>
@@ -162,40 +156,28 @@ export default function DestinationShowcase() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-    );
-  }
+        </SectionWrapper>
+      );
+    }
 
   if (error) {
     return (
-      <section className="py-12 md:py-20 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <SectionWrapper background="gradient">
+        <div className="text-center">
           <div className="text-red-500 mb-4">Error: {error}</div>
           <Button onClick={() => window.location.reload()}>Try Again</Button>
         </div>
-      </section>
+      </SectionWrapper>
     );
   }
 
   return (
-    <section
-      id="destinations"
-      className="py-12 md:py-20 bg-gradient-to-b from-gray-50 to-white"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10 md:mb-16">
-          <Badge className="mb-3 md:mb-4 bg-primary-100 text-primary-700 hover:bg-primary-200">
-            Popular Destinations
-          </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Discover Amazing Trips
-          </h2>
-          <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
-            Explore our handpicked selection of community trips to breathtaking
-            destinations around the world.
-          </p>
-        </div>
+    <SectionWrapper id="destinations" background="gradient">
+      <SectionHeader
+        badge="Popular Destinations"
+        title="Discover Amazing Trips"
+        subtitle="Explore our handpicked selection of community trips to breathtaking destinations around the world."
+      />
         <div className="md:hidden mb-6">
           <Button
             onClick={() => setShowMobileFilters(!showMobileFilters)}
@@ -230,10 +212,10 @@ export default function DestinationShowcase() {
                     setSelectedCategory(category);
                     setShowMobileFilters(false);
                   }}
-                  className={`rounded-full px-3 py-2 text-sm md:px-4 md:py-2 md:text-base transition-all duration-300 ${
+                  className={`rounded-full px-4 py-2.5 text-sm md:px-6 md:py-3 md:text-base transition-all duration-300 ${
                     selectedCategory === category
-                      ? "bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg"
-                      : "text-gray-600 hover:text-gray-900"
+                      ? "btn-primary shadow-lg"
+                      : "text-gray-600 hover:text-primary-600 hover:bg-primary-50"
                   }`}
                 >
                   {category}
@@ -331,7 +313,6 @@ export default function DestinationShowcase() {
             </div>
           </div>
         )}
-      </div>
-    </section>
-  );
-}
+      </SectionWrapper>
+    );
+  }

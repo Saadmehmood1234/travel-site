@@ -7,6 +7,8 @@ import { Star, Quote, ChevronLeft, ChevronRight, Play } from "lucide-react"
 import Image from "next/image"
 import { getTestimonials } from "../actions/testimonials.actions"
 import { ITestimonial } from "@/model/Testimonial"
+import { SectionWrapper } from "@/app/components/ui/section-wrapper"
+import { SectionHeader } from "@/app/components/ui/section-header"
 
 export default function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -38,50 +40,44 @@ export default function Testimonials() {
 
   if (loading) {
     return (
-      <section className="py-20 bg-gradient-to-br from-primary-50 via-white to-secondary-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-heading font-bold text-gray-900 mb-6">
-              Loading Testimonials...
-            </h2>
-          </div>
+      <SectionWrapper background="primary">
+        <div className="text-center">
+          <h2 className="section-title">
+            Loading Testimonials...
+          </h2>
         </div>
-      </section>
+      </SectionWrapper>
     )
   }
 
   if (testimonials.length === 0) {
     return (
-      <section className="py-20 bg-gradient-to-br from-primary-50 via-white to-secondary-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-heading font-bold text-gray-900 mb-6">
-              No Testimonials Yet
-            </h2>
-          </div>
+      <SectionWrapper background="primary">
+        <div className="text-center">
+          <h2 className="section-title">
+            No Testimonials Yet
+          </h2>
         </div>
-      </section>
+      </SectionWrapper>
     )
   }
 
   const currentTestimonial = testimonials[currentIndex]
 
   return (
-    <section className="py-20 bg-gradient-to-br from-primary-50 via-white to-secondary-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <Badge className="mb-4 bg-primary-100 text-primary-700 hover:bg-primary-200">⭐ Customer Reviews</Badge>
-          <h2 className="text-4xl  md:text-5xl font-heading font-bold text-gray-900 mb-6">
+    <SectionWrapper background="primary">
+      <SectionHeader
+        badge="⭐ Customer Reviews"
+        title={
+          <>
             What Our Travelers
-            <span className="block  text-primary-600 ">
+            <span className="block text-primary-600">
               Are Saying
             </span>
-          </h2>
-          <p className="text-xl mt-4 text-gray-600 max-w-3xl mx-auto">
-            Don't just take our word for it - hear from our satisfied customers who have experienced unforgettable
-            journeys with us.
-          </p>
-        </div>
+          </>
+        }
+        subtitle="Don't just take our word for it - hear from our satisfied customers who have experienced unforgettable journeys with us."
+      />
         <div className="relative max-w-4xl mx-auto mb-12">
           <Card className="border-0 shadow-2xl overflow-hidden">
             <CardContent className="p-0">
@@ -137,7 +133,6 @@ export default function Testimonials() {
             <ChevronRight className="h-6 w-6 text-gray-700" />
           </button>
         </div>
-      </div>
-    </section>
-  )
-}
+      </SectionWrapper>
+    )
+  }
