@@ -138,7 +138,7 @@ export default function TripDetailPage() {
             ],
             tripType: product.tripType || "domestic",
           };
-
+console.log("transformedData",transformedData)
           setTripDetails(transformedData);
         } else {
           setError(result.error || "Product not found");
@@ -358,7 +358,17 @@ export default function TripDetailPage() {
 
             <section className="bg-white rounded-xl shadow-sm p-6 mb-8">
               <h2 className="text-2xl font-bold mb-6">Detailed Itinerary</h2>
-              <div className="space-y-6">{tripDetails.itinerary}</div>
+              <div className="space-y-6">
+                {tripDetails.itinerary.map((item, index) => (
+                  <div
+                    key={index}
+                    className="border-l-4 border-blue-500 pl-4 py-2"
+                  >
+                    <h3 className="font-semibold text-lg">Day {index + 1}</h3>
+                    <p className="text-gray-700">{item}</p>
+                  </div>
+                ))}
+              </div>
             </section>
 
             <section className="bg-white rounded-xl shadow-sm p-6 mb-8">

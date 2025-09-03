@@ -98,13 +98,71 @@ function formatDate(dateString: string): string {
   return date.toISOString().split("T")[0];
 }
 
-function calculateDuration(departureTime: string, arrivalTime: string): string {
-  const depTime = new Date(departureTime);
-  const arrTime = new Date(arrivalTime);
-  const durationMs = arrTime.getTime() - depTime.getTime();
+function processItinerary(itinerary: any, originCode: string, destinationCode: string) {
+  const segments = itinerary.segments;
+  const firstSegment = segments[0];
+  const lastSegment = segments[segments.length - 1];
+  
+  const departureTime = new Date(firstSegment.departure.at);
+  const arrivalTime = new Date(lastSegment.arrival.at);
+  const durationMs = arrivalTime.getTime() - departureTime.getTime();
   const hours = Math.floor(durationMs / (1000 * 60 * 60));
   const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
-  return `${hours}h ${minutes}m`;
+
+  return {
+    airline: firstSegment.carrierCode,
+    flightNumber: `${firstSegment.carrierCode}${firstSegment.number}`,
+    departure: {
+      airport: firstSegment.departure.iataCode,
+      time: formatTime(firstSegment.departure.at),
+      city: getCityName(firstSegment.departure.iataCode),
+      date: formatDate(firstSegment.departure.at),
+      datetime: firstSegment.departure.at
+    },
+    arrival: {
+      airport: lastSegment.arrival.iataCode,
+      time: formatTime(lastSegment.arrival.at),
+      city: getCityName(lastSegment.arrival.iataCode),
+      date: formatDate(lastSegment.arrival.at),
+      datetime: lastSegment.arrival.at
+    },
+    duration: `${hours}h ${minutes}m`,
+    durationMinutes: Math.floor(durationMs / (1000 * 60)),
+    stops: segments.length - 1,
+    segments: segments.map((segment: any) => ({
+      airline: segment.carrierCode,
+      flightNumber: `${segment.carrierCode}${segment.number}`,
+      departure: {
+        airport: segment.departure.iataCode,
+        time: formatTime(segment.departure.at),
+        terminal: segment.departure.terminal
+      },
+      arrival: {
+        airport: segment.arrival.iataCode,
+        time: formatTime(segment.arrival.at),
+        terminal: segment.arrival.terminal
+      },
+      duration: segment.duration
+    }))
+  };
+}
+
+async function searchFlights(accessToken: string, originCode: string, destinationCode: string, date: string, adults: string) {
+  const flightOffersUrl = `https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${originCode}&destinationLocationCode=${destinationCode}&departureDate=${date}&adults=${adults}&max=10`;
+
+  const flightResponse = await fetch(flightOffersUrl, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!flightResponse.ok) {
+    const errorData = await flightResponse.json();
+    throw new Error(errorData.errors?.[0]?.detail || "Failed to fetch flight offers");
+  }
+
+  const flightData = await flightResponse.json();
+  return flightData.data || [];
 }
 
 export async function GET(request: NextRequest) {
@@ -180,35 +238,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    let flightOffersUrl = `https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${originCode}&destinationLocationCode=${destinationCode}&departureDate=${departureDate}&adults=${adults}&max=10`;
+    // Search for outbound flights (origin → destination)
+    const outboundFlights = await searchFlights(accessToken, originCode, destinationCode, departureDate, adults);
 
-    if (tripType === 'roundTrip' && returnDate) {
-      flightOffersUrl += `&returnDate=${returnDate}`;
-    }
-
-    const flightResponse = await fetch(flightOffersUrl, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    if (!flightResponse.ok) {
-      const errorData = await flightResponse.json();
-      
-      let errorMessage = "Failed to fetch flight offers";
-      if (errorData.errors && errorData.errors.length > 0) {
-        errorMessage = errorData.errors[0].detail || errorMessage;
-      }
-      
-      return NextResponse.json(
-        { error: errorMessage },
-        { status: flightResponse.status }
-      );
-    }
-
-    const flightData = await flightResponse.json();
-  
-    if (!flightData.data || flightData.data.length === 0) {
+    if (outboundFlights.length === 0) {
       return NextResponse.json(
         {
           error: "No flights found for the selected route and date. Please try different search criteria.",
@@ -218,112 +251,68 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const processedFlights = flightData.data.map((offer: any) => {
-      const outboundItinerary = offer.itineraries[0];
-      const returnItinerary = offer.itineraries[1] || null;
-      
-      const outboundSegments = outboundItinerary.segments;
-      const firstOutboundSegment = outboundSegments[0];
-      const lastOutboundSegment = outboundSegments[outboundSegments.length - 1];
-      
-      const departureTime = new Date(firstOutboundSegment.departure.at);
-      const arrivalTime = new Date(lastOutboundSegment.arrival.at);
-      const durationMs = arrivalTime.getTime() - departureTime.getTime();
-      const hours = Math.floor(durationMs / (1000 * 60 * 60));
-      const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+    let returnFlights = [];
+    
+    // If round trip, search for return flights (destination → origin)
+    if (tripType === 'roundTrip' && returnDate) {
+      try {
+        returnFlights = await searchFlights(accessToken, destinationCode, originCode, returnDate, adults);
+      } catch (error) {
+        console.error("Error fetching return flights:", error);
+        // Continue with outbound flights only, but mark as round trip search
+      }
+    }
 
+    // Process the flights
+    const processedFlights = outboundFlights.map((outboundOffer: any, index: number) => {
+      const outboundItinerary = outboundOffer.itineraries[0];
+      const outboundFlight = processItinerary(outboundItinerary, originCode, destinationCode);
+
+      // For round trip, try to find a matching return flight
       let returnFlight = null;
-      if (returnItinerary) {
-        const returnSegments = returnItinerary.segments;
-        const firstReturnSegment = returnSegments[0];
-        const lastReturnSegment = returnSegments[returnSegments.length - 1];
-        
-        const returnDepartureTime = new Date(firstReturnSegment.departure.at);
-        const returnArrivalTime = new Date(lastReturnSegment.arrival.at);
-        const returnDurationMs = returnArrivalTime.getTime() - returnDepartureTime.getTime();
-        const returnHours = Math.floor(returnDurationMs / (1000 * 60 * 60));
-        const returnMinutes = Math.floor((returnDurationMs % (1000 * 60 * 60)) / (1000 * 60));
-        
-        returnFlight = {
-          airline: firstReturnSegment.carrierCode,
-          flightNumber: `${firstReturnSegment.carrierCode}${firstReturnSegment.number}`,
-          departure: {
-            airport: firstReturnSegment.departure.iataCode,
-            time: formatTime(firstReturnSegment.departure.at),
-            city: getCityName(firstReturnSegment.departure.iataCode),
-            date: formatDate(firstReturnSegment.departure.at),
-            datetime: firstReturnSegment.departure.at
-          },
-          arrival: {
-            airport: lastReturnSegment.arrival.iataCode,
-            time: formatTime(lastReturnSegment.arrival.at),
-            city: getCityName(lastReturnSegment.arrival.iataCode),
-            date: formatDate(lastReturnSegment.arrival.at),
-            datetime: lastReturnSegment.arrival.at
-          },
-          duration: `${returnHours}h ${returnMinutes}m`,
-          segments: returnSegments.map((segment: any) => ({
-            airline: segment.carrierCode,
-            flightNumber: `${segment.carrierCode}${segment.number}`,
-            departure: {
-              airport: segment.departure.iataCode,
-              time: formatTime(segment.departure.at),
-              terminal: segment.departure.terminal
-            },
-            arrival: {
-              airport: segment.arrival.iataCode,
-              time: formatTime(segment.arrival.at),
-              terminal: segment.arrival.terminal
-            },
-            duration: segment.duration
-          }))
-        };
+      if (tripType === 'roundTrip' && returnFlights.length > 0) {
+        // Use the same index if available, or first available return flight
+        const returnOffer = returnFlights[index] || returnFlights[0];
+        if (returnOffer) {
+          const returnItinerary = returnOffer.itineraries[0];
+          returnFlight = processItinerary(returnItinerary, destinationCode, originCode);
+          
+          // Update price to include both flights
+          const totalPrice = parseFloat(outboundOffer.price.total) + parseFloat(returnOffer.price.total);
+          outboundOffer.price.total = totalPrice.toString();
+        }
       }
 
       return {
-        id: offer.id,
-        airline: firstOutboundSegment.carrierCode,
-        airlineName: getAirlineName(firstOutboundSegment.carrierCode),
-        flightNumber: `${firstOutboundSegment.carrierCode}${firstOutboundSegment.number}`,
+        id: outboundOffer.id,
+        airline: outboundFlight.airline,
+        airlineName: getAirlineName(outboundFlight.airline),
+        flightNumber: outboundFlight.flightNumber,
         departure: {
-          airport: firstOutboundSegment.departure.iataCode,
-          airportName: getAirlineName(firstOutboundSegment.departure.iataCode),
-          time: formatTime(firstOutboundSegment.departure.at),
-          city: getCityName(firstOutboundSegment.departure.iataCode),
-          date: formatDate(firstOutboundSegment.departure.at),
-          datetime: firstOutboundSegment.departure.at
+          airport: outboundFlight.departure.airport,
+          airportName: getAirlineName(outboundFlight.departure.airport),
+          time: outboundFlight.departure.time,
+          city: outboundFlight.departure.city,
+          date: outboundFlight.departure.date,
+          datetime: outboundFlight.departure.datetime
         },
         arrival: {
-          airport: lastOutboundSegment.arrival.iataCode,
-          airportName: getAirlineName(lastOutboundSegment.arrival.iataCode),
-          time: formatTime(lastOutboundSegment.arrival.at),
-          city: getCityName(lastOutboundSegment.arrival.iataCode),
-          date: formatDate(lastOutboundSegment.arrival.at),
-          datetime: lastOutboundSegment.arrival.at
+          airport: outboundFlight.arrival.airport,
+          airportName: getAirlineName(outboundFlight.arrival.airport),
+          time: outboundFlight.arrival.time,
+          city: outboundFlight.arrival.city,
+          date: outboundFlight.arrival.date,
+          datetime: outboundFlight.arrival.datetime
         },
-        duration: `${hours}h ${minutes}m`,
-        durationMinutes: Math.floor(durationMs / (1000 * 60)),
-        price: parseFloat(offer.price.total),
-        currency: offer.price.currency,
+        duration: outboundFlight.duration,
+        durationMinutes: outboundFlight.durationMinutes,
+        price: parseFloat(outboundOffer.price.total),
+        currency: outboundOffer.price.currency,
         seatsAvailable: Math.max(1, Math.floor(Math.random() * 10) + 1),
-        stops: outboundSegments.length - 1,
+        stops: outboundFlight.stops,
         isRoundTrip: tripType === 'roundTrip',
         returnFlight: returnFlight,
-        segments: outboundSegments.map((segment: any) => ({
-          airline: segment.carrierCode,
-          flightNumber: `${segment.carrierCode}${segment.number}`,
-          departure: {
-            airport: segment.departure.iataCode,
-            time: formatTime(segment.departure.at),
-            terminal: segment.departure.terminal
-          },
-          arrival: {
-            airport: segment.arrival.iataCode,
-            time: formatTime(segment.arrival.at),
-            terminal: segment.arrival.terminal
-          },
-          duration: segment.duration
-        }))
+        segments: outboundFlight.segments
       };
     });
 
@@ -335,7 +324,8 @@ export async function GET(request: NextRequest) {
         departureDate,
         returnDate,
         tripType,
-        totalFlights: processedFlights.length
+        totalFlights: processedFlights.length,
+        hasReturnFlights: returnFlights.length > 0
       }
     });
 

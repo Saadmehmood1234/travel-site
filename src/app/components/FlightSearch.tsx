@@ -88,7 +88,7 @@ export default function FlightSearch({
 
       const response = await fetch(`/api/flights?${params}`);
       const data = await response.json();
-
+console.log("Data",data)
       if (response.ok) {
         if (data.flights && data.flights.length > 0) {
           onFlightsFound(data.flights);

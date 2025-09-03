@@ -32,7 +32,7 @@ import { contactUs } from "../actions/contact.actions";
 const DESTINATION_OPTIONS = [
   // Domestic
   "Kerala",
-  "Himachal Pradesh", 
+  "Himachal Pradesh",
   "Sikkim",
   "Darjeeling",
   "Kashmir",
@@ -44,7 +44,7 @@ const DESTINATION_OPTIONS = [
   "North East",
   "Assam",
   "Meghalaya",
-  
+
   // International
   "Bali",
   "Singapore",
@@ -60,7 +60,7 @@ const DESTINATION_OPTIONS = [
   "Georgia",
   "Hong Kong",
   "Kazakhstan",
-  
+
   "Other (please specify in details)",
 ];
 
@@ -75,7 +75,7 @@ const TIME_TO_BOOK = [
   "I will book within 2-3 days",
   "I will book within a week",
   "I will book within a month",
-  "Nothing decided as of now"
+  "Nothing decided as of now",
 ];
 type FormDataState = {
   name: string;
@@ -110,7 +110,6 @@ export default function ContactSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
 
     try {
       const res = await contactUs(formData);
@@ -391,6 +390,7 @@ export default function ContactSection() {
                             id="phone"
                             type="tel"
                             value={formData.phone}
+                            required
                             onChange={(e) =>
                               handleInputChange("phone", e.target.value)
                             }
@@ -420,7 +420,6 @@ export default function ContactSection() {
                         </div>
                       </div>
 
-                      
                       <div>
                         <Label
                           htmlFor="additionalDetails"

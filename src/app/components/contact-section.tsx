@@ -499,6 +499,7 @@ export default function ContactSection() {
                         id="phone"
                         type="tel"
                         value={formData.phone}
+                        required
                         onChange={(e) =>
                           handleInputChange("phone", e.target.value)
                         }
