@@ -8,7 +8,7 @@ import { use, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
-// Dynamically import TripCard to avoid Framer Motion client boundary issues
+
 const TripCard = dynamic(
   () => import("@/app/components/destination/trip-card"),
   {
@@ -148,7 +148,7 @@ export default function DestinationPage() {
               rating: product.rating,
               reviews: product.reviews,
               highlights: product.highlights || [],
-              isCommunityTrip: product.isCommunityTrip || true,
+              isCommunityTrip: product.isCommunityTrip || false,
               category: product.category,
               featured: product.featured,
               discount: product.discount,
