@@ -176,29 +176,56 @@ export default function Navbar() {
 
                   {n.hasMenu && isDestinationsOpen && (
                     <div
-                      className="absolute top-full left-0 mt-2 w-[700px] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-100 p-8"
+                      className="absolute top-full left-0 mt-2 w-[700px] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-100 p-8 z-50"
                       onMouseEnter={() => setIsDestinationsOpen(true)}
                       onMouseLeave={() => setIsDestinationsOpen(false)}
                     >
                       <div className="grid grid-cols-2 gap-8">
                         {staticDestinationMenu.map((section, index) => (
-                          <div key={index}>
-                            <h3 className="font-semibold text-gray-900 mb-3 text-sm uppercase tracking-wide border-b border-gray-200 pb-2">
-                              {section.category}
-                            </h3>
-                            <ul className="space-y-2">
-                              {section.items.map((item, itemIndex) => (
-                                <li key={itemIndex}>
-                                  <Link
-                                    href={item.href}
-                                    className="text-gray-600 hover:text-primary-600 transition-colors text-sm block py-1"
-                                    onClick={() => setIsDestinationsOpen(false)}
-                                  >
-                                    {item.name}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
+                          <div key={index} className="relative">
+                            <button
+                              onClick={() => {
+                                setMobileDropdownsOpen((prev) => ({
+                                  ...prev,
+                                  [section.category]:
+                                    !prev[
+                                      section.category as keyof typeof mobileDropdownsOpen
+                                    ],
+                                }));
+                              }}
+                              className="font-semibold text-gray-900 mb-3 text-sm uppercase tracking-wide border-b border-gray-200 pb-2 w-full text-left flex items-center justify-between"
+                            >
+                              <span>{section.category}</span>
+                              <ChevronRight
+                                className={`h-4 w-4 transition-transform ${
+                                  mobileDropdownsOpen[
+                                    section.category as keyof typeof mobileDropdownsOpen
+                                  ]
+                                    ? "rotate-90"
+                                    : ""
+                                }`}
+                              />
+                            </button>
+
+                            {mobileDropdownsOpen[
+                              section.category as keyof typeof mobileDropdownsOpen
+                            ] && (
+                              <ul className="space-y-2 mt-3">
+                                {section.items.map((item, itemIndex) => (
+                                  <li key={itemIndex}>
+                                    <Link
+                                      href={item.href}
+                                      className="text-gray-600 hover:text-primary-600 transition-colors text-sm block py-1"
+                                      onClick={() =>
+                                        setIsDestinationsOpen(false)
+                                      }
+                                    >
+                                      {item.name}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
                           </div>
                         ))}
                       </div>
