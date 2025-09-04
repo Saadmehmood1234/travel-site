@@ -3,6 +3,7 @@ import { FiCalendar, FiMapPin, FiUsers, FiStar } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 export default function TripCard({ trip }: { trip: any }) {
+  console.log("Trp",trip)
   return (
     <motion.div 
       whileHover={{ y: -8, scale: 1.02 }}
