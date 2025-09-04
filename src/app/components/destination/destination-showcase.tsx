@@ -85,7 +85,7 @@ export default function DestinationShowcase() {
             rating: product.rating,
             reviews: product.reviews,
             highlights: product.highlights || [],
-            isCommunityTrip: product.isCommunityTrip || true,
+            isCommunityTrip: product.isCommunityTrip || false,
             category: product.category,
             featured: product.featured,
             discount: product.discount,
