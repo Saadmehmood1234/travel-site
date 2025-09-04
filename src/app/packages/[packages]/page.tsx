@@ -8,7 +8,6 @@ import { use, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
-
 const TripCard = dynamic(
   () => import("@/app/components/destination/trip-card"),
   {
@@ -89,10 +88,12 @@ export default function DestinationPage() {
   const { packages } = params;
 
   const decodedDestination = decodeURIComponent(packages as string);
+  const formattedDestination = decodedDestination.charAt(0).toUpperCase() + 
+                              decodedDestination.slice(1).toLowerCase();
   const [destinationTrips, setDestinationTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  console.log("Saad", packages);
+
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -187,10 +188,10 @@ export default function DestinationPage() {
                 Destination
               </Badge>
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                {decodedDestination} Tours & Packages
+                {formattedDestination} Tours & Packages
               </h1>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Discover amazing travel experiences in {decodedDestination}
+                Discover amazing travel experiences in {formattedDestination}
               </p>
             </div>
           </div>
@@ -249,10 +250,10 @@ export default function DestinationPage() {
               Destination
             </Badge>
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {decodedDestination} Tours & Packages
+              {formattedDestination} Tours & Packages
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Discover amazing travel experiences in {decodedDestination}
+              Discover amazing travel experiences in {formattedDestination}
             </p>
           </div>
         </div>
@@ -266,7 +267,7 @@ export default function DestinationPage() {
         ) : (
           <div className="text-center py-16">
             <h2 className="text-2xl font-semibold text-gray-700">
-              No packages found for "{decodedDestination}"
+              No packages found for "{formattedDestination}"
             </h2>
             <p className="text-gray-500 mt-2 mb-4">
               We couldn't find any trips matching your search. Please try:
